@@ -1,0 +1,82 @@
+import axios from 'axios';
+
+// Use environment variables for API configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://seagreen-mink-431224.hostingersite.com/api';
+ const API_KEY = import.meta.env.VITE_API_KEY || 'mh8bUvdGP2xD9P4J3BZPYvr6noPBwEwZ';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'x-api-key': API_KEY,
+  },
+  timeout: 10000, // 10 second timeout
+});
+
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid - trigger logout
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      localStorage.removeItem('verification_data');
+      window.dispatchEvent(new CustomEvent('auth-expired'));
+    }
+    
+    // Handle network errors
+    if (error.code === 'ECONNABORTED') {
+      error.message = 'Request timeout. Please check your connection and try again.';
+    } else if (!error.response) {
+      error.message = 'Network error. Please check your connection.';
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
+export const authAPI = {
+  register: (userData) => api.post('/register', userData),
+  login: (credentials) => api.post('/login', credentials),
+  verifyOTP: (data) => api.post('/auth/verify-otp', data),
+  resendOTP: (data) => api.post('/auth/resend-otp', data),
+  getProfile: () => api.get('/profile'),
+  updateProfile: (data) => api.put('/profile', data),
+  updateUser: (data) => api.put('/user', data),
+  getAllUsers: (params) => api.get('/admin/users', { params }),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
+  suspendUser: (userId, data) => api.put(`/admin/users/${userId}/status`, data),
+  updateUserRole: (userId, data) => api.put(`/admin/users/${userId}/role`, data),
+  // Role management methods
+  assignRoleToUser: (data) => api.post('/admin/users/assign-role', data),
+  removeRoleFromUser: (data) => api.delete('/admin/users/remove-role', { data }),
+  getUserRoles: (userId) => api.get(`/admin/users/${userId}/roles`),
+  getUserPermissions: (userId) => api.get(`/admin/users/${userId}/permissions`),
+};
+
+export const profileAPI = {
+  getProfile: () => api.get('/profile'),
+  updateProfile: (data) => api.put('/profile', data),
+  uploadProfilePicture: (formData) => api.post('/profile/picture', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  updateLocation: (data) => api.put('/profile/location', data),
+  deleteProfilePicture: () => api.delete('/profile/picture'),
+};
+
+export default api;

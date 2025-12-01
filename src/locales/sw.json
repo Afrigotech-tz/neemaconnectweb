@@ -1,0 +1,51 @@
+{
+  "common": {
+    "welcome": "Karibu Neema Gospel Choir",
+    "home": "NYUMBANI",
+    "about": "KWA KUHUSU SISI",
+    "events": "MATUKIO",
+    "partner": "SHIRIKA",
+    "blog": "BALOZI",
+    "shop": "DUKA",
+    "contact": "WASILIANO",
+    "login": "Ingia",
+    "register": "Jisajili",
+    "dashboard": "Dashibodi",
+    "logout": "Toka",
+    "watch_performances": "Tazama Maonyesho",
+    "choir_members": "Wanachama wa Kwaya",
+    "performances": "Maonyesho",
+    "lives_touched": "Maisha Yaliyoguswa",
+    "years_of_ministry": "Miaka ya Huduma",
+    "passionate_voices": "Sauti zenye shauku zilizoungana katika ibada",
+    "concerts_and_services": "Matamasha na huduma za kanisa",
+    "hearts_changed": "Mioyo iliyobadilika kupitia muziki",
+    "serving_community": "Kutumikia jamii yetu kwa furaha",
+    "what_people_say": "Watu Wanasema Nini",
+    "testimonies": "Shuhuda za maisha yaliyoguswa na huduma yetu",
+    "support_ministry": "Unga Mkono Huduma Yetu",
+    "donation_description": "Michango yenu ya ukarimu inatusaidia kuendelea kusambaza upendo wa Mungu kupitia muziki, kuwaunga mkono wanachama wa kwaya, na kufikia jamii kwa ujumbe wa matumaini na neema."
+  },
+  "home": {
+    "title": "Karibu Neema Gospel Choir",
+    "description1": "Kwa zaidi ya miaka 15, Neema Gospel Choir imekuwa taa ya matumaini na furaha katika jamii yetu. Jina letu \"Neema,\" linalomaanisha \"neema\" kwa Kiswahili, linaakisi dhamira yetu ya kushiriki neema ya Mungu kupitia njia yenye nguvu ya muziki.",
+    "description2": "Sisi si kwaya tu; sisi ni familia iliyoungana kwa imani, shauku, na dhamira ya pamoja ya kusambaza upendo na matumaini kupitia muziki wa injili. Kikundi chetu cha wasanii wenye vipaji kinakusanyika kuunda midundo inayogusa mioyo na kubadilisha maisha."
+  },
+  "testimonials": [
+    {
+      "name": "Sarah Johnson",
+      "role": "Mratibu wa Matukio",
+      "quote": "Neema Gospel Choir walileta nguvu na kina cha kiroho katika harusi yetu. Maonyesho yao yalikuwa ya kuvutia kabisa!"
+    },
+    {
+      "name": "Pastor Michael",
+      "role": "Kanisa la Grace Baptist",
+      "quote": "Kuwa na Neema wakitumbuiza katika huduma za kanisa letu imekuwa baraka. Wanaelewa ibada na kuiongoza kwa mioyo yao."
+    },
+    {
+      "name": "Maria Rodriguez",
+      "role": "Mwanajamii",
+      "quote": "Tamasha lao la Krismasi lilinifanya nilie. Midundo, shauku, furaha - ilikuwa ni uzoefu wa kubadilisha maisha."
+    }
+  ]
+}

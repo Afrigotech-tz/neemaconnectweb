@@ -1,0 +1,51 @@
+{
+  "common": {
+    "welcome": "Welcome to Neema Gospel Choir",
+    "home": "HOME",
+    "about": "ABOUT US",
+    "events": "EVENTS",
+    "partner": "PARTNER",
+    "blog": "BLOG",
+    "shop": "SHOP",
+    "contact": "CONTACT",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "logout": "Log out",
+    "watch_performances": "Watch Performances",
+    "choir_members": "Choir Members",
+    "performances": "Performances",
+    "lives_touched": "Lives Touched",
+    "years_of_ministry": "Years of Ministry",
+    "passionate_voices": "Passionate voices united in worship",
+    "concerts_and_services": "Concerts and church services",
+    "hearts_changed": "Hearts changed through music",
+    "serving_community": "Serving our community with joy",
+    "what_people_say": "What People Say",
+    "testimonies": "Testimonies of lives touched by our ministry",
+    "support_ministry": "Support Our Ministry",
+    "donation_description": "Your generous donations help us continue spreading God's love through music, supporting our choir members, and reaching communities with the message of hope and grace."
+  },
+  "home": {
+    "title": "Welcome to Neema Gospel Choir",
+    "description1": "For over 15 years, Neema Gospel Choir has been a beacon of hope and joy in our community. Our name \"Neema,\" meaning \"grace\" in Swahili, reflects our mission to share God's grace through the powerful medium of music.",
+    "description2": "We are more than just a choir; we are a family united by faith, passion, and a shared commitment to spreading love and hope through gospel music. Our diverse group of talented singers comes together to create harmonies that touch hearts and transform lives."
+  },
+  "testimonials": [
+    {
+      "name": "Sarah Johnson",
+      "role": "Event Coordinator",
+      "quote": "Neema Gospel Choir brought such energy and spiritual depth to our wedding. Their performance was absolutely breathtaking!"
+    },
+    {
+      "name": "Pastor Michael",
+      "role": "Grace Baptist Church",
+      "quote": "Having Neema perform at our church services has been a blessing. They truly understand worship and lead with their hearts."
+    },
+    {
+      "name": "Maria Rodriguez",
+      "role": "Community Member",
+      "quote": "Their Christmas concert moved me to tears. The harmony, the passion, the joy - it was a truly transformative experience."
+    }
+  ]
+}

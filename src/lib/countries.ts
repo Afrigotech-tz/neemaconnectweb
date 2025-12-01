@@ -1,0 +1,22 @@
+export const countries = [
+  { id: 1, name: "Tanzania" },
+  { id: 2, name: "Kenya" },
+  { id: 3, name: "Uganda" },
+  { id: 4, name: "Rwanda" },
+  { id: 5, name: "Burundi" },
+  { id: 6, name: "South Sudan" },
+  { id: 7, name: "Democratic Republic of Congo" },
+  { id: 8, name: "Zambia" },
+  { id: 9, name: "Malawi" },
+  { id: 10, name: "Mozambique" },
+  { id: 11, name: "Zimbabwe" },
+  { id: 12, name: "Botswana" },
+  { id: 13, name: "South Africa" },
+  { id: 14, name: "Nigeria" },
+  { id: 15, name: "Ghana" },
+  { id: 16, name: "United States" },
+  { id: 17, name: "United Kingdom" },
+  { id: 18, name: "Canada" },
+  { id: 19, name: "Australia" },
+  { id: 20, name: "Germany" }
+];
