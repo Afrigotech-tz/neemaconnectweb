@@ -16,7 +16,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { usePermissions } from "@/hooks/usePermissions";
 
-const Navigation = () => {
+interface NavigationProps {
+  onLoginClick?: () => void;
+  onRegisterClick?: () => void;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -115,16 +120,21 @@ const Navigation = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="outline" size="sm" className="text-sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button size="sm" className="text-sm">
-                    Register
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-sm"
+                  onClick={onLoginClick}
+                >
+                  Login
+                </Button>
+                <Button
+                  size="sm"
+                  className="text-sm"
+                  onClick={onRegisterClick}
+                >
+                  Register
+                </Button>
               </>
             )}
           </div>
