@@ -68,15 +68,15 @@ export const authAPI = {
 };
 
 export const profileAPI = {
-  getProfile: () => api.get('/profile'),
-  updateProfile: (data) => api.put('/profile', data),
-  uploadProfilePicture: (formData) => api.post('/profile/picture', formData, {
+  getProfile: (userId?: string) => api.get(userId ? `/users/${userId}/profile` : '/profile'),
+  updateProfile: (userId: string, data: any) => api.patch(`/users/${userId}/profile`, data),
+  uploadProfilePicture: (userId: string, formData: FormData) => api.post(`/users/${userId}/profile/picture`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   }),
-  updateLocation: (data) => api.put('/profile/location', data),
-  deleteProfilePicture: () => api.delete('/profile/picture'),
+  updateLocation: (userId: string, data: any) => api.patch(`/users/${userId}/profile/location`, data),
+  deleteProfilePicture: (userId: string) => api.delete(`/users/${userId}/profile/picture`),
 };
 
 export default api;

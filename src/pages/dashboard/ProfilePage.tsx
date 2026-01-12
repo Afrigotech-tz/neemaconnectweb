@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 const ProfilePage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -83,18 +83,25 @@ const ProfilePage = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !user?.id) return;
 
     setUploading(true);
     try {
-      const response = await profileService.uploadProfilePicture(file);
+      const response = await profileService.uploadProfilePicture(user.id, file);
       if (response.success) {
         toast({
           title: "Success",
           description: "Profile picture updated successfully",
         });
-        // Refresh user data
-        window.location.reload();
+        // Update user data in context
+        if (response.data?.profile_picture_url) {
+          updateUser({
+            profile: {
+              ...user.profile,
+              profile_picture: response.data.profile_picture_url,
+            } as any,
+          });
+        }
       } else {
         toast({
           title: "Error",
@@ -114,16 +121,23 @@ const ProfilePage = () => {
   };
 
   const handleDeleteProfilePicture = async () => {
+    if (!user?.id) return;
+
     setUploading(true);
     try {
-      const response = await profileService.deleteProfilePicture();
+      const response = await profileService.deleteProfilePicture(user.id);
       if (response.success) {
         toast({
           title: "Success",
           description: "Profile picture removed successfully",
         });
-        // Refresh user data
-        window.location.reload();
+        // Update user data in context
+        updateUser({
+          profile: {
+            ...user.profile,
+            profile_picture: null,
+          } as any,
+        });
       } else {
         toast({
           title: "Error",
@@ -151,8 +165,15 @@ const ProfilePage = () => {
           title: "Success",
           description: "Location updated successfully",
         });
-        // Refresh user data
-        window.location.reload();
+        // Update user data in context
+        updateUser({
+          profile: {
+            ...user.profile,
+            address: locationData.address,
+            postal_code: locationData.postal_code,
+            location_public: locationData.location_public,
+          } as any,
+        });
       } else {
         toast({
           title: "Error",
@@ -172,9 +193,11 @@ const ProfilePage = () => {
   };
 
   const handleNamesUpdate = async () => {
+    if (!user?.id) return;
+
     setUpdatingNames(true);
     try {
-      const response = await userService.updateUser({
+      const response = await userService.updateUser(user.id, {
         first_name: editableData.first_name,
         surname: editableData.surname,
       });
@@ -183,8 +206,11 @@ const ProfilePage = () => {
           title: "Success",
           description: "Names updated successfully",
         });
-        // Refresh user data
-        window.location.reload();
+        // Update user data in context
+        updateUser({
+          first_name: editableData.first_name,
+          surname: editableData.surname,
+        });
       } else {
         toast({
           title: "Error",
@@ -204,9 +230,11 @@ const ProfilePage = () => {
   };
 
   const handleProfileUpdate = async () => {
+    if (!user?.id) return;
+
     setUpdatingProfile(true);
     try {
-      const response = await profileService.updateProfile({
+      const response = await profileService.updateProfile(user.id, {
         bio: editableData.bio,
         city: editableData.city,
         state_province: editableData.state_province,
@@ -219,8 +247,18 @@ const ProfilePage = () => {
           title: "Success",
           description: "Profile updated successfully",
         });
-        // Refresh user data
-        window.location.reload();
+        // Update user data in context
+        updateUser({
+          profile: {
+            ...user.profile,
+            bio: editableData.bio,
+            city: editableData.city,
+            state_province: editableData.state_province,
+            date_of_birth: editableData.date_of_birth,
+            occupation: editableData.occupation,
+            profile_public: editableData.profile_public,
+          } as any,
+        });
       } else {
         toast({
           title: "Error",

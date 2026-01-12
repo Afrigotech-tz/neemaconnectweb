@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { RegisterFormData } from '../lib/validations/auth';
+import { countries } from '../lib/countries';
+import PasswordStrengthIndicator from './ui/password-strength-indicator';
 import {
   Dialog,
   DialogContent,
@@ -19,22 +21,24 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState<RegisterFormData>({
     first_name: '',
     surname: '',
-    gender: '' as 'male' | 'female',
+    gender: '',
     phone_number: '',
     email: '',
     password: '',
     password_confirmation: '',
-    verification_method: 'mobile',
-    country_id: 1
+    country_id: 0,
+    verification_method: 'email',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked, files } = e.target as HTMLInputElement;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : type === 'file' ? files?.[0] : name === 'country_id' ? Number(value) : value
     });
   };
 
@@ -90,6 +94,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
           </div>
         )}
 
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+            {success}
+          </div>
+        )}
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -125,7 +135,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
           <div>
             <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
-              Gender
+              Gender <span className="text-red-500">*</span>
             </label>
             <select
               id="gender"
@@ -143,12 +153,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
           <div>
             <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
-              Phone Number {formData.verification_method === 'mobile' && <span className="text-red-500">*</span>}
+              Phone Number <span className="text-red-500">*</span>
             </label>
             <input
               id="phone_number"
               name="phone_number"
               type="tel"
+              required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="255718561495"
               value={formData.phone_number}
@@ -158,16 +169,56 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email {formData.verification_method === 'email' && <span className="text-red-500">*</span>}
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               id="email"
               name="email"
               type="email"
+              required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               value={formData.email}
               onChange={handleChange}
             />
+          </div>
+
+          <div>
+            <label htmlFor="country_id" className="block text-sm font-medium text-gray-700">
+              Country <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="country_id"
+              name="country_id"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              value={formData.country_id}
+              onChange={handleChange}
+            >
+              <option value="">Select Country</option>
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="verification_method" className="block text-sm font-medium text-gray-700">
+              Verification Method <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="verification_method"
+              name="verification_method"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              value={formData.verification_method}
+              onChange={handleChange}
+            >
+              <option value="">Select Verification Method</option>
+              <option value="email">Email</option>
+              <option value="mobile">Mobile</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -184,6 +235,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                 value={formData.password}
                 onChange={handleChange}
               />
+              <PasswordStrengthIndicator password={formData.password} />
             </div>
 
             <div>
@@ -202,21 +254,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </div>
           </div>
 
-          <div>
-            <label htmlFor="verification_method" className="block text-sm font-medium text-gray-700">
-              Verification Method
-            </label>
-            <select
-              id="verification_method"
-              name="verification_method"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-              value={formData.verification_method}
-              onChange={handleChange}
-            >
-              <option value="mobile">Mobile</option>
-              <option value="email">Email</option>
-            </select>
-          </div>
+
+
+
+
+
 
           <button
             type="submit"
