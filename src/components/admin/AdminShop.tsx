@@ -14,9 +14,10 @@ import {
   Search,
   Filter,
   MoreHorizontal,
-  Package
+  Package,
+  Eye
 } from 'lucide-react';
-import { productService } from '@/services/productService';
+import { productService, PaginatedResponse } from '@/services/productService';
 import { Product, ProductCategory } from '@/types/productTypes';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -44,8 +45,11 @@ const AdminShop: React.FC = () => {
       setLoading(true);
       const response = await productService.getProducts();
       if (response.success && response.data) {
-        setProducts(response.data);
+        // Handle paginated response - products are in response.data.data
+        const paginatedData = response.data as PaginatedResponse<Product>;
+        setProducts(Array.isArray(paginatedData.data) ? paginatedData.data : []);
       } else {
+        setProducts([]);
         toast({
           title: 'Error',
           description: response.message || 'Failed to load products',
@@ -53,6 +57,7 @@ const AdminShop: React.FC = () => {
         });
       }
     } catch (error) {
+      setProducts([]);
       toast({
         title: 'Error',
         description: 'Failed to load products',
@@ -92,10 +97,12 @@ const AdminShop: React.FC = () => {
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = Array.isArray(products)
+    ? products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   if (loading) {
     return (
@@ -116,7 +123,7 @@ const AdminShop: React.FC = () => {
           </p>
         </div>
         <Button asChild>
-          <Link to="/admin/shop/create">
+          <Link to="/dashboard/shop/create">
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Link>
@@ -201,7 +208,13 @@ const AdminShop: React.FC = () => {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem asChild>
-                            <Link to={`/admin/shop/edit/${product.id}`}>
+                            <Link to={`/dashboard/shop/view/${product.id}`}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              View
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link to={`/dashboard/shop/edit/${product.id}`}>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </Link>

@@ -27,19 +27,16 @@ export type UpdateCategoryData = Partial<CreateCategoryData>;
 export interface Product {
   id: number;
   name: string;
-  slug: string;
   description: string;
-  short_description?: string;
-  price: number;
-  sale_price?: number;
   sku: string;
-  stock_quantity: number;
+  base_price: string;
+  weight: number | null;
+  image_url: string | null;
+  images: string[] | null;
   is_active: boolean;
-  is_featured: boolean;
+  stock_quantity: number;
   category_id: number;
   category?: ProductCategory;
-  images: ProductImage[];
-  attributes: ProductAttribute[];
   variants: ProductVariant[];
   created_at: string;
   updated_at: string;
@@ -57,14 +54,13 @@ export interface ProductImage {
 export interface CreateProductData {
   name: string;
   description: string;
-  short_description?: string;
-  price: number;
-  sale_price?: number;
+  category_id: number;
+  base_price: number;
   sku: string;
   stock_quantity: number;
   is_active?: boolean;
-  is_featured?: boolean;
-  category_id: number;
+  weight?: number;
+  images?: File[];
 }
 
 export type UpdateProductData = Partial<CreateProductData>;

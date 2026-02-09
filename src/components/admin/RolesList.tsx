@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { roleService } from '@/services/roleService';
 import { Role, CreateRoleData, UpdateRoleData } from '@/types/rolePermissionTypes';
-import { Plus, Edit, Trash2, Shield } from 'lucide-react';
+import { Plus, Edit, Trash2, Shield, Eye, Settings } from 'lucide-react';
 
 const RolesList: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -19,7 +20,7 @@ const RolesList: React.FC = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', description: '', is_active: true });
+  const [formData, setFormData] = useState({ name: '', display_name: '', description: '', is_active: true });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -52,10 +53,10 @@ const RolesList: React.FC = () => {
   };
 
   const handleCreateRole = async () => {
-    if (!formData.name.trim()) {
+    if (!formData.name.trim() || !formData.display_name.trim()) {
       toast({
         title: 'Validation Error',
-        description: 'Role name is required.',
+        description: 'Role name and display name are required.',
         variant: 'destructive',
       });
       return;
@@ -64,6 +65,7 @@ const RolesList: React.FC = () => {
     try {
       const roleData: CreateRoleData = {
         name: formData.name,
+        display_name: formData.display_name,
         description: formData.description,
         is_active: formData.is_active,
       };
@@ -75,7 +77,7 @@ const RolesList: React.FC = () => {
           description: 'Role created successfully.',
         });
         setIsCreateDialogOpen(false);
-        setFormData({ name: '', description: '', is_active: true });
+        setFormData({ name: '', display_name: '', description: '', is_active: true });
         fetchRoles();
       } else {
         toast({
@@ -95,10 +97,10 @@ const RolesList: React.FC = () => {
   };
 
   const handleUpdateRole = async () => {
-    if (!selectedRole || !formData.name.trim()) {
+    if (!selectedRole || !formData.name.trim() || !formData.display_name.trim()) {
       toast({
         title: 'Validation Error',
-        description: 'Role name is required.',
+        description: 'Role name and display name are required.',
         variant: 'destructive',
       });
       return;
@@ -107,6 +109,7 @@ const RolesList: React.FC = () => {
     try {
       const roleData: UpdateRoleData = {
         name: formData.name,
+        display_name: formData.display_name,
         description: formData.description,
         is_active: formData.is_active,
       };
@@ -119,7 +122,7 @@ const RolesList: React.FC = () => {
         });
         setIsEditDialogOpen(false);
         setSelectedRole(null);
-        setFormData({ name: '', description: '', is_active: true });
+        setFormData({ name: '', display_name: '', description: '', is_active: true });
         fetchRoles();
       } else {
         toast({
@@ -172,6 +175,7 @@ const RolesList: React.FC = () => {
     setSelectedRole(role);
     setFormData({
       name: role.name,
+      display_name: role.display_name,
       description: role.description || '',
       is_active: role.is_active,
     });
@@ -184,7 +188,7 @@ const RolesList: React.FC = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', is_active: true });
+    setFormData({ name: '', display_name: '', description: '', is_active: true });
   };
 
   if (loading) {
@@ -262,6 +266,15 @@ const RolesList: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
+                          asChild
+                        >
+                          <Link to={`/dashboard/roles/view/${role.id}`}>
+                            <Settings className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => openEditDialog(role)}
                         >
                           <Edit className="h-4 w-4" />
@@ -303,8 +316,23 @@ const RolesList: React.FC = () => {
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter role name"
+                placeholder="e.g., content_editor"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Use lowercase letters and underscores only
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="display_name">Display Name</Label>
+              <Input
+                id="display_name"
+                value={formData.display_name}
+                onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                placeholder="e.g., Content Editor"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Human-readable name for the role
+              </p>
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
@@ -360,8 +388,23 @@ const RolesList: React.FC = () => {
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter role name"
+                placeholder="e.g., content_editor"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Use lowercase letters and underscores only
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="edit-display_name">Display Name</Label>
+              <Input
+                id="edit-display_name"
+                value={formData.display_name}
+                onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                placeholder="e.g., Content Editor"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Human-readable name for the role
+              </p>
             </div>
             <div>
               <Label htmlFor="edit-description">Description</Label>

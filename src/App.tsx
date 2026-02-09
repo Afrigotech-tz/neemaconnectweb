@@ -47,6 +47,23 @@ import BlogManagement from "./components/admin/BlogManagement";
 import EventsManagement from "./components/admin/EventsManagement";
 import DonationsManagement from "./components/admin/DonationsManagement";
 import ReportsManagement from "./components/admin/ReportsManagement";
+
+
+import AddUserPage from "./pages/dashboard/AddUserPage";
+import AddProductPage from "./pages/dashboard/AddProductPage";
+import AddCategoryPage from "./pages/dashboard/AddCategoryPage";
+import EditProductPage from "./pages/dashboard/EditProductPage";
+import ViewProductPage from "./pages/dashboard/ViewProductPage";
+import EditCategoryPage from "./pages/dashboard/EditCategoryPage";
+import ViewCategoryPage from "./pages/dashboard/ViewCategoryPage";
+import AddPermissionPage from "./pages/dashboard/AddPermissionPage";
+import EditPermissionPage from "./pages/dashboard/EditPermissionPage";
+import ViewRolePage from "./pages/dashboard/ViewRolePage";
+import EditRolePage from "./pages/dashboard/EditRolePage";
+import PermissionsList from "./components/admin/PermissionsList";
+
+
+
 // Import i18n configuration
 import './i18n';
 import { AuthProvider } from "./Providers/auth.provider";
@@ -132,6 +149,15 @@ const App = () => (
                     </PermissionBasedRoute>
                   }
                 />
+
+                <Route
+                  path="users/add"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <AddUserPage />
+                    </PermissionBasedRoute>
+                  }
+                />
                 <Route
                   path="roles"
                   element={
@@ -140,6 +166,47 @@ const App = () => (
                     </PermissionBasedRoute>
                   }
                 />
+                  <Route
+                  path="roles/view/:id"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <ViewRolePage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="roles/edit/:id"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <EditRolePage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="permissions"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <PermissionsList />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="permissions/create"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <AddPermissionPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="permissions/edit/:id"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <EditPermissionPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+              
                 <Route
                   path="shop"
                   element={
@@ -148,6 +215,31 @@ const App = () => (
                     </PermissionBasedRoute>
                   }
                 />
+                 <Route
+                  path="shop/create"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <AddProductPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="shop/edit/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <EditProductPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="shop/view/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <ViewProductPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+               
                 <Route
                   path="products/categories"
                   element={
@@ -156,6 +248,31 @@ const App = () => (
                     </PermissionBasedRoute>
                   }
                 />
+                  <Route
+                  path="products/categories/create"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <AddCategoryPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="products/categories/edit/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <EditCategoryPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="products/categories/view/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <ViewCategoryPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+              
                 <Route
                   path="blog-management"
                   element={

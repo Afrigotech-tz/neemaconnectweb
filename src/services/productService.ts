@@ -22,6 +22,27 @@ import {
   UpdateVariantData
 } from '@/types/productTypes';
 
+export interface PaginatedResponse<T> {
+  current_page: number;
+  data: T[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: Array<{
+    url: string | null;
+    label: string;
+    page: number | null;
+    active: boolean;
+  }>;
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
+}
+
 export const productService = {
   // Get all categories
   async getCategories(): Promise<ApiResponse<ProductCategory[]>> {
@@ -96,7 +117,7 @@ export const productService = {
   // ===== PRODUCT FUNCTIONS =====
 
   // Get all products
-  async getProducts(): Promise<ApiResponse<Product[]>> {
+  async getProducts(): Promise<ApiResponse<PaginatedResponse<Product>>> {
     try {
       const response = await api.get('/admin/products');
       return response.data;
@@ -124,9 +145,13 @@ export const productService = {
   },
 
   // Create new product
-  async createProduct(data: CreateProductData): Promise<ApiResponse<Product>> {
+  async createProduct(data: CreateProductData | FormData): Promise<ApiResponse<Product>> {
     try {
-      const response = await api.post('/admin/products', data);
+      // If data is FormData, send as-is (multipart/form-data for images)
+      // Otherwise, send as JSON
+      const response = await api.post('/admin/products', data, {
+        headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+      });
       return response.data;
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>;
@@ -138,9 +163,11 @@ export const productService = {
   },
 
   // Update product
-  async updateProduct(id: number, data: UpdateProductData): Promise<ApiResponse<Product>> {
+  async updateProduct(id: number, data: UpdateProductData | FormData): Promise<ApiResponse<Product>> {
     try {
-      const response = await api.put(`/admin/products/${id}`, data);
+      const response = await api.put(`/admin/products/${id}`, data, {
+        headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+      });
       return response.data;
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>;

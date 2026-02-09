@@ -15,8 +15,10 @@ export interface CreateUserData {
   first_name: string;
   surname: string;
   email: string;
-  phone_number?: string;
+  phone_number: string;
+  gender: string;
   password: string;
+  country_id: number;
 }
 
 export interface UpdateUserData {
@@ -231,10 +233,10 @@ export const userService = {
   },
 
   // Legacy methods for backward compatibility
-  async suspendUser(userId: string, suspend: boolean = true): Promise<ApiResponse> {
+  async suspendUser(userId: string, _suspend: boolean = true): Promise<ApiResponse> {
     try {
       // Update user status - you may need to add status field to UpdateUserData interface
-      const response = await this.updateUser(userId, { 
+      const response = await this.updateUser(userId, {
         // Add proper typing when status field is available
       } as UpdateUserData);
       return response;

@@ -22,6 +22,7 @@ export interface Permission {
 
 export interface CreateRoleData {
   name: string;
+  display_name: string;
   description: string;
   is_active?: boolean;
 }
@@ -37,3 +38,13 @@ export interface RolePermissionsData {
   role_id: number;
   permission_ids: number[];
 }
+
+export interface CreatePermissionData {
+  name: string;
+  display_name: string;
+  description: string;
+  module: string;
+  is_active?: boolean;
+}
+
+export type UpdatePermissionData = Partial<CreatePermissionData>;

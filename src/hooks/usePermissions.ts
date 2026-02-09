@@ -3,7 +3,7 @@ import { hasRouteAccess, hasModuleAccess, MODULE_PERMISSIONS } from '@/config/ro
 import { useRBAC } from './useRBAC';
 
 export const usePermissions = () => {
-  const { userPermissions, hasPermission, hasAnyPermission, hasAllPermissions, hasRole } = useRBAC();
+  const { userPermissions, hasPermission, hasAnyPermission, hasAllPermissions, hasRole, loading } = useRBAC();
 
   // Get user permissions as string array for easier checking
   const userPermissionNames = userPermissions.map(perm => perm.name);
@@ -79,6 +79,7 @@ export const usePermissions = () => {
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
-    hasRole
+    hasRole,
+    loading
   };
 };

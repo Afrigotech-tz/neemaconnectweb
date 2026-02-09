@@ -60,8 +60,10 @@ import {
   Settings
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const UsersList: React.FC = () => {
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const {
     users,
@@ -271,11 +273,11 @@ const UsersList: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <Button variant="outline" size="sm" onClick={fetchUsers} className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" onClick={() => fetchUsers()} className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Button size="sm" className="w-full sm:w-auto">
+            <Button size="sm" onClick={() => navigate('/dashboard/users/add')} className="w-full sm:w-auto">
               <UserPlus className="h-4 w-4 mr-2" />
               Add User
             </Button>

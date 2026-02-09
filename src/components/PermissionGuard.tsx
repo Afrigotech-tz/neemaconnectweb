@@ -2,6 +2,7 @@ import React from 'react';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ShieldX } from 'lucide-react';
+import { MODULE_PERMISSIONS } from '@/config/routePermissions';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ interface PermissionGuardProps {
   requireAll?: boolean; // Whether user needs ALL permissions/roles (default: false - needs ANY)
   fallback?: React.ReactNode;
   route?: string; // Route to check access for
-  module?: string; // Module to check access for
+  module?: keyof typeof MODULE_PERMISSIONS; // Module to check access for
 }
 
 const PermissionGuard: React.FC<PermissionGuardProps> = ({
@@ -28,8 +29,19 @@ const PermissionGuard: React.FC<PermissionGuardProps> = ({
     hasAllPermissions, 
     hasRole, 
     canAccessRoute,
-    canAccessModule 
+    canAccessModule ,
+    loading
   } = usePermissions();
+
+
+if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
 
   // Check route access if route is provided
   if (route && !canAccessRoute(route)) {
@@ -44,7 +56,7 @@ const PermissionGuard: React.FC<PermissionGuardProps> = ({
   }
 
   // Check module access if module is provided
-  if (module && !canAccessModule(module as any)) {
+  if (module && !canAccessModule(module)) {
     return fallback || (
       <Alert className="m-4">
         <ShieldX className="h-4 w-4" />

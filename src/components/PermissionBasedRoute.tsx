@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import PermissionGuard from './PermissionGuard';
+import { MODULE_PERMISSIONS } from '@/config/routePermissions';
 
 interface PermissionBasedRouteProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ interface PermissionBasedRouteProps {
   requireAll?: boolean;
   redirectTo?: string;
   route?: string;
-  module?: string;
+  module?: keyof typeof MODULE_PERMISSIONS;
 }
 
 const PermissionBasedRoute: React.FC<PermissionBasedRouteProps> = ({
@@ -23,8 +24,17 @@ const PermissionBasedRoute: React.FC<PermissionBasedRouteProps> = ({
   route,
   module
 }) => {
-  const { user } = useAuth();
+  const { user,loading: authLoading } = useAuth();
   const location = useLocation();
+
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   // If user is not authenticated, redirect to login
   if (!user) {
