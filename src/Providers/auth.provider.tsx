@@ -5,6 +5,7 @@ import React, { ReactNode, useCallback, useEffect, useState } from "react";
 interface AuthProviderProps {
   children: ReactNode;
 }
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -72,3 +73,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

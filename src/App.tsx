@@ -63,6 +63,10 @@ import EditRolePage from "./pages/dashboard/EditRolePage";
 import PermissionsList from "./components/admin/PermissionsList";
 
 
+// Enhanced Chat Components
+import EnhancedChat from "./components/enhanced-chat/EnhancedChat";
+import ChatHistory from "./components/enhanced-chat/ChatHistory";
+import ChatSettings from "./components/enhanced-chat/ChatSettings";
 
 // Import i18n configuration
 import './i18n';
@@ -139,6 +143,10 @@ const App = () => (
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="settings" element={<SettingsPage />} />
 
+                {/* Enhanced Chat Routes */}
+                <Route path="chat" element={<EnhancedChat />} />
+                <Route path="chat/history" element={<ChatHistory />} />
+                <Route path="chat/settings" element={<ChatSettings />} />
 
                 {/* Management Routes - Access controlled by RBAC permissions */}
                 <Route

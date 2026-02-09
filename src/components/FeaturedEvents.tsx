@@ -140,3 +140,4 @@ const FeaturedEvents = () => {
 };
 
 export default FeaturedEvents;
+

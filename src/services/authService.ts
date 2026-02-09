@@ -71,7 +71,8 @@ export interface OTPResponseData {
 }
 
 interface ErrorResponse {
-  message: string;
+  message?: string;
+  errors?: Record<string, string[]>;
 }
 
 export const authService = {
@@ -81,9 +82,21 @@ export const authService = {
       return response.data;
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>;
+      
+      // Extract detailed error message
+      let errorMessage = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
+      
+      // If there are field-specific errors, combine them
+      if (err.response?.data?.errors) {
+        const fieldErrors = Object.entries(err.response.data.errors)
+          .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+          .join('; ');
+        errorMessage = `${errorMessage}. Details: ${fieldErrors}`;
+      }
+      
       return {
         success: false,
-        message: err.response?.data?.message || err.message || 'Registration failed. Please try again.'
+        message: errorMessage
       };
     }
   },
