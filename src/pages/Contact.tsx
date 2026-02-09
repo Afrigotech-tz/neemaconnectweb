@@ -1,34 +1,70 @@
+import { useEffect, useState } from "react";
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useContact } from "@/hooks/useContact";
 
 const Contact = () => {
-  const contactInfo = [
+  const { contactInfo, fetchContactInfo, submitContactForm, loading } = useContact();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchContactInfo();
+  }, [fetchContactInfo]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const success = await submitContactForm(formData);
+      if (success) {
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: ""
+        });
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Default contact info
+  const defaultContactInfo = [
     {
       icon: MapPin,
       title: "Address",
-      details: ["123 Gospel Street", "Music City, MC 12345"],
+      details: [contactInfo?.address || "123 Gospel Street", "Music City, MC 12345"],
       action: "Get Directions"
     },
     {
       icon: Phone,
       title: "Phone",
-      details: ["+255 743 871 360", "Call us anytime"],
+      details: [contactInfo?.phone || "+255 743 871 360", "Call us anytime"],
       action: "Call Now"
     },
     {
       icon: Mail,
       title: "Email",
-      details: ["info@neemagospelchoir.com", "We'll respond within 24 hours"],
+      details: [contactInfo?.email || "info@neemagospelchoir.com", "We'll respond within 24 hours"],
       action: "Send Email"
     },
     {
       icon: Clock,
       title: "Office Hours",
-      details: ["Monday - Friday: 9 AM - 5 PM", "Saturday: 10 AM - 2 PM"],
+      details: contactInfo?.office_hours ? [contactInfo.office_hours] : ["Monday - Friday: 9 AM - 5 PM", "Saturday: 10 AM - 2 PM"],
       action: "Schedule Visit"
     }
   ];
@@ -57,7 +93,7 @@ const Contact = () => {
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            {contactInfo.map((info, index) => {
+            {defaultContactInfo.map((info, index) => {
               const IconComponent = info.icon;
               return (
                 <Card key={index} className="text-center hover:shadow-warm transition-all duration-300 group">
@@ -73,9 +109,9 @@ const Contact = () => {
                         {detail}
                       </p>
                     ))}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="mt-4 hover:bg-primary hover:text-primary-foreground transition-all duration-300"
                     >
                       {info.action}
@@ -96,60 +132,89 @@ const Contact = () => {
                   Fill out the form below and we'll get back to you as soon as possible.
                 </p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="Your first name" />
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="Your full name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
                   </div>
+
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Your last name" />
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your.email@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                    />
                   </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="your.email@example.com" />
-                </div>
-                
-                <div>
-                  <Label htmlFor="phone">Phone (Optional)</Label>
-                  <Input id="phone" type="tel" placeholder="+255 743 871 360" />
-                </div>
-                
-                <div>
-                  <Label htmlFor="subject">Subject</Label>
-                  <select 
-                    id="subject" 
-                    className="w-full p-3 border border-input rounded-md bg-background"
+
+                  <div>
+                    <Label htmlFor="phone">Phone (Optional)</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+255 743 871 360"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="subject">Subject</Label>
+                    <select
+                      id="subject"
+                      className="w-full p-3 border border-input rounded-md bg-background"
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      required
+                    >
+                      <option value="">Select a subject</option>
+                      <option value="general">General Inquiry</option>
+                      <option value="booking">Performance Booking</option>
+                      <option value="joining">Joining the Choir</option>
+                      <option value="partnership">Partnership</option>
+                      <option value="donation">Donation</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Tell us how we can help you..."
+                      className="min-h-[120px]"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
+                    disabled={submitting}
                   >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="booking">Performance Booking</option>
-                    <option value="joining">Joining the Choir</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="donation">Donation</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea 
-                    id="message" 
-                    placeholder="Tell us how we can help you..."
-                    className="min-h-[120px]"
-                  />
-                </div>
-                
-                <Button 
-                  size="lg" 
-                  className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
-                >
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
-                </Button>
+                    {submitting ? (
+                      <>Sending...</>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
 

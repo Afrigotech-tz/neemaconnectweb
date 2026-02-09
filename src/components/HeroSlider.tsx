@@ -2,31 +2,46 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Play, Heart, MousePointer2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useSlider } from "@/hooks/useSlider";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { sliders, getActiveSliders, loading } = useSlider();
 
-  const slides = [
+  useEffect(() => {
+    getActiveSliders();
+  }, [getActiveSliders]);
+
+  // Fallback slides in case API doesn't return data
+  const defaultSlides = [
     {
-      image: "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png",
+      image_url: "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png",
       title: "Worship in Unity",
       subtitle: "Join our vibrant choir family",
-      description: "Experience the power of collective worship as we lift our voices together in praise and celebration."
+      description: "Experience the power of collective worship as we lift our voices together in praise and celebration.",
+      cta_text: "Join Our Choir",
+      cta_link: "/join"
     },
     {
-      image: "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png",
+      image_url: "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png",
       title: "Inspiring Performances",
       subtitle: "Feel the spirit move",
-      description: "Witness breathtaking performances that touch hearts and transform lives through the power of gospel music."
+      description: "Witness breathtaking performances that touch hearts and transform lives through the power of gospel music.",
+      cta_text: "Watch Performances",
+      cta_link: "https://www.youtube.com/@NeemaGospelChoir"
     },
     {
-      image: "/lovable-uploads/95215f6e-1ac7-47e3-aef6-31de3bfe820f.png",
+      image_url: "/lovable-uploads/95215f6e-1ac7-47e3-aef6-31de3bfe820f.png",
       title: "Community & Faith",
       subtitle: "Building connections through music",
-      description: "Be part of a community that celebrates faith, fellowship, and the joy of making music together."
+      description: "Be part of a community that celebrates faith, fellowship, and the joy of making music together.",
+      cta_text: "Become a Partner",
+      cta_link: "/partner"
     }
   ];
+
+  const slides = sliders.length > 0 ? sliders : defaultSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -80,9 +95,9 @@ const HeroSlider = () => {
           }`}
         >
           {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${slide.image})` }}
+            style={{ backgroundImage: `url(${slide.image_url})` }}
           />
           
           {/* Overlay */}
@@ -113,16 +128,25 @@ const HeroSlider = () => {
                 
                 {/* CTA Buttons */}
                 <div className={`flex flex-col sm:flex-row gap-4 animate-slide-up animation-delay-400`}>
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300 text-lg px-8"
-                  >
-                    <Play className="mr-2 h-5 w-5" />
-                    Join Our Choir
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
+                  {slide.cta_text && slide.cta_link && (
+                    <Button
+                      size="lg"
+                      className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300 text-lg px-8"
+                      onClick={() => {
+                        if (slide.cta_link.startsWith('http')) {
+                          window.open(slide.cta_link, '_blank');
+                        } else {
+                          window.location.href = slide.cta_link;
+                        }
+                      }}
+                    >
+                      <Play className="mr-2 h-5 w-5" />
+                      {slide.cta_text}
+                    </Button>
+                  )}
+                  <Button
+                    size="lg"
+                    variant="outline"
                     className="border-white/40 text-white hover:bg-white hover:text-primary transition-all duration-300 text-lg px-8 bg-white/5 backdrop-blur-sm hover-lift"
                     onClick={() => window.open('https://www.youtube.com/@NeemaGospelChoir', '_blank')}
                   >
@@ -130,9 +154,9 @@ const HeroSlider = () => {
                     Watch Performances
                   </Button>
                   <Link to="/partner">
-                    <Button 
-                      size="lg" 
-                      variant="outline" 
+                    <Button
+                      size="lg"
+                      variant="outline"
                       className="border-primary/60 text-white hover:bg-primary hover:text-white transition-all duration-300 text-lg px-8 bg-primary/10 backdrop-blur-sm hover-lift"
                     >
                       <Heart className="mr-2 h-5 w-5" />

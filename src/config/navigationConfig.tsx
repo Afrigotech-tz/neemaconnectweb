@@ -15,7 +15,9 @@ import {
   Calendar,
   Heart,
   Shield,
-  Box
+  Box,
+  Mail,
+  ImageIcon
 } from 'lucide-react';
 import { RouteConfig } from './routePermissions';
 
@@ -47,18 +49,11 @@ export const navigationItems: RouteConfig[] = [
 
   // Content Management
   {
-    name: 'Blog',
-    path: '/dashboard/blog',
-    icon: BookOpen,
-    section: 'Content',
-    requiredPermissions: ['view_news']
-  },
-  {
     name: 'Blog Management',
     path: '/dashboard/blog-management',
     icon: BookOpen,
     section: 'Content',
-    requiredPermissions: ['view_news', 'edit_news']
+    requiredPermissions: ['view_news']
   },
   {
     name: 'Music',
@@ -93,6 +88,20 @@ export const navigationItems: RouteConfig[] = [
     icon: Calendar,
     section: 'Content',
     requiredPermissions: ['view_events', 'edit_events']
+  },
+  {
+    name: 'Contact Management',
+    path: '/dashboard/contact-management',
+    icon: Mail,
+    section: 'Content',
+    requiredPermissions: ['view_news']
+  },
+  {
+    name: 'Slider Management',
+    path: '/dashboard/slider-management',
+    icon: ImageIcon,
+    section: 'Content',
+    requiredPermissions: ['view_news']
   },
 
   // Commerce

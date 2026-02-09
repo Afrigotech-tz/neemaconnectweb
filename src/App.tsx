@@ -72,6 +72,20 @@ import ChatSettings from "./components/enhanced-chat/ChatSettings";
 import './i18n';
 import { AuthProvider } from "./Providers/auth.provider";
 
+// Import CMS Providers
+import { BlogProvider } from "./contexts/BlogContext";
+import { ContactProvider } from "./contexts/ContactContext";
+import { SliderProvider } from "./contexts/SliderContext";
+
+// Import CMS Pages
+import BlogManagementPage from "./pages/dashboard/BlogManagementPage";
+import AddBlogPage from "./pages/dashboard/AddBlogPage";
+import EditBlogPage from "./pages/dashboard/EditBlogPage";
+import ContactManagementPage from "./pages/dashboard/ContactManagementPage";
+import SliderManagementPage from "./pages/dashboard/SliderManagementPage";
+import AddSliderPage from "./pages/dashboard/AddSliderPage";
+import EditSliderPage from "./pages/dashboard/EditSliderPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -79,8 +93,11 @@ const App = () => (
     <AuthProvider>
       <RBACProvider>
         <UserManagementProvider>
-          <LanguageProvider>
-            <TooltipProvider>
+          <BlogProvider>
+            <ContactProvider>
+              <SliderProvider>
+                <LanguageProvider>
+                  <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -107,14 +124,6 @@ const App = () => (
                 }
               >
                 <Route index element={<DashboardHome />} />
-                <Route 
-                  path="blog" 
-                  element={
-                    <PermissionBasedRoute requiredPermissions={['view_news']}>
-                      <BlogPage />
-                    </PermissionBasedRoute>
-                  } 
-                />
                 <Route 
                   path="music" 
                   element={
@@ -285,7 +294,51 @@ const App = () => (
                   path="blog-management"
                   element={
                     <PermissionBasedRoute  requiredRoles={['super_admin']}>
-                      <BlogManagement />
+                      <BlogManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="blog-management/add"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <AddBlogPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="blog-management/edit/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <EditBlogPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="contact-management"
+                  element={<ContactManagementPage />}
+                />
+                <Route
+                  path="slider-management"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <SliderManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="slider-management/add"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <AddSliderPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="slider-management/edit/:id"
+                  element={
+                    <PermissionBasedRoute  requiredRoles={['super_admin']}>
+                      <EditSliderPage />
                     </PermissionBasedRoute>
                   }
                 />
@@ -323,9 +376,12 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-          </TooltipProvider>
-        </LanguageProvider>
-      </UserManagementProvider>
+                  </TooltipProvider>
+                </LanguageProvider>
+              </SliderProvider>
+            </ContactProvider>
+          </BlogProvider>
+        </UserManagementProvider>
       </RBACProvider>
     </AuthProvider>
   </QueryClientProvider>
