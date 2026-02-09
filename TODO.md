@@ -1,15 +1,9 @@
-# TODO: Integrate SuperAdmin Features into Dashboard
+# Fix Email Null Constraint Violation in Registration
 
 ## Tasks
-- [ ] Update DashboardHome.tsx to include enhanced superadmin features from SuperAdminDashboard.tsx
-- [ ] Merge management sections with all items (User Management, Content Management, Commerce Management, System Management)
-- [ ] Enhance recent activity section for superadmin with typed activities
-- [ ] Add/expand system status cards (API Status, Database, Storage, Communications, Quick Stats)
-- [ ] Update header for superadmin with badge
-- [ ] Ensure quick actions include all superadmin links
-- [ ] Add hover effects and transitions for better UX
-- [ ] Enhance UsersList.tsx integration with back button and role checks
-- [ ] Test superadmin dashboard rendering
-- [ ] Test navigation to user management and other sections
-- [ ] Test conditional rendering for different roles
-- [ ] Verify responsive design and UI consistency
+- [x] Update Zod schemas in `src/lib/validations/auth.ts` to require email in both mobile and email contact schemas
+- [x] Modify `src/components/Register/StepContact.tsx` to always display and require the email field
+- [x] Update validation logic in `StepContact.tsx` to always check for email
+- [x] Adjust `src/pages/Register.tsx` to ensure email is always included in form data
+- [x] Update `src/components/Register/StepReview.tsx` to always display the email field
+- [x] Test the changes to ensure registration works without null email errors

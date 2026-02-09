@@ -1,17 +1,31 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+
+// MUI Components
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  CircularProgress,
+  Alert,
+  Paper,
+  InputAdornment,
+} from '@mui/material';
+
+// MUI Icons
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RefreshIcon from '@mui/icons-material/Refresh';
+
+// Services and Hooks
 import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
-
-interface VerificationData {
-  login: string;
-  verification_method: 'mobile' | 'email';
-}
 
 const VerifyOTP: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -19,11 +33,16 @@ const VerifyOTP: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState(0);
-  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [mounted, setMounted] = useState(false);
   
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const verificationData: VerificationData = JSON.parse(localStorage.getItem('verification_data') || '{}');
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const verificationData = JSON.parse(localStorage.getItem('verification_data') || '{}');
   const loginValue = location.state?.login || verificationData.login;
   const message = location.state?.message || 'Please enter the OTP sent to your device';
 
@@ -37,38 +56,36 @@ const VerifyOTP: React.FC = () => {
     startResendTimer();
 
     // Auto-focus first input
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       inputRefs.current[0]?.focus();
     }, 100);
 
     return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
+      clearTimeout(timer);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
       }
     };
   }, [loginValue, navigate]);
 
   const startResendTimer = useCallback(() => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
     }
 
     setResendTimer(60);
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setResendTimer((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
+          clearInterval(timerRef.current!);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-
-    setTimerInterval(timer);
-  }, []); // Removed timerInterval from deps to avoid stale closure
+  }, []);
 
   const handleOtpChange = (index: number, value: string) => {
-    // Only allow numeric input
     const numericValue = value.replace(/[^0-9]/g, '');
     if (numericValue.length > 1) return;
 
@@ -76,7 +93,6 @@ const VerifyOTP: React.FC = () => {
     newOtp[index] = numericValue;
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (numericValue && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -87,7 +103,6 @@ const VerifyOTP: React.FC = () => {
       inputRefs.current[index - 1]?.focus();
     }
     
-    // Allow only numeric input
     if (!/^[0-9]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
       e.preventDefault();
     }
@@ -122,9 +137,8 @@ const VerifyOTP: React.FC = () => {
       if (response.success && response.data) {
         const { user, token, permissions } = response.data;
         localStorage.removeItem('verification_data');
-        // Merge permissions into user object for RBAC
         const userWithPermissions = { ...user, permissions };
-        login(userWithPermissions, token);
+        authLogin(userWithPermissions, token);
         navigate('/login', {
           state: {
             message: 'Account verified successfully! Please login to continue.',
@@ -135,8 +149,8 @@ const VerifyOTP: React.FC = () => {
         setError(response.message || 'Invalid OTP. Please try again.');
       }
     } catch (err) {
-      const error = err as Error;
-      setError(error.message || 'Invalid OTP. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Invalid OTP. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -159,100 +173,236 @@ const VerifyOTP: React.FC = () => {
         setError(response.message || 'Failed to resend OTP. Please try again.');
       }
     } catch (err) {
-      const error = err as Error;
-      setError(error.message || 'Failed to resend OTP. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to resend OTP. Please try again.';
+      setError(errorMessage);
     } finally {
       setResendLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Verify OTP</h2>
-          <p className="mt-2 text-sm text-gray-600">{message}</p>
-          <p className="mt-1 text-sm text-gray-500">Sent to: {loginValue}</p>
-        </div>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fafafa',
+        py: 4,
+        px: 2,
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 3, sm: 5 },
+          maxWidth: 440,
+          width: '100%',
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          animation: mounted ? 'fadeSlideIn 0.5s ease-out' : 'none',
+        }}
+      >
+        {/* Header */}
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #FF5600 0%, #ff7b00 100%)',
+              mb: 2,
+              boxShadow: '0 4px 15px rgba(255, 86, 0, 0.3)',
+            }}
+          >
+            <CheckCircleIcon sx={{ fontSize: 36, color: 'white' }} />
+          </Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+            Verify OTP
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {message}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Sent to: <strong>{loginValue}</strong>
+          </Typography>
+        </Box>
 
+        {/* Error/Success Alerts */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+          <Alert
+            severity="error"
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+              backgroundColor: 'rgba(211, 47, 47, 0.08)',
+              border: '1px solid rgba(211, 47, 47, 0.2)',
+            }}
+          >
             {error}
-          </div>
+          </Alert>
         )}
         
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+          <Alert
+            severity="success"
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+              backgroundColor: 'rgba(56, 142, 60, 0.08)',
+              border: '1px solid rgba(56, 142, 60, 0.2)',
+            }}
+          >
             {success}
-          </div>
+          </Alert>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="flex justify-center space-x-2">
+        {/* OTP Form */}
+        <form onSubmit={handleSubmit}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 1.5,
+              mb: 4,
+            }}
+          >
             {otp.map((digit, index) => (
-              <input
+              <TextField
                 key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
-                id={`otp-${index}`}
-                type="text"
-                className="w-12 h-12 text-center text-xl border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                inputRef={(el) => (inputRefs.current[index] = el)}
                 value={digit}
                 onChange={(e) => handleOtpChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                maxLength={1}
-                pattern="[0-9]*"
-                inputMode="numeric"
-                autoComplete="one-time-code"
+                inputProps={{
+                  maxLength: 1,
+                  style: {
+                    textAlign: 'center',
+                    fontSize: '1.25rem',
+                    fontWeight: 600,
+                    padding: '12px 0',
+                  },
+                }}
+                sx={{
+                  width: 52,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#FF5600',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#FF5600',
+                      boxShadow: '0 0 0 3px rgba(255, 86, 0, 0.1)',
+                    },
+                  },
+                }}
               />
             ))}
-          </div>
+          </Box>
 
-          <button
+          {/* Submit Button */}
+          <Button
             type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
             disabled={loading || otp.join('').length !== 6}
-            className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            sx={{
+              py: 1.5,
+              borderRadius: 2,
+              fontSize: '1rem',
+              fontWeight: 600,
+              textTransform: 'none',
+              background: 'linear-gradient(135deg, #FF5600 0%, #ff7b00 100%)',
+              boxShadow: '0 4px 15px rgba(255, 86, 0, 0.3)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #e64d00 0%, #ff6e00 100%)',
+                boxShadow: '0 6px 20px rgba(255, 86, 0, 0.4)',
+              },
+              '&:disabled': {
+                background: '#ccc',
+                boxShadow: 'none',
+              },
+            }}
           >
             {loading ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Verifying...
-              </span>
-            ) : (
-              'Verify OTP'
-            )}
-          </button>
-
-          <div className="text-center">
-            {resendTimer > 0 ? (
-              <p className="text-sm text-gray-600">Resend OTP in {resendTimer} seconds</p>
-            ) : (
-              <button
-                type="button"
-                className="text-sm text-orange-600 hover:text-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleResendOTP}
-                disabled={resendLoading}
-              >
-                {resendLoading ? 'Resending...' : 'Resend OTP'}
-              </button>
-            )}
-          </div>
+              <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
+            ) : null}
+            {loading ? 'Verifying...' : 'Verify OTP'}
+          </Button>
         </form>
 
-        <div className="text-center">
-          <Link 
-            to="/login" 
-            className="text-sm text-orange-600 hover:text-orange-500"
-          >
-            Back to Login
-          </Link>
-        </div>
-      </div>
-    </div>
+        {/* Resend OTP */}
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
+          {resendTimer > 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              Resend OTP in <strong>{resendTimer}</strong> seconds
+            </Typography>
+          ) : (
+            <Button
+              type="button"
+              variant="text"
+              onClick={handleResendOTP}
+              disabled={resendLoading}
+              sx={{
+                color: '#FF5600',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 86, 0, 0.08)',
+                },
+                '&:disabled': {
+                  color: '#999',
+                },
+              }}
+              startIcon={<RefreshIcon />}
+            >
+              {resendLoading ? 'Resending...' : 'Resend OTP'}
+            </Button>
+          )}
+        </Box>
+
+        {/* Back to Login */}
+        <Box sx={{ textAlign: 'center', mt: 3, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="body2" color="text.secondary">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              style={{
+                color: '#FF5600',
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Sign in
+            </Link>
+          </Typography>
+        </Box>
+      </Paper>
+
+      <style>
+        {`
+          @keyframes fadeSlideIn {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
+    </Box>
   );
 };
 
 export default VerifyOTP;
+

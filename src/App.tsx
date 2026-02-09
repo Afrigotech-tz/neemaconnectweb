@@ -47,6 +47,12 @@ import BlogManagement from "./components/admin/BlogManagement";
 import EventsManagement from "./components/admin/EventsManagement";
 import DonationsManagement from "./components/admin/DonationsManagement";
 import ReportsManagement from "./components/admin/ReportsManagement";
+
+// Enhanced Chat Components
+import EnhancedChat from "./components/enhanced-chat/EnhancedChat";
+import ChatHistory from "./components/enhanced-chat/ChatHistory";
+import ChatSettings from "./components/enhanced-chat/ChatSettings";
+
 // Import i18n configuration
 import './i18n';
 import { AuthProvider } from "./Providers/auth.provider";
@@ -122,6 +128,10 @@ const App = () => (
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="settings" element={<SettingsPage />} />
 
+                {/* Enhanced Chat Routes */}
+                <Route path="chat" element={<EnhancedChat />} />
+                <Route path="chat/history" element={<ChatHistory />} />
+                <Route path="chat/settings" element={<ChatSettings />} />
 
                 {/* Management Routes - Access controlled by RBAC permissions */}
                 <Route
