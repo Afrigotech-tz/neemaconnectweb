@@ -1,30 +1,26 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
-import {
-  ContactInfo,
-  CreateContactInfoData,
-  UpdateContactInfoData,
-} from '@/types/contactTypes';
-import { contactService } from '@/services/contactService';
+import { AboutUs, CreateAboutUsData, UpdateAboutUsData } from '@/types/aboutTypes';
+import { aboutService } from '@/services/aboutService';
 import { useToast } from '@/hooks/use-toast';
 
-interface ContactContextType {
-  contactInfo: ContactInfo | null;
+interface AboutContextType {
+  aboutUs: AboutUs | null;
   loading: boolean;
   error: string | null;
-  fetchContactInfo: (showToast?: boolean) => Promise<void>;
-  createContactInfo: (data: CreateContactInfoData) => Promise<boolean>;
-  updateContactInfo: (data: UpdateContactInfoData) => Promise<boolean>;
+  fetchAboutUs: (showToast?: boolean) => Promise<void>;
+  createAboutUs: (data: CreateAboutUsData) => Promise<boolean>;
+  updateAboutUs: (data: UpdateAboutUsData) => Promise<boolean>;
   clearError: () => void;
 }
 
-export const ContactContext = createContext<ContactContextType | undefined>(undefined);
+export const AboutContext = createContext<AboutContextType | undefined>(undefined);
 
-interface ContactProviderProps {
+interface AboutProviderProps {
   children: ReactNode;
 }
 
-export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) => {
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+export const AboutProvider: React.FC<AboutProviderProps> = ({ children }) => {
+  const [aboutUs, setAboutUs] = useState<AboutUs | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -33,14 +29,14 @@ export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) =>
     setError(null);
   }, []);
 
-  const fetchContactInfo = useCallback(async (showToast = false) => {
+  const fetchAboutUs = useCallback(async (showToast = false) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await contactService.getContactInfo();
+      const response = await aboutService.getAboutUs();
 
       if (response.success && response.data) {
-        setContactInfo(response.data);
+        setAboutUs(response.data);
         if (showToast) {
           toast({ title: 'Success', description: response.message });
         }
@@ -51,7 +47,7 @@ export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) =>
         }
       }
     } catch (err) {
-      const errorMessage = 'An unexpected error occurred while fetching contact information';
+      const errorMessage = 'An unexpected error occurred while fetching about us content';
       setError(errorMessage);
       if (showToast) {
         toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
@@ -61,15 +57,15 @@ export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) =>
     }
   }, [toast]);
 
-  const createContactInfo = useCallback(async (data: CreateContactInfoData): Promise<boolean> => {
+  const createAboutUs = useCallback(async (data: CreateAboutUsData): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
-      const response = await contactService.createContactInfo(data);
+      const response = await aboutService.createAboutUs(data);
 
       if (response.success) {
+        if (response.data) setAboutUs(response.data);
         toast({ title: 'Success', description: response.message });
-        await fetchContactInfo();
         return true;
       } else {
         setError(response.message);
@@ -77,24 +73,24 @@ export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) =>
         return false;
       }
     } catch (err) {
-      const errorMessage = 'An unexpected error occurred while creating contact information';
+      const errorMessage = 'An unexpected error occurred while creating about us content';
       setError(errorMessage);
       toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
       return false;
     } finally {
       setLoading(false);
     }
-  }, [toast, fetchContactInfo]);
+  }, [toast]);
 
-  const updateContactInfo = useCallback(async (data: UpdateContactInfoData): Promise<boolean> => {
+  const updateAboutUs = useCallback(async (data: UpdateAboutUsData): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
-      const response = await contactService.updateContactInfo(data);
+      const response = await aboutService.updateAboutUs(data);
 
       if (response.success) {
+        if (response.data) setAboutUs(response.data);
         toast({ title: 'Success', description: response.message });
-        await fetchContactInfo();
         return true;
       } else {
         setError(response.message);
@@ -102,24 +98,24 @@ export const ContactProvider: React.FC<ContactProviderProps> = ({ children }) =>
         return false;
       }
     } catch (err) {
-      const errorMessage = 'An unexpected error occurred while updating contact information';
+      const errorMessage = 'An unexpected error occurred while updating about us content';
       setError(errorMessage);
       toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
       return false;
     } finally {
       setLoading(false);
     }
-  }, [toast, fetchContactInfo]);
+  }, [toast]);
 
-  const value: ContactContextType = {
-    contactInfo,
+  const value: AboutContextType = {
+    aboutUs,
     loading,
     error,
-    fetchContactInfo,
-    createContactInfo,
-    updateContactInfo,
+    fetchAboutUs,
+    createAboutUs,
+    updateAboutUs,
     clearError,
   };
 
-  return <ContactContext.Provider value={value}>{children}</ContactContext.Provider>;
+  return <AboutContext.Provider value={value}>{children}</AboutContext.Provider>;
 };

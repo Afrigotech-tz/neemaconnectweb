@@ -1,7 +1,15 @@
+import { useEffect } from "react";
 import { Music, Users, Heart, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAbout } from "@/hooks/useAbout";
 
 const About = () => {
+  const { aboutUs, fetchAboutUs } = useAbout();
+
+  useEffect(() => {
+    fetchAboutUs();
+  }, [fetchAboutUs]);
+
   const values = [
     {
       icon: Heart,
@@ -25,6 +33,22 @@ const About = () => {
     }
   ];
 
+  // Fallback content when API hasn't loaded yet
+  const storyContent = aboutUs?.our_story ||
+    `Founded in 2009, Neema Gospel Choir began as a small group of friends who shared a passion for worship music. What started in a church basement with just 12 members has grown into a thriving ministry of over 150 talented singers from diverse backgrounds.
+
+Our name "Neema," meaning "grace" in Swahili, was chosen to reflect our core belief that God's grace is for everyone, regardless of their background or circumstances. This principle guides everything we do — from our inclusive membership to our diverse musical repertoire.
+
+Over the years, we've had the privilege of performing at hundreds of events, touching thousands of lives, and building a community that extends far beyond our choir.`;
+
+  const missionContent = aboutUs?.mission ||
+    "To glorify God and serve our community by sharing the message of hope, love, and grace through powerful gospel music that touches hearts and transforms lives.";
+
+  const visionContent = aboutUs?.vision ||
+    "To be a beacon of hope in our community, using music as a bridge to bring people together, heal divisions, and create a world filled with more love, understanding, and joy.";
+
+  const heroImage = aboutUs?.image || "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png";
+
   return (
     <div className="pt-16 min-h-screen">
       {/* Hero Section */}
@@ -43,21 +67,21 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-foreground mb-6">Our Story</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                Founded in 2009, Neema Gospel Choir began as a small group of friends who shared a passion for worship music. What started in a church basement with just 12 members has grown into a thriving ministry of over 150 talented singers from diverse backgrounds.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                Our name "Neema," meaning "grace" in Swahili, was chosen to reflect our core belief that God's grace is for everyone, regardless of their background or circumstances. This principle guides everything we do - from our inclusive membership to our diverse musical repertoire.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Over the years, we've had the privilege of performing at hundreds of events, touching thousands of lives, and building a community that extends far beyond our choir. We've seen marriages restored, hearts healed, and lives transformed through the power of worship music.
-              </p>
+              {storyContent.split('\n').filter(p => p.trim()).map((paragraph, index) => (
+                <p key={index} className="text-lg text-muted-foreground leading-relaxed mb-6">
+                  {paragraph.trim()}
+                </p>
+              ))}
             </div>
             <div className="relative">
-              <img 
-                src="/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png" 
+              <img
+                src={heroImage}
                 alt="Choir performing"
-                className="rounded-2xl shadow-warm"
+                className="rounded-2xl shadow-warm w-full"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src =
+                    "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png";
+                }}
               />
             </div>
           </div>
@@ -73,7 +97,7 @@ const About = () => {
               The principles that guide our ministry and shape our community
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => {
               const IconComponent = value.icon;
@@ -105,16 +129,16 @@ const About = () => {
               <CardContent className="p-8">
                 <h2 className="text-3xl font-bold text-foreground mb-6 text-center">Our Mission</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed text-center">
-                  To glorify God and serve our community by sharing the message of hope, love, and grace through powerful gospel music that touches hearts and transforms lives.
+                  {missionContent}
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="hover:shadow-warm transition-all duration-300">
               <CardContent className="p-8">
                 <h2 className="text-3xl font-bold text-foreground mb-6 text-center">Our Vision</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed text-center">
-                  To be a beacon of hope in our community, using music as a bridge to bring people together, heal divisions, and create a world filled with more love, understanding, and joy.
+                  {visionContent}
                 </p>
               </CardContent>
             </Card>
@@ -131,10 +155,10 @@ const About = () => {
               Meet the dedicated individuals who guide our ministry
             </p>
           </div>
-          
+
           <div className="text-center">
-            <img 
-              src="/lovable-uploads/336ebe09-2ea3-4cfb-a1ca-56b18fd19f9b.png" 
+            <img
+              src="/lovable-uploads/336ebe09-2ea3-4cfb-a1ca-56b18fd19f9b.png"
               alt="Leadership Team"
               className="rounded-2xl shadow-warm mx-auto max-w-2xl w-full"
             />

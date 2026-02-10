@@ -17,7 +17,6 @@ interface SliderContextType {
   clearError: () => void;
   getActiveSliders: () => Promise<void>;
   toggleSliderStatus: (id: number, isActive: boolean) => Promise<boolean>;
-  reorderSliders: (sliderIds: number[]) => Promise<boolean>;
 }
 
 export const SliderContext = createContext<SliderContextType | undefined>(undefined);
@@ -45,7 +44,7 @@ export const SliderProvider: React.FC<SliderProviderProps> = ({ children }) => {
 
       if (response.success && response.data) {
         // Sort by order
-        const sortedSliders = [...response.data].sort((a, b) => a.order - b.order);
+        const sortedSliders = [...response.data].sort((a, b) => a.sort_order - b.sort_order);
         setSliders(sortedSliders);
         if (showToast) {
           toast({
@@ -226,7 +225,7 @@ export const SliderProvider: React.FC<SliderProviderProps> = ({ children }) => {
 
       if (response.success && response.data) {
         // Sort by order
-        const sortedSliders = [...response.data].sort((a, b) => a.order - b.order);
+        const sortedSliders = [...response.data].sort((a, b) => a.sort_order - b.sort_order);
         setSliders(sortedSliders);
       } else {
         setError(response.message);
@@ -276,43 +275,6 @@ export const SliderProvider: React.FC<SliderProviderProps> = ({ children }) => {
     }
   }, [toast, fetchSliders]);
 
-  const reorderSliders = useCallback(async (sliderIds: number[]): Promise<boolean> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await sliderService.reorderSliders(sliderIds);
-
-      if (response.success) {
-        toast({
-          title: 'Success',
-          description: response.message,
-        });
-        // Refresh sliders list
-        await fetchSliders();
-        return true;
-      } else {
-        setError(response.message);
-        toast({
-          title: 'Error',
-          description: response.message,
-          variant: 'destructive',
-        });
-        return false;
-      }
-    } catch (err) {
-      const errorMessage = 'An unexpected error occurred while reordering sliders';
-      setError(errorMessage);
-      toast({
-        title: 'Error',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, [toast, fetchSliders]);
-
   const value: SliderContextType = {
     sliders,
     selectedSlider,
@@ -327,7 +289,6 @@ export const SliderProvider: React.FC<SliderProviderProps> = ({ children }) => {
     clearError,
     getActiveSliders,
     toggleSliderStatus,
-    reorderSliders,
   };
 
   return <SliderContext.Provider value={value}>{children}</SliderContext.Provider>;

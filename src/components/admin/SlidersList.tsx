@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useSlider } from '@/hooks/useSlider';
 import { HomeSlider } from '@/types/sliderTypes';
-import { Plus, Edit, Trash2, Image, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ImageIcon, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const SlidersList: React.FC = () => {
   const { sliders, fetchSliders, deleteSlider, toggleSliderStatus, loading } = useSlider();
@@ -70,14 +70,14 @@ const SlidersList: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Image className="h-5 w-5" />
+            <ImageIcon className="h-5 w-5" />
             Home Sliders ({sliders.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {sliders.length === 0 ? (
             <div className="text-center py-8">
-              <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No sliders found</h3>
               <p className="text-gray-500 mb-4">Get started by creating your first slider.</p>
               <Button asChild>
@@ -92,9 +92,9 @@ const SlidersList: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order</TableHead>
-                  <TableHead>Title</TableHead>
                   <TableHead>Image</TableHead>
-                  <TableHead>CTA</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Head</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -102,27 +102,27 @@ const SlidersList: React.FC = () => {
               <TableBody>
                 {sliders.map((slider) => (
                   <TableRow key={slider.id}>
-                    <TableCell className="font-medium">{slider.order}</TableCell>
-                    <TableCell>{slider.title}</TableCell>
+                    <TableCell className="font-medium">{slider.sort_order}</TableCell>
                     <TableCell>
                       <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden">
-                        <img
-                          src={slider.image_url}
-                          alt={slider.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/150';
-                          }}
-                        />
+                        {slider.image ? (
+                          <img
+                            src={slider.image}
+                            alt={slider.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageIcon className="h-5 w-5 text-gray-400" />
+                          </div>
+                        )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {slider.cta_text ? (
-                        <Badge variant="outline">{slider.cta_text}</Badge>
-                      ) : (
-                        <span className="text-gray-400">No CTA</span>
-                      )}
-                    </TableCell>
+                    <TableCell>{slider.title}</TableCell>
+                    <TableCell className="max-w-xs truncate">{slider.head}</TableCell>
                     <TableCell>
                       <Badge variant={slider.is_active ? 'default' : 'secondary'}>
                         {slider.is_active ? 'Active' : 'Inactive'}

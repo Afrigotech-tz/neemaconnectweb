@@ -3,9 +3,7 @@ import {
   Blog,
   CreateBlogData,
   UpdateBlogData,
-  BlogResponse,
-  BlogsResponse,
-  BlogSearchParams,
+  BlogFilters,
 } from '@/types/blogTypes';
 import { AxiosError } from 'axios';
 
@@ -19,13 +17,26 @@ interface ApiResponse<T = unknown> {
   data?: T;
 }
 
+const buildFormData = (data: CreateBlogData | UpdateBlogData): FormData => {
+  const formData = new FormData();
+  if (data.image instanceof File) {
+    formData.append('image', data.image);
+  }
+  if (data.title !== undefined) formData.append('title', data.title);
+  if (data.description !== undefined) formData.append('description', data.description);
+  if (data.date !== undefined) formData.append('date', data.date);
+  if (data.location !== undefined) formData.append('location', data.location);
+  if (data.is_active !== undefined) formData.append('is_active', String(data.is_active));
+  return formData;
+};
+
 export const blogService = {
   /**
-   * Get all blogs with optional search and filter parameters
+   * Get all blogs with optional filters
    */
-  async getBlogs(params?: BlogSearchParams): Promise<ApiResponse<Blog[]>> {
+  async getBlogs(filters?: BlogFilters): Promise<ApiResponse<Blog[]>> {
     try {
-      const response = await api.get('/blogs', { params });
+      const response = await api.get('/blogs', { params: filters });
       return {
         success: true,
         message: 'Blogs fetched successfully',
@@ -61,11 +72,14 @@ export const blogService = {
   },
 
   /**
-   * Create a new blog
+   * Create a new blog (multipart/form-data)
    */
   async createBlog(data: CreateBlogData): Promise<ApiResponse<Blog>> {
     try {
-      const response = await api.post('/blogs', data);
+      const formData = buildFormData(data);
+      const response = await api.post('/blogs', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return {
         success: true,
         message: 'Blog created successfully',
@@ -81,11 +95,14 @@ export const blogService = {
   },
 
   /**
-   * Update an existing blog
+   * Update an existing blog (multipart/form-data)
    */
   async updateBlog(id: number, data: UpdateBlogData): Promise<ApiResponse<Blog>> {
     try {
-      const response = await api.put(`/blogs/${id}`, data);
+      const formData = buildFormData(data);
+      const response = await api.post(`/blogs/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return {
         success: true,
         message: 'Blog updated successfully',
@@ -120,87 +137,23 @@ export const blogService = {
   },
 
   /**
-   * Get featured blogs
+   * Get active blogs only (for public display)
    */
-  async getFeaturedBlogs(): Promise<ApiResponse<Blog[]>> {
-    try {
-      const response = await api.get('/blogs', { params: { is_featured: true, status: 'published' } });
-      return {
-        success: true,
-        message: 'Featured blogs fetched successfully',
-        data: response.data.data || response.data,
-      };
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || 'Failed to fetch featured blogs',
-      };
-    }
-  },
-
-  /**
-   * Get published blogs only
-   */
-  async getPublishedBlogs(params?: BlogSearchParams): Promise<ApiResponse<Blog[]>> {
+  async getActiveBlogs(filters?: BlogFilters): Promise<ApiResponse<Blog[]>> {
     try {
       const response = await api.get('/blogs', {
-        params: { ...params, status: 'published' }
+        params: { ...filters, is_active: true },
       });
       return {
         success: true,
-        message: 'Published blogs fetched successfully',
+        message: 'Active blogs fetched successfully',
         data: response.data.data || response.data,
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
       return {
         success: false,
-        message: axiosError.response?.data?.message || 'Failed to fetch published blogs',
-      };
-    }
-  },
-
-  /**
-   * Search blogs by title or content
-   */
-  async searchBlogs(searchTerm: string): Promise<ApiResponse<Blog[]>> {
-    try {
-      const response = await api.get('/blogs', {
-        params: { search: searchTerm }
-      });
-      return {
-        success: true,
-        message: 'Blogs searched successfully',
-        data: response.data.data || response.data,
-      };
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || 'Failed to search blogs',
-      };
-    }
-  },
-
-  /**
-   * Get blogs by category
-   */
-  async getBlogsByCategory(category: string): Promise<ApiResponse<Blog[]>> {
-    try {
-      const response = await api.get('/blogs', {
-        params: { category }
-      });
-      return {
-        success: true,
-        message: 'Blogs fetched by category successfully',
-        data: response.data.data || response.data,
-      };
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || 'Failed to fetch blogs by category',
+        message: axiosError.response?.data?.message || 'Failed to fetch active blogs',
       };
     }
   },

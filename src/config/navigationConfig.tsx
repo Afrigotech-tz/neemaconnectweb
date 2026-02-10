@@ -17,7 +17,8 @@ import {
   Shield,
   Box,
   Mail,
-  ImageIcon
+  ImageIcon,
+  Info
 } from 'lucide-react';
 import { RouteConfig } from './routePermissions';
 
@@ -100,6 +101,13 @@ export const navigationItems: RouteConfig[] = [
     name: 'Slider Management',
     path: '/dashboard/slider-management',
     icon: ImageIcon,
+    section: 'Content',
+    requiredPermissions: ['view_news']
+  },
+  {
+    name: 'About Us',
+    path: '/dashboard/about-management',
+    icon: Info,
     section: 'Content',
     requiredPermissions: ['view_news']
   },

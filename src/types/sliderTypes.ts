@@ -1,32 +1,22 @@
 export interface HomeSlider {
   id: number;
+  image: string;
   title: string;
-  subtitle?: string;
+  head: string;
   description?: string;
-  image_url: string;
-  cta_text?: string;
-  cta_link?: string;
-  order: number;
   is_active: boolean;
-  background_color?: string;
-  text_color?: string;
-  overlay_opacity?: number;
+  sort_order: number;
   created_at: string;
   updated_at: string;
 }
 
 export interface CreateSliderData {
+  image?: File;
   title: string;
-  subtitle?: string;
+  head: string;
   description?: string;
-  image_url: string;
-  cta_text?: string;
-  cta_link?: string;
-  order?: number;
   is_active?: boolean;
-  background_color?: string;
-  text_color?: string;
-  overlay_opacity?: number;
+  sort_order?: number;
 }
 
 export type UpdateSliderData = Partial<CreateSliderData>;

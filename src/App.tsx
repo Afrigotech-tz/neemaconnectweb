@@ -43,7 +43,6 @@ import AdminShop from "./components/admin/AdminShop";
 import UsersList from "./components/admin/UsersList";
 import RolesList from "./components/admin/RolesList";
 
-import BlogManagement from "./components/admin/BlogManagement";
 import EventsManagement from "./components/admin/EventsManagement";
 import DonationsManagement from "./components/admin/DonationsManagement";
 import ReportsManagement from "./components/admin/ReportsManagement";
@@ -76,6 +75,7 @@ import { AuthProvider } from "./Providers/auth.provider";
 import { BlogProvider } from "./contexts/BlogContext";
 import { ContactProvider } from "./contexts/ContactContext";
 import { SliderProvider } from "./contexts/SliderContext";
+import { AboutProvider } from "./contexts/AboutContext";
 
 // Import CMS Pages
 import BlogManagementPage from "./pages/dashboard/BlogManagementPage";
@@ -85,6 +85,7 @@ import ContactManagementPage from "./pages/dashboard/ContactManagementPage";
 import SliderManagementPage from "./pages/dashboard/SliderManagementPage";
 import AddSliderPage from "./pages/dashboard/AddSliderPage";
 import EditSliderPage from "./pages/dashboard/EditSliderPage";
+import AboutManagementPage from "./pages/dashboard/AboutManagementPage";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +97,7 @@ const App = () => (
           <BlogProvider>
             <ContactProvider>
               <SliderProvider>
+                <AboutProvider>
                 <LanguageProvider>
                   <TooltipProvider>
           <Toaster />
@@ -319,6 +321,14 @@ const App = () => (
                   element={<ContactManagementPage />}
                 />
                 <Route
+                  path="about-management"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <AboutManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
                   path="slider-management"
                   element={
                     <PermissionBasedRoute  requiredRoles={['super_admin']}>
@@ -378,6 +388,7 @@ const App = () => (
           </BrowserRouter>
                   </TooltipProvider>
                 </LanguageProvider>
+                </AboutProvider>
               </SliderProvider>
             </ContactProvider>
           </BlogProvider>

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useContact } from "@/hooks/useContact";
 
 const Contact = () => {
-  const { contactInfo, fetchContactInfo, submitContactForm, loading } = useContact();
+  const { contactInfo, fetchContactInfo } = useContact();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,65 +16,46 @@ const Contact = () => {
     subject: "",
     message: ""
   });
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchContactInfo();
   }, [fetchContactInfo]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    try {
-      const success = await submitContactForm(formData);
-      if (success) {
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: ""
-        });
-      }
-    } finally {
-      setSubmitting(false);
-    }
+    const email = contactInfo?.email || "info@neemagospelchoir.com";
+    const subject = encodeURIComponent(formData.subject || "Contact Form Message");
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\n${formData.message}`
+    );
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   };
 
-  // Default contact info
-  const defaultContactInfo = [
+  const contactCards = [
     {
       icon: MapPin,
       title: "Address",
-      details: [contactInfo?.address || "123 Gospel Street", "Music City, MC 12345"],
+      detail: contactInfo?.address || "123 Gospel Street, Music City",
       action: "Get Directions"
     },
     {
       icon: Phone,
       title: "Phone",
-      details: [contactInfo?.phone || "+255 743 871 360", "Call us anytime"],
+      detail: contactInfo?.phone || "+255 743 871 360",
       action: "Call Now"
     },
     {
       icon: Mail,
       title: "Email",
-      details: [contactInfo?.email || "info@neemagospelchoir.com", "We'll respond within 24 hours"],
+      detail: contactInfo?.email || "info@neemagospelchoir.com",
       action: "Send Email"
     },
     {
       icon: Clock,
       title: "Office Hours",
-      details: contactInfo?.office_hours ? [contactInfo.office_hours] : ["Monday - Friday: 9 AM - 5 PM", "Saturday: 10 AM - 2 PM"],
+      detail: contactInfo?.office_hours || "Monday - Friday: 9 AM - 5 PM",
       action: "Schedule Visit"
     }
-  ];
-
-  const departments = [
-    { name: "General Inquiries", email: "info@neemagospelchoir.com" },
-    { name: "Performance Bookings", email: "bookings@neemagospelchoir.com" },
-    { name: "Partnership Opportunities", email: "partners@neemagospelchoir.com" },
-    { name: "Media & Press", email: "media@neemagospelchoir.com" },
-    { name: "Donations", email: "donations@neemagospelchoir.com" }
   ];
 
   return (
@@ -89,11 +70,11 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Contact Information */}
+      {/* Contact Information Cards */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            {defaultContactInfo.map((info, index) => {
+            {contactCards.map((info, index) => {
               const IconComponent = info.icon;
               return (
                 <Card key={index} className="text-center hover:shadow-warm transition-all duration-300 group">
@@ -104,11 +85,7 @@ const Contact = () => {
                     <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
                       {info.title}
                     </h3>
-                    {info.details.map((detail, detailIndex) => (
-                      <p key={detailIndex} className={`${detailIndex === 0 ? 'text-foreground font-medium' : 'text-muted-foreground text-sm'} mb-1`}>
-                        {detail}
-                      </p>
-                    ))}
+                    <p className="text-foreground font-medium mb-1">{info.detail}</p>
                     <Button
                       variant="outline"
                       size="sm"
@@ -178,12 +155,12 @@ const Contact = () => {
                       required
                     >
                       <option value="">Select a subject</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="booking">Performance Booking</option>
-                      <option value="joining">Joining the Choir</option>
-                      <option value="partnership">Partnership</option>
-                      <option value="donation">Donation</option>
-                      <option value="other">Other</option>
+                      <option value="General Inquiry">General Inquiry</option>
+                      <option value="Performance Booking">Performance Booking</option>
+                      <option value="Joining the Choir">Joining the Choir</option>
+                      <option value="Partnership">Partnership</option>
+                      <option value="Donation">Donation</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
 
@@ -203,16 +180,9 @@ const Contact = () => {
                     type="submit"
                     size="lg"
                     className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
-                    disabled={submitting}
                   >
-                    {submitting ? (
-                      <>Sending...</>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        Send Message
-                      </>
-                    )}
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Message
                   </Button>
                 </form>
               </CardContent>
@@ -233,23 +203,30 @@ const Contact = () => {
                 </div>
               </Card>
 
-              {/* Quick Contact Options */}
+              {/* Quick Contact */}
               <Card>
                 <CardHeader>
                   <CardTitle>Quick Contact</CardTitle>
                   <p className="text-muted-foreground">
-                    Need immediate assistance? Contact the right department directly.
+                    Need immediate assistance? Reach out to us directly.
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {departments.map((dept, index) => (
+                    {[
+                      { name: "General Inquiries", email: contactInfo?.email || "info@neemagospelchoir.com" },
+                      { name: "Performance Bookings", email: "bookings@neemagospelchoir.com" },
+                      { name: "Partnership Opportunities", email: "partners@neemagospelchoir.com" },
+                      { name: "Media & Press", email: "media@neemagospelchoir.com" },
+                      { name: "Donations", email: "donations@neemagospelchoir.com" }
+                    ].map((dept, index) => (
                       <div key={index} className="flex justify-between items-center p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                         <span className="font-medium">{dept.name}</span>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className="text-primary hover:text-primary hover:bg-primary/10"
+                          onClick={() => window.location.href = `mailto:${dept.email}`}
                         >
                           <Mail className="h-4 w-4 mr-1" />
                           Email

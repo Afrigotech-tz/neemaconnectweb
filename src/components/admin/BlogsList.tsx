@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,12 +17,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useBlog } from '@/hooks/useBlog';
 import { Blog } from '@/types/blogTypes';
-import { Plus, Edit, Trash2, Search, Eye, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, FileText, ImageIcon } from 'lucide-react';
 
 const BlogsList: React.FC = () => {
   const { blogs, fetchBlogs, deleteBlog, loading } = useBlog();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
 
@@ -44,21 +42,10 @@ const BlogsList: React.FC = () => {
     }
   };
 
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.author.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || blog.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      published: 'default',
-      draft: 'secondary',
-      archived: 'destructive',
-    };
-    return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
-  };
+  const filteredBlogs = blogs.filter((blog) =>
+    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    blog.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -95,23 +82,12 @@ const BlogsList: React.FC = () => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search blogs..."
+                placeholder="Search by title or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           {filteredBlogs.length === 0 ? (
@@ -130,29 +106,44 @@ const BlogsList: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Image</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>Category</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Featured</TableHead>
-                  <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredBlogs.map((blog) => (
                   <TableRow key={blog.id}>
-                    <TableCell className="font-medium">{blog.title}</TableCell>
-                    <TableCell>{blog.author}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{blog.category}</Badge>
+                      <div className="w-16 h-10 bg-gray-100 rounded overflow-hidden">
+                        {blog.image ? (
+                          <img
+                            src={blog.image}
+                            alt={blog.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageIcon className="h-4 w-4 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(blog.status)}</TableCell>
-                    <TableCell>
-                      {blog.is_featured && <Badge variant="secondary">Featured</Badge>}
-                    </TableCell>
+                    <TableCell className="font-medium max-w-xs truncate">{blog.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(blog.created_at).toLocaleDateString()}
+                      {new Date(blog.date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-sm">{blog.location}</TableCell>
+                    <TableCell>
+                      <Badge variant={blog.is_active ? 'default' : 'secondary'}>
+                        {blog.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">

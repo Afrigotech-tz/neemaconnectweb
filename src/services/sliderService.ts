@@ -3,8 +3,6 @@ import {
   HomeSlider,
   CreateSliderData,
   UpdateSliderData,
-  SliderResponse,
-  SlidersResponse,
   SliderFilters,
 } from '@/types/sliderTypes';
 import { AxiosError } from 'axios';
@@ -18,6 +16,19 @@ interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
 }
+
+const buildFormData = (data: CreateSliderData | UpdateSliderData): FormData => {
+  const formData = new FormData();
+  if (data.image instanceof File) {
+    formData.append('image', data.image);
+  }
+  if (data.title !== undefined) formData.append('title', data.title);
+  if (data.head !== undefined) formData.append('head', data.head);
+  if (data.description !== undefined) formData.append('description', data.description);
+  if (data.is_active !== undefined) formData.append('is_active', String(data.is_active));
+  if (data.sort_order !== undefined) formData.append('sort_order', String(data.sort_order));
+  return formData;
+};
 
 export const sliderService = {
   /**
@@ -61,11 +72,14 @@ export const sliderService = {
   },
 
   /**
-   * Create a new slider
+   * Create a new slider (multipart/form-data)
    */
   async createSlider(data: CreateSliderData): Promise<ApiResponse<HomeSlider>> {
     try {
-      const response = await api.post('/home-sliders', data);
+      const formData = buildFormData(data);
+      const response = await api.post('/home-sliders', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return {
         success: true,
         message: 'Slider created successfully',
@@ -81,11 +95,14 @@ export const sliderService = {
   },
 
   /**
-   * Update an existing slider
+   * Update an existing slider (multipart/form-data)
    */
   async updateSlider(id: number, data: UpdateSliderData): Promise<ApiResponse<HomeSlider>> {
     try {
-      const response = await api.post(`/home-sliders/${id}`, data);
+      const formData = buildFormData(data);
+      const response = await api.post(`/home-sliders/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return {
         success: true,
         message: 'Slider updated successfully',
@@ -125,7 +142,7 @@ export const sliderService = {
   async getActiveSliders(): Promise<ApiResponse<HomeSlider[]>> {
     try {
       const response = await api.get('/home-sliders', {
-        params: { is_active: true }
+        params: { is_active: true },
       });
       return {
         success: true,
@@ -142,31 +159,15 @@ export const sliderService = {
   },
 
   /**
-   * Reorder sliders
-   * Note: This might need to be implemented based on your API
-   */
-  async reorderSliders(sliderIds: number[]): Promise<ApiResponse<void>> {
-    try {
-      await api.post('/home-sliders/reorder', { slider_ids: sliderIds });
-      return {
-        success: true,
-        message: 'Sliders reordered successfully',
-      };
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || 'Failed to reorder sliders',
-      };
-    }
-  },
-
-  /**
    * Toggle slider active status
    */
   async toggleSliderStatus(id: number, isActive: boolean): Promise<ApiResponse<HomeSlider>> {
     try {
-      const response = await api.post(`/home-sliders/${id}`, { is_active: isActive });
+      const formData = new FormData();
+      formData.append('is_active', String(isActive));
+      const response = await api.post(`/home-sliders/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return {
         success: true,
         message: `Slider ${isActive ? 'activated' : 'deactivated'} successfully`,

@@ -9,18 +9,15 @@ import { UpdateContactInfoData } from '@/types/contactTypes';
 import { Loader2, Save } from 'lucide-react';
 
 const ContactInfoForm: React.FC = () => {
-  const { contactInfo, fetchContactInfo, updateContactInfo, loading } = useContact();
+  const { contactInfo, fetchContactInfo, updateContactInfo, createContactInfo, loading } = useContact();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<UpdateContactInfoData>({
+    address: '',
     phone: '',
     email: '',
-    address: '',
     office_hours: '',
-    facebook_url: '',
-    twitter_url: '',
-    instagram_url: '',
-    whatsapp_number: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchContactInfo();
@@ -29,23 +26,38 @@ const ContactInfoForm: React.FC = () => {
   useEffect(() => {
     if (contactInfo) {
       setFormData({
+        address: contactInfo.address || '',
         phone: contactInfo.phone || '',
         email: contactInfo.email || '',
-        address: contactInfo.address || '',
         office_hours: contactInfo.office_hours || '',
-        facebook_url: contactInfo.facebook_url || '',
-        twitter_url: contactInfo.twitter_url || '',
-        instagram_url: contactInfo.instagram_url || '',
-        whatsapp_number: contactInfo.whatsapp_number || '',
       });
     }
   }, [contactInfo]);
 
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.address?.trim()) newErrors.address = 'Address is required';
+    if (!formData.phone?.trim()) newErrors.phone = 'Phone is required';
+    if (!formData.email?.trim()) newErrors.email = 'Email is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setSubmitting(true);
     try {
-      await updateContactInfo(formData);
+      if (contactInfo) {
+        await updateContactInfo(formData);
+      } else {
+        await createContactInfo({
+          address: formData.address!,
+          phone: formData.phone!,
+          email: formData.email!,
+          office_hours: formData.office_hours,
+        });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -71,35 +83,55 @@ const ContactInfoForm: React.FC = () => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* Phone */}
             <div>
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">
+                Phone <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+1234567890"
+                className={errors.phone ? 'border-red-500' : ''}
               />
+              {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
             </div>
+
+            {/* Email */}
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="contact@example.com"
+                className={errors.email ? 'border-red-500' : ''}
               />
+              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
             </div>
+
+            {/* Address */}
             <div className="md:col-span-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">
+                Address <span className="text-red-500">*</span>
+              </Label>
               <Textarea
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Full address"
                 rows={2}
+                className={errors.address ? 'border-red-500' : ''}
               />
+              {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
             </div>
+
+            {/* Office Hours */}
             <div className="md:col-span-2">
               <Label htmlFor="office_hours">Office Hours</Label>
               <Input
@@ -109,42 +141,7 @@ const ContactInfoForm: React.FC = () => {
                 placeholder="Mon-Fri: 9AM-5PM"
               />
             </div>
-            <div>
-              <Label htmlFor="whatsapp_number">WhatsApp Number</Label>
-              <Input
-                id="whatsapp_number"
-                value={formData.whatsapp_number}
-                onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-                placeholder="+1234567890"
-              />
-            </div>
-            <div>
-              <Label htmlFor="facebook_url">Facebook URL</Label>
-              <Input
-                id="facebook_url"
-                value={formData.facebook_url}
-                onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
-                placeholder="https://facebook.com/..."
-              />
-            </div>
-            <div>
-              <Label htmlFor="twitter_url">Twitter URL</Label>
-              <Input
-                id="twitter_url"
-                value={formData.twitter_url}
-                onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
-                placeholder="https://twitter.com/..."
-              />
-            </div>
-            <div>
-              <Label htmlFor="instagram_url">Instagram URL</Label>
-              <Input
-                id="instagram_url"
-                value={formData.instagram_url}
-                onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
-                placeholder="https://instagram.com/..."
-              />
-            </div>
+
           </div>
 
           <div className="flex justify-end">
@@ -152,12 +149,12 @@ const ContactInfoForm: React.FC = () => {
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Updating...
+                  {contactInfo ? 'Updating...' : 'Saving...'}
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Update Contact Info
+                  {contactInfo ? 'Update Contact Info' : 'Save Contact Info'}
                 </>
               )}
             </Button>
