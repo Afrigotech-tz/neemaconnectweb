@@ -42,7 +42,7 @@ const Home = () => {
   return (
     <div className="pt-16"> {/* Account for fixed navigation */}
       {/* Hero Section */}
-      <HeroSlider />
+     <HeroSlider />
 
       {/* Donation Section */}
       <section className="py-16 bg-gradient-to-br from-primary/10 to-accent/10">

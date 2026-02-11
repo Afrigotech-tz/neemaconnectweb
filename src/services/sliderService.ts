@@ -29,6 +29,7 @@ const buildFormData = (data: CreateSliderData | UpdateSliderData): FormData => {
   if (data.is_active !== undefined) formData.append('is_active', data.is_active ? '1' : '0');
   if (data.sort_order !== undefined) formData.append('sort_order', String(data.sort_order));
   return formData;
+  
 };
 
 export const sliderService = {
@@ -159,13 +160,16 @@ export const sliderService = {
     }
   },
 
+
   /**
    * Toggle slider active status
    */
   async toggleSliderStatus(id: number, isActive: boolean): Promise<ApiResponse<HomeSlider>> {
     try {
       const formData = new FormData();
-      formData.append('is_active', String(isActive));
+      // formData.append('is_active', String(isActive));
+      formData.append('is_active', isActive ? '1' : '0');
+
       const response = await api.post(`/home-sliders/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -182,4 +186,7 @@ export const sliderService = {
       };
     }
   },
+
+
 };
+
