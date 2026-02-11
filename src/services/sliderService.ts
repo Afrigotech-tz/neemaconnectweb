@@ -25,7 +25,8 @@ const buildFormData = (data: CreateSliderData | UpdateSliderData): FormData => {
   if (data.title !== undefined) formData.append('title', data.title);
   if (data.head !== undefined) formData.append('head', data.head);
   if (data.description !== undefined) formData.append('description', data.description);
-  if (data.is_active !== undefined) formData.append('is_active', String(data.is_active));
+  // if (data.is_active !== undefined) formData.append('is_active', String(data.is_active));
+  if (data.is_active !== undefined) formData.append('is_active', data.is_active ? '1' : '0');
   if (data.sort_order !== undefined) formData.append('sort_order', String(data.sort_order));
   return formData;
 };
