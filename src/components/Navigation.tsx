@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { usePermissions } from "@/hooks/usePermissions";
+import CartBadge from "@/components/shop/CartBadge";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,6 +74,7 @@ const Navigation = () => {
 
           {/* User Menu / Login Register Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            {user && <CartBadge />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -130,7 +132,8 @@ const Navigation = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-1">
+            {user && <CartBadge />}
             <Button
               variant="ghost"
               size="sm"

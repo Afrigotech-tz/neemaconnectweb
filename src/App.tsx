@@ -87,6 +87,22 @@ import AddSliderPage from "./pages/dashboard/AddSliderPage";
 import EditSliderPage from "./pages/dashboard/EditSliderPage";
 import AboutManagementPage from "./pages/dashboard/AboutManagementPage";
 
+// Import E-Commerce Providers
+import { ShopProvider } from "./contexts/ShopContext";
+import { CartProvider } from "./contexts/CartContext";
+import { OrderProvider } from "./contexts/OrderContext";
+import { AddressProvider } from "./contexts/AddressContext";
+
+// Import E-Commerce Pages
+import ProductDetail from "./pages/ProductDetail";
+import CartPage from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderHistoryPage from "./pages/dashboard/OrderHistoryPage";
+import OrderDetailPage from "./pages/dashboard/OrderDetailPage";
+import AddressManagementPage from "./pages/dashboard/AddressManagementPage";
+import OrdersManagementPage from "./pages/dashboard/OrdersManagementPage";
+import OrderDetailAdminPage from "./pages/dashboard/OrderDetailAdminPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -98,6 +114,10 @@ const App = () => (
             <ContactProvider>
               <SliderProvider>
                 <AboutProvider>
+                <ShopProvider>
+                <CartProvider>
+                <OrderProvider>
+                <AddressProvider>
                 <LanguageProvider>
                   <TooltipProvider>
           <Toaster />
@@ -111,6 +131,17 @@ const App = () => (
                 <Route path="partner" element={<Partner />} />
                 <Route path="blog" element={<Blog />} />
                 <Route path="shop" element={<Shop />} />
+                <Route path="shop/:id" element={<ProductDetail />} />
+                <Route path="cart" element={
+                  <ProtectedRoute>
+                    <CartPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="checkout" element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                } />
                 <Route path="donation" element={<Donation />} />
                 <Route path="tickets" element={<Tickets />} />
                 <Route path="contact" element={<Contact />} />
@@ -376,6 +407,27 @@ const App = () => (
                     </PermissionBasedRoute>
                   }
                 />
+
+                {/* E-Commerce Routes */}
+                <Route path="orders" element={<OrderHistoryPage />} />
+                <Route path="orders/:id" element={<OrderDetailPage />} />
+                <Route path="addresses" element={<AddressManagementPage />} />
+                <Route
+                  path="orders-management"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <OrdersManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="orders-management/:id"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <OrderDetailAdminPage />
+                    </PermissionBasedRoute>
+                  }
+                />
               </Route>
 
               <Route path="/register" element={<Register />} />
@@ -388,6 +440,10 @@ const App = () => (
           </BrowserRouter>
                   </TooltipProvider>
                 </LanguageProvider>
+                </AddressProvider>
+                </OrderProvider>
+                </CartProvider>
+                </ShopProvider>
                 </AboutProvider>
               </SliderProvider>
             </ContactProvider>

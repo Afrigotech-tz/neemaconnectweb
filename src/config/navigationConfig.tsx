@@ -18,7 +18,9 @@ import {
   Box,
   Mail,
   ImageIcon,
-  Info
+  Info,
+  ClipboardList,
+  MapPin
 } from 'lucide-react';
 import { RouteConfig } from './routePermissions';
 
@@ -135,6 +137,13 @@ export const navigationItems: RouteConfig[] = [
     requiredPermissions: ['view_donations']
   },
   {
+    name: 'Orders Management',
+    path: '/dashboard/orders-management',
+    icon: ClipboardList,
+    section: 'Commerce',
+    requiredPermissions: ['view_products']
+  },
+  {
     name: 'Payments',
     path: '/dashboard/payments',
     icon: CreditCard,
@@ -154,6 +163,18 @@ export const navigationItems: RouteConfig[] = [
     path: '/dashboard/partnership',
     icon: Handshake,
     section: 'System'
+  },
+  {
+    name: 'My Orders',
+    path: '/dashboard/orders',
+    icon: ClipboardList,
+    section: 'Settings'
+  },
+  {
+    name: 'My Addresses',
+    path: '/dashboard/addresses',
+    icon: MapPin,
+    section: 'Settings'
   },
   {
     name: 'Settings',
