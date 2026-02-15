@@ -9,6 +9,7 @@ import { UserManagementProvider } from "@/contexts/UserManagementContext";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Leadership from "./pages/Leadership";
 import Events from "./pages/Events";
 import Partner from "./pages/Partner";
 import Blog from "./pages/Blog";
@@ -127,6 +128,7 @@ const App = () => (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="about" element={<About />} />
+                <Route path="leadership" element={<Leadership />} />
                 <Route path="events" element={<Events />} />
                 <Route path="partner" element={<Partner />} />
                 <Route path="blog" element={<Blog />} />

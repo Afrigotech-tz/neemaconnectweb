@@ -1,7 +1,16 @@
 import { useEffect } from "react";
-import { Music, Users, Heart, Star } from "lucide-react";
+import { Music, Users, Heart, Star, Mic, Music2, Shield, Crown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAbout } from "@/hooks/useAbout";
+
+interface Leader {
+  id: number;
+  name: string;
+  role: string;
+  description: string;
+  image: string;
+  icon: React.ElementType;
+}
 
 const About = () => {
   const { aboutUs, fetchAboutUs } = useAbout();
@@ -30,6 +39,50 @@ const About = () => {
       icon: Star,
       title: "Service",
       description: "We are committed to serving our community through music ministry."
+    }
+  ];
+
+  // Leadership team data for the choir
+  const leadershipTeam: Leader[] = [
+    {
+      id: 1,
+      name: "Reverend Sarah Johnson",
+      role: "Choir Director",
+      description: "Oversees all musical performances, leads rehearsals, and provides spiritual guidance to the choir. With over 20 years of experience in gospel music ministry.",
+      image: "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png",
+      icon: Crown
+    },
+    {
+      id: 2,
+      name: "Michael Chen",
+      role: "Assistant Choir Director",
+      description: "Supports the director in managing rehearsals, coordinates section leaders, and assists with vocal training programs.",
+      image: "/lovable-uploads/336ebe09-2ea3-4cfb-a1ca-56b18fd19f9b.png",
+      icon: Mic
+    },
+    {
+      id: 3,
+      name: "Dr. Emily Williams",
+      role: "Vocal Coach",
+      description: "Provides vocal training, coaches individual singers, and ensures vocal health and technique excellence throughout the choir.",
+      image: "/lovable-uploads/693e0442-bda3-4e44-bf2d-08b09e98ba54.png",
+      icon: Music2
+    },
+    {
+      id: 4,
+      name: "James Anderson",
+      role: "Choir Administrator",
+      description: "Manages scheduling, communications, event logistics, and coordinates performances with external venues and organizations.",
+      image: "/lovable-uploads/95215f6e-1ac7-47e3-aef6-31de3bfe820f.png",
+      icon: Shield
+    },
+    {
+      id: 5,
+      name: "Pastor David Martinez",
+      role: "Spiritual Leader",
+      description: "Provides pastoral care, leads prayer sessions, and ensures the choir's mission remains grounded in faith and spiritual growth.",
+      image: "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png",
+      icon: Heart
     }
   ];
 
@@ -156,15 +209,102 @@ Over the years, we've had the privilege of performing at hundreds of events, tou
             </p>
           </div>
 
-          <div className="text-center">
-            <img
-              src="/lovable-uploads/336ebe09-2ea3-4cfb-a1ca-56b18fd19f9b.png"
-              alt="Leadership Team"
-              className="rounded-2xl shadow-warm mx-auto max-w-2xl w-full"
-            />
-            <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Our leadership team brings together decades of musical experience, pastoral wisdom, and administrative excellence. Together, they provide spiritual guidance, musical direction, and organizational leadership that keeps our choir thriving and growing.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+            {leadershipTeam.map((leader, index) => {
+              const IconComponent = leader.icon;
+              return (
+                <Card 
+                  key={leader.id} 
+                  className="group hover:shadow-warm transition-all duration-500 overflow-hidden border-0 bg-gradient-to-b from-card to-card/80"
+                  style={{
+                    animationDelay: `${index * 100}ms`
+                  }}
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={leader.image}
+                      alt={leader.name}
+                      className="w-full h-56 object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center">
+                          <IconComponent className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                        <span className="text-xs font-medium text-primary-foreground/90 uppercase tracking-wider">
+                          {leader.role}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <CardContent className="p-5">
+                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+                      {leader.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {leader.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Leadership Flow Visual */}
+          <div className="mt-16">
+            <div className="flex flex-col items-center">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+                {/* Choir Director - Top */}
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg ring-4 ring-amber-100">
+                    <Crown className="h-10 w-10 text-white" />
+                  </div>
+                  <span className="mt-3 font-semibold text-foreground">Choir Director</span>
+                </div>
+              </div>
+              
+              {/* Arrow down */}
+              <div className="h-8 w-0.5 bg-gradient-to-b from-amber-400 to-primary my-2" />
+              
+              {/* Row 2: Assistant Director & Vocal Coach */}
+              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-16">
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+                    <Mic className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="mt-2 font-medium text-foreground">Assistant Director</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg ring-4 ring-purple-100">
+                    <Music2 className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="mt-2 font-medium text-foreground">Vocal Coach</span>
+                </div>
+              </div>
+              
+              {/* Arrow down */}
+              <div className="h-8 w-0.5 bg-gradient-to-b from-blue-400 to-purple-400 my-2" />
+              
+              {/* Row 3: Choir Administrator & Spiritual Leader */}
+              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-16">
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shadow-lg ring-4 ring-teal-100">
+                    <Shield className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="mt-2 font-medium text-foreground">Choir Administrator</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center shadow-lg ring-4 ring-rose-100">
+                    <Heart className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="mt-2 font-medium text-foreground">Spiritual Leader</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
