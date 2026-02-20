@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSlider } from '@/hooks/useSlider';
 import { HomeSlider } from '@/types/sliderTypes';
 import { Plus, Edit, Trash2, ImageIcon, ToggleLeft, ToggleRight } from 'lucide-react';
+import { getImageUrl } from '@/lib/utils';
 
 const SlidersList: React.FC = () => {
   const { sliders, fetchSliders, deleteSlider, toggleSliderStatus, loading } = useSlider();
@@ -90,7 +91,7 @@ const SlidersList: React.FC = () => {
                         <div className="w-20 h-12 bg-base-200 rounded overflow-hidden">
                           {slider.image ? (
                             <img
-                              src={slider.image}
+                              src={getImageUrl(slider.image)}
                               alt={slider.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {

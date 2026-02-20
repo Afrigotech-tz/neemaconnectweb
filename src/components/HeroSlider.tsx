@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Play, Heart, MousePointer2 } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSlider } from "@/hooks/useSlider";
+import { getImageUrl } from "@/lib/utils";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -89,9 +90,10 @@ const HeroSlider = () => {
           }`}
         >
           {/* Background Image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${slide.image})` }}
+          <img
+            src={getImageUrl(slide.image)}
+            alt={slide.title}
+            className="absolute inset-0 w-full h-full object-cover"
           />
           
           {/* Overlay */}

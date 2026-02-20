@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useBlog } from "@/hooks/useBlog";
+import { getImageUrl } from "@/lib/utils";
 
 const Blog = () => {
   const { blogs, getActiveBlogs, loading } = useBlog();
@@ -58,7 +59,7 @@ const Blog = () => {
                 <Card key={post.id} className="group hover:shadow-warm transition-all duration-300 flex flex-col">
                   <div className="relative overflow-hidden rounded-t-lg">
                     <img
-                      src={post.image || "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png"}
+                      src={getImageUrl(post.image) || "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png"}
                       alt={post.title}
                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
