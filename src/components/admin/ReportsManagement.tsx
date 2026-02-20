@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from "@/components/ui/button";
 import { BarChart3, Download, Calendar, Users, DollarSign, TrendingUp, FileText, Eye } from 'lucide-react';
 
 const ReportsManagement: React.FC = () => {
@@ -52,7 +50,7 @@ const ReportsManagement: React.FC = () => {
       change: '+3',
       period: 'This month',
       icon: FileText,
-      color: 'text-blue-600'
+      color: 'text-info'
     },
     {
       title: 'Downloads',
@@ -60,7 +58,7 @@ const ReportsManagement: React.FC = () => {
       change: '+12%',
       period: 'This month',
       icon: Download,
-      color: 'text-green-600'
+      color: 'text-success'
     },
     {
       title: 'Scheduled Reports',
@@ -68,7 +66,7 @@ const ReportsManagement: React.FC = () => {
       change: '+2',
       period: 'Active',
       icon: Calendar,
-      color: 'text-purple-600'
+      color: 'text-secondary'
     },
     {
       title: 'Report Views',
@@ -76,44 +74,44 @@ const ReportsManagement: React.FC = () => {
       change: '+18%',
       period: 'This month',
       icon: Eye,
-      color: 'text-orange-600'
+      color: 'text-warning'
     }
   ];
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Ready': return 'bg-green-100 text-green-800';
-      case 'Generating': return 'bg-yellow-100 text-yellow-800';
-      case 'Error': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Ready': return 'badge-success';
+      case 'Generating': return 'badge-warning';
+      case 'Error': return 'badge-error';
+      default: return 'badge-ghost';
     }
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryBadge = (category: string) => {
     switch (category) {
-      case 'Financial': return 'bg-blue-100 text-blue-800';
-      case 'Analytics': return 'bg-purple-100 text-purple-800';
-      case 'Events': return 'bg-green-100 text-green-800';
-      case 'Content': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Financial': return 'badge-info';
+      case 'Analytics': return 'badge-secondary';
+      case 'Events': return 'badge-success';
+      case 'Content': return 'badge-warning';
+      default: return 'badge-ghost';
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-theme="neemadmin">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <BarChart3 className="h-8 w-8 text-blue-600" />
+          <h1 className="text-3xl font-bold text-base-content flex items-center gap-3">
+            <BarChart3 className="h-8 w-8 text-primary" />
             Reports & Analytics
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-base-content/60 mt-2">
             Generate, view, and manage comprehensive reports and analytics
           </p>
         </div>
-        <Button className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
+        <Button className="btn btn-primary">
+          <FileText className="h-4 w-4 mr-2" />
           Create Custom Report
         </Button>
       </div>
@@ -123,149 +121,140 @@ const ReportsManagement: React.FC = () => {
         {quickStats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index}>
-              <CardHeader className="pb-2">
+            <div key={index} className="card bg-base-100 shadow-md">
+              <div className="card-body">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
+                  <h2 className="card-title text-sm font-medium text-base-content/70">{stat.title}</h2>
+                  <Icon className={`h-5 w-5 ${stat.color}`} />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <span className="text-green-600">{stat.change}</span>
-                  <span className="ml-1">{stat.period}</span>
+                <div className="mt-2">
+                  <p className="text-2xl font-bold text-base-content">{stat.value}</p>
+                  <div className="flex items-center text-xs text-base-content/50">
+                    <span className="text-success font-medium">{stat.change}</span>
+                    <span className="ml-1">{stat.period}</span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Key Metrics Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2 text-lg text-base-content">
+              <Users className="h-5 w-5 text-info" />
               User Metrics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+            </h2>
+            <div className="space-y-3 mt-4">
               <div className="flex justify-between">
-                <span className="text-sm">Total Users</span>
-                <span className="font-medium">1,247</span>
+                <span className="text-sm text-base-content/70">Total Users</span>
+                <span className="font-medium text-base-content">1,247</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Active This Month</span>
-                <span className="font-medium">892</span>
+                <span className="text-sm text-base-content/70">Active This Month</span>
+                <span className="font-medium text-base-content">892</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">New Registrations</span>
-                <span className="font-medium">23</span>
+                <span className="text-sm text-base-content/70">New Registrations</span>
+                <span className="font-medium text-base-content">23</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Retention Rate</span>
-                <span className="font-medium text-green-600">85%</span>
+                <span className="text-sm text-base-content/70">Retention Rate</span>
+                <span className="font-medium text-success">85%</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2 text-lg text-base-content">
+              <DollarSign className="h-5 w-5 text-success" />
               Financial Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+            </h2>
+            <div className="space-y-3 mt-4">
               <div className="flex justify-between">
-                <span className="text-sm">Total Donations</span>
-                <span className="font-medium">$24,580</span>
+                <span className="text-sm text-base-content/70">Total Donations</span>
+                <span className="font-medium text-base-content">$24,580</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Monthly Recurring</span>
-                <span className="font-medium">$6,750</span>
+                <span className="text-sm text-base-content/70">Monthly Recurring</span>
+                <span className="font-medium text-base-content">$6,750</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Average Donation</span>
-                <span className="font-medium">$157</span>
+                <span className="text-sm text-base-content/70">Average Donation</span>
+                <span className="font-medium text-base-content">$157</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Growth Rate</span>
-                <span className="font-medium text-green-600">+12%</span>
+                <span className="text-sm text-base-content/70">Growth Rate</span>
+                <span className="font-medium text-success">+12%</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2 text-lg text-base-content">
+              <TrendingUp className="h-5 w-5 text-secondary" />
               Content Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+            </h2>
+            <div className="space-y-3 mt-4">
               <div className="flex justify-between">
-                <span className="text-sm">Blog Views</span>
-                <span className="font-medium">12.4K</span>
+                <span className="text-sm text-base-content/70">Blog Views</span>
+                <span className="font-medium text-base-content">12.4K</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Music Downloads</span>
-                <span className="font-medium">3.2K</span>
+                <span className="text-sm text-base-content/70">Music Downloads</span>
+                <span className="font-medium text-base-content">3.2K</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Event Registrations</span>
-                <span className="font-medium">456</span>
+                <span className="text-sm text-base-content/70">Event Registrations</span>
+                <span className="font-medium text-base-content">456</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Engagement Rate</span>
-                <span className="font-medium text-green-600">78%</span>
+                <span className="text-sm text-base-content/70">Engagement Rate</span>
+                <span className="font-medium text-success">78%</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Available Reports */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Reports</CardTitle>
-          <CardDescription>
-            Generate and download comprehensive reports
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h2 className="card-title text-xl text-base-content">Available Reports</h2>
+          <p className="text-base-content/60">Generate and download comprehensive reports</p>
+          <div className="divider"></div>
           <div className="space-y-4">
             {availableReports.map((report) => (
-              <div key={report.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-base-300 rounded-lg hover:bg-base-200 transition-colors gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-medium">{report.name}</h3>
-                    <Badge className={getStatusColor(report.status)}>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <h3 className="font-medium text-base-content">{report.name}</h3>
+                    <span className={`badge ${getStatusBadge(report.status)}`}>
                       {report.status}
-                    </Badge>
-                    <Badge variant="outline" className={getCategoryColor(report.category)}>
+                    </span>
+                    <span className={`badge badge-outline ${getCategoryBadge(report.category)}`}>
                       {report.category}
-                    </Badge>
+                    </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">{report.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <p className="text-sm text-base-content/60 mb-2">{report.description}</p>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-base-content/50">
                     <span>Last generated: {report.lastGenerated}</span>
                     <span>Frequency: {report.frequency}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" disabled={report.status !== 'Ready'}>
+                  <Button variant="outline" size="sm" className="btn btn-outline btn-sm" disabled={report.status !== 'Ready'}>
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm" disabled={report.status !== 'Ready'}>
+                  <Button variant="outline" size="sm" className="btn btn-outline btn-sm" disabled={report.status !== 'Ready'}>
                     <Download className="h-4 w-4 mr-1" />
                     Download
                   </Button>
@@ -273,37 +262,35 @@ const ReportsManagement: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Report Schedule */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Scheduled Reports</CardTitle>
-          <CardDescription>
-            Automated report generation schedule
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h2 className="card-title text-xl text-base-content">Scheduled Reports</h2>
+          <p className="text-base-content/60">Automated report generation schedule</p>
+          <div className="divider"></div>
           <div className="space-y-3">
             {[
               { name: 'Weekly User Activity', nextRun: '2024-03-18', status: 'Active' },
               { name: 'Monthly Financial Summary', nextRun: '2024-04-01', status: 'Active' },
               { name: 'Quarterly Performance Review', nextRun: '2024-06-01', status: 'Active' }
             ].map((schedule, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 border border-base-300 rounded-lg">
                 <div>
-                  <p className="font-medium">{schedule.name}</p>
-                  <p className="text-sm text-muted-foreground">Next run: {schedule.nextRun}</p>
+                  <p className="font-medium text-base-content">{schedule.name}</p>
+                  <p className="text-sm text-base-content/60">Next run: {schedule.nextRun}</p>
                 </div>
-                <Badge className="bg-green-100 text-green-800">{schedule.status}</Badge>
+                <span className="badge badge-success">{schedule.status}</span>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ReportsManagement;
+

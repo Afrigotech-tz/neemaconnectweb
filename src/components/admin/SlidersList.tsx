@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Button } from "@/components/ui/button";
 import { useSlider } from '@/hooks/useSlider';
 import { HomeSlider } from '@/types/sliderTypes';
 import { Plus, Edit, Trash2, ImageIcon, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -46,143 +33,143 @@ const SlidersList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center h-64" data-theme="neemadmin">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6" data-theme="neemadmin">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Slider Management</h1>
-          <p className="text-gray-600 mt-2">Manage home page sliders</p>
+          <h1 className="text-3xl font-bold text-base-content">Slider Management</h1>
+          <p className="text-base-content/60 mt-2">Manage home page sliders</p>
         </div>
-        <Button asChild>
-          <Link to="/dashboard/slider-management/add">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Slider
-          </Link>
-        </Button>
+        <Link to="/dashboard/slider-management/add" className="btn btn-primary">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Slider
+        </Link>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2 text-xl text-base-content">
             <ImageIcon className="h-5 w-5" />
             Home Sliders ({sliders.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
+          
           {sliders.length === 0 ? (
             <div className="text-center py-8">
-              <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No sliders found</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first slider.</p>
-              <Button asChild>
-                <Link to="/dashboard/slider-management/add">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Slider
-                </Link>
-              </Button>
+              <ImageIcon className="h-12 w-12 text-base-content/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-base-content mb-2">No sliders found</h3>
+              <p className="text-base-content/60 mb-4">Get started by creating your first slider.</p>
+              <Link to="/dashboard/slider-management/add" className="btn btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Slider
+              </Link>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Image</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Head</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sliders.map((slider) => (
-                  <TableRow key={slider.id}>
-                    <TableCell className="font-medium">{slider.sort_order}</TableCell>
-                    <TableCell>
-                      <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden">
-                        {slider.image ? (
-                          <img
-                            src={slider.image}
-                            alt={slider.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-5 w-5 text-gray-400" />
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{slider.title}</TableCell>
-                    <TableCell className="max-w-xs truncate">{slider.head}</TableCell>
-                    <TableCell>
-                      <Badge variant={slider.is_active ? 'default' : 'secondary'}>
-                        {slider.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleToggleStatus(slider)}
-                          title={slider.is_active ? 'Deactivate' : 'Activate'}
-                        >
-                          {slider.is_active ? (
-                            <ToggleRight className="h-4 w-4 text-green-600" />
+            <div className="overflow-x-auto mt-4">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Head</th>
+                    <th>Status</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sliders.map((slider) => (
+                    <tr key={slider.id} className="hover">
+                      <td className="font-medium">{slider.sort_order}</td>
+                      <td>
+                        <div className="w-20 h-12 bg-base-200 rounded overflow-hidden">
+                          {slider.image ? (
+                            <img
+                              src={slider.image}
+                              alt={slider.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
                           ) : (
-                            <ToggleLeft className="h-4 w-4 text-gray-400" />
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ImageIcon className="h-5 w-5 text-base-content/40" />
+                            </div>
                           )}
-                        </Button>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/dashboard/slider-management/edit/${slider.id}`}>
+                        </div>
+                      </td>
+                      <td>{slider.title}</td>
+                      <td className="max-w-xs truncate">{slider.head}</td>
+                      <td>
+                        <span className={`badge ${slider.is_active ? 'badge-success' : 'badge-warning'}`}>
+                          {slider.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleToggleStatus(slider)}
+                            title={slider.is_active ? 'Deactivate' : 'Activate'}
+                            className="btn btn-ghost btn-xs"
+                          >
+                            {slider.is_active ? (
+                              <ToggleRight className="h-4 w-4 text-success" />
+                            ) : (
+                              <ToggleLeft className="h-4 w-4 text-base-content/40" />
+                            )}
+                          </Button>
+                          <Link 
+                            to={`/dashboard/slider-management/edit/${slider.id}`}
+                            className="btn btn-ghost btn-xs"
+                          >
                             <Edit className="h-4 w-4" />
                           </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteClick(slider)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteClick(slider)}
+                            className="btn btn-ghost btn-xs text-error"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Slider</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{sliderToDelete?.title}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-600 hover:bg-red-700">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete Confirmation Modal */}
+      <dialog className={`modal ${deleteDialogOpen ? 'modal-open' : ''}`}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Delete Slider</h3>
+          <p className="py-4">
+            Are you sure you want to delete "{sliderToDelete?.title}"? This action cannot be undone.
+          </p>
+          <div className="modal-action">
+            <button className="btn" onClick={() => setDeleteDialogOpen(false)}>Cancel</button>
+            <button className="btn btn-error" onClick={handleDeleteConfirm}>Delete</button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => setDeleteDialogOpen(false)}>close</button>
+        </form>
+      </dialog>
     </div>
   );
 };
 
 export default SlidersList;
+

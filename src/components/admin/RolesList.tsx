@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { roleService } from '@/services/roleService';
 import { Role, CreateRoleData, UpdateRoleData } from '@/types/rolePermissionTypes';
-import { Plus, Edit, Trash2, Shield, Eye, Settings } from 'lucide-react';
+import { Plus, Edit, Trash2, Shield, Settings } from 'lucide-react';
 
 const RolesList: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', display_name: '', description: '', is_active: true });
   const { toast } = useToast();
 
@@ -37,7 +30,6 @@ const RolesList: React.FC = () => {
         toast({
           title: 'Error',
           description: response.message || 'Failed to fetch roles.',
-          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -45,7 +37,6 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to fetch roles. Please try again.',
-        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -57,7 +48,6 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Validation Error',
         description: 'Role name and display name are required.',
-        variant: 'destructive',
       });
       return;
     }
@@ -76,14 +66,13 @@ const RolesList: React.FC = () => {
           title: 'Success',
           description: 'Role created successfully.',
         });
-        setIsCreateDialogOpen(false);
+        setIsCreateModalOpen(false);
         setFormData({ name: '', display_name: '', description: '', is_active: true });
         fetchRoles();
       } else {
         toast({
           title: 'Error',
           description: response.message || 'Failed to create role.',
-          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -91,7 +80,6 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to create role. Please try again.',
-        variant: 'destructive',
       });
     }
   };
@@ -101,7 +89,6 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Validation Error',
         description: 'Role name and display name are required.',
-        variant: 'destructive',
       });
       return;
     }
@@ -120,7 +107,7 @@ const RolesList: React.FC = () => {
           title: 'Success',
           description: 'Role updated successfully.',
         });
-        setIsEditDialogOpen(false);
+        setIsEditModalOpen(false);
         setSelectedRole(null);
         setFormData({ name: '', display_name: '', description: '', is_active: true });
         fetchRoles();
@@ -128,7 +115,6 @@ const RolesList: React.FC = () => {
         toast({
           title: 'Error',
           description: response.message || 'Failed to update role.',
-          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -136,7 +122,6 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to update role. Please try again.',
-        variant: 'destructive',
       });
     }
   };
@@ -151,14 +136,13 @@ const RolesList: React.FC = () => {
           title: 'Success',
           description: 'Role deleted successfully.',
         });
-        setIsDeleteDialogOpen(false);
+        setIsDeleteModalOpen(false);
         setSelectedRole(null);
         fetchRoles();
       } else {
         toast({
           title: 'Error',
           description: response.message || 'Failed to delete role.',
-          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -166,12 +150,11 @@ const RolesList: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to delete role. Please try again.',
-        variant: 'destructive',
       });
     }
   };
 
-  const openEditDialog = (role: Role) => {
+  const openEditModal = (role: Role) => {
     setSelectedRole(role);
     setFormData({
       name: role.name,
@@ -179,12 +162,12 @@ const RolesList: React.FC = () => {
       description: role.description || '',
       is_active: role.is_active,
     });
-    setIsEditDialogOpen(true);
+    setIsEditModalOpen(true);
   };
 
-  const openDeleteDialog = (role: Role) => {
+  const openDeleteModal = (role: Role) => {
     setSelectedRole(role);
-    setIsDeleteDialogOpen(true);
+    setIsDeleteModalOpen(true);
   };
 
   const resetForm = () => {
@@ -193,272 +176,266 @@ const RolesList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center h-64" data-theme="neemadmin">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6" data-theme="neemadmin">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Roles Management</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-base-content">Roles Management</h1>
+          <p className="text-base-content/60 mt-2">
             Manage user roles and their permissions
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <Button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary">
+          <Plus className="h-4 w-4 mr-2" />
           Create Role
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2 text-xl text-base-content">
             <Shield className="h-5 w-5" />
             Roles List
-          </CardTitle>
-          <CardDescription>
-            View and manage all user roles in the system
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h2>
+          <p className="text-base-content/60">View and manage all user roles in the system</p>
+          
           {roles.length === 0 ? (
             <div className="text-center py-8">
-              <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No roles found</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first role.</p>
-              <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Shield className="h-12 w-12 text-base-content/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-base-content mb-2">No roles found</h3>
+              <p className="text-base-content/60 mb-4">Get started by creating your first role.</p>
+              <Button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Role
               </Button>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Permissions</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((role) => (
-                  <TableRow key={role.id}>
-                    <TableCell className="font-medium">{role.name}</TableCell>
-                    <TableCell>{role.description || 'No description'}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">
-                        {role.permissions?.length || 0} permissions
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={role.is_active ? 'default' : 'secondary'}>
-                        {role.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                        >
-                          <Link to={`/dashboard/roles/view/${role.id}`}>
+            <div className="overflow-x-auto mt-4">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Permissions</th>
+                    <th>Status</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roles.map((role) => (
+                    <tr key={role.id} className="hover">
+                      <td className="font-medium">{role.name}</td>
+                      <td>{role.description || 'No description'}</td>
+                      <td>
+                        <span className="badge badge-ghost">
+                          {role.permissions?.length || 0} permissions
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`badge ${role.is_active ? 'badge-success' : 'badge-warning'}`}>
+                          {role.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/dashboard/roles/view/${role.id}`}
+                            className="btn btn-ghost btn-xs"
+                          >
                             <Settings className="h-4 w-4" />
                           </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEditDialog(role)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openDeleteDialog(role)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditModal(role)}
+                            className="btn btn-ghost btn-xs"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openDeleteModal(role)}
+                            className="btn btn-ghost btn-xs text-error"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Create Role Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-        setIsCreateDialogOpen(open);
-        if (!open) resetForm();
-      }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create New Role</DialogTitle>
-            <DialogDescription>
-              Add a new role with specific permissions
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Role Name</Label>
-              <Input
-                id="name"
+      {/* Create Role Modal */}
+      <dialog className={`modal ${isCreateModalOpen ? 'modal-open' : ''}`}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Create New Role</h3>
+          <p className="text-sm text-base-content/60 py-2">Add a new role with specific permissions</p>
+          <div className="space-y-4 py-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Role Name</span>
+              </label>
+              <input
+                type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., content_editor"
+                className="input input-bordered"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Use lowercase letters and underscores only
-              </p>
+              <label className="label">
+                <span className="label-text-alt">Use lowercase letters and underscores only</span>
+              </label>
             </div>
-            <div>
-              <Label htmlFor="display_name">Display Name</Label>
-              <Input
-                id="display_name"
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Display Name</span>
+              </label>
+              <input
+                type="text"
                 value={formData.display_name}
                 onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
                 placeholder="e.g., Content Editor"
+                className="input input-bordered"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Human-readable name for the role
-              </p>
+              <label className="label">
+                <span className="label-text-alt">Human-readable name for the role</span>
+              </label>
             </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Description</span>
+              </label>
+              <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Enter role description"
+                className="textarea textarea-bordered"
                 rows={3}
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="rounded"
-              />
-              <Label htmlFor="is_active">Active</Label>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateRole}>
-                Create Role
-              </Button>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <span className="label-text">Active</span>
+                <input
+                  type="checkbox"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  className="toggle toggle-primary"
+                />
+              </label>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => { setIsCreateModalOpen(false); resetForm(); }}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleCreateRole}>Create Role</button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => { setIsCreateModalOpen(false); resetForm(); }}>close</button>
+        </form>
+      </dialog>
 
-      {/* Edit Role Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
-        setIsEditDialogOpen(open);
-        if (!open) {
-          setSelectedRole(null);
-          resetForm();
-        }
-      }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Role</DialogTitle>
-            <DialogDescription>
-              Update role information
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-name">Role Name</Label>
-              <Input
-                id="edit-name"
+      {/* Edit Role Modal */}
+      <dialog className={`modal ${isEditModalOpen ? 'modal-open' : ''}`}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Edit Role</h3>
+          <p className="text-sm text-base-content/60 py-2">Update role information</p>
+          <div className="space-y-4 py-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Role Name</span>
+              </label>
+              <input
+                type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., content_editor"
+                className="input input-bordered"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Use lowercase letters and underscores only
-              </p>
+              <label className="label">
+                <span className="label-text-alt">Use lowercase letters and underscores only</span>
+              </label>
             </div>
-            <div>
-              <Label htmlFor="edit-display_name">Display Name</Label>
-              <Input
-                id="edit-display_name"
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Display Name</span>
+              </label>
+              <input
+                type="text"
                 value={formData.display_name}
                 onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
                 placeholder="e.g., Content Editor"
+                className="input input-bordered"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Human-readable name for the role
-              </p>
+              <label className="label">
+                <span className="label-text-alt">Human-readable name for the role</span>
+              </label>
             </div>
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Description</span>
+              </label>
+              <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Enter role description"
+                className="textarea textarea-bordered"
                 rows={3}
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="edit-is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="rounded"
-              />
-              <Label htmlFor="edit-is_active">Active</Label>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleUpdateRole}>
-                Update Role
-              </Button>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <span className="label-text">Active</span>
+                <input
+                  type="checkbox"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  className="toggle toggle-primary"
+                />
+              </label>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => { setIsEditModalOpen(false); setSelectedRole(null); resetForm(); }}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleUpdateRole}>Update Role</button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => { setIsEditModalOpen(false); setSelectedRole(null); resetForm(); }}>close</button>
+        </form>
+      </dialog>
 
-      {/* Delete Role Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Role</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete the role "{selectedRole?.name}"? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteRole}>
-              Delete Role
-            </Button>
+      {/* Delete Role Modal */}
+      <dialog className={`modal ${isDeleteModalOpen ? 'modal-open' : ''}`}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Delete Role</h3>
+          <p className="py-4">
+            Are you sure you want to delete the role "{selectedRole?.name}"? This action cannot be undone.
+          </p>
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
+            <button className="btn btn-error" onClick={handleDeleteRole}>Delete Role</button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => setIsDeleteModalOpen(false)}>close</button>
+        </form>
+      </dialog>
     </div>
   );
 };
 
 export default RolesList;
+

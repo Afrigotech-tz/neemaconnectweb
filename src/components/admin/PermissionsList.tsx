@@ -1,31 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Button } from "@/components/ui/button";
 import {
   Plus,
   Edit,
   Trash2,
   Shield,
   Search,
-  Filter,
   MoreHorizontal,
-  Eye
 } from 'lucide-react';
 import { permissionService } from '@/services/permissionService';
 import { Permission } from '@/types/rolePermissionTypes';
 import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 const PermissionsList: React.FC = () => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -47,14 +33,12 @@ const PermissionsList: React.FC = () => {
         toast({
           title: 'Error',
           description: response.message || 'Failed to load permissions',
-          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to load permissions',
-        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -78,14 +62,12 @@ const PermissionsList: React.FC = () => {
         toast({
           title: 'Error',
           description: response.message || 'Failed to delete permission',
-          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to delete permission',
-        variant: 'destructive',
       });
     }
   };
@@ -110,140 +92,130 @@ const PermissionsList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center h-64" data-theme="neemadmin">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-theme="neemadmin">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Permissions</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-base-content">Permissions</h1>
+          <p className="text-base-content/60 mt-2">
             Manage system permissions and access controls
           </p>
         </div>
-        <Button asChild>
-          <Link to="/dashboard/permissions/create">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Permission
-          </Link>
-        </Button>
+        <Link to="/dashboard/permissions/create" className="btn btn-primary">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Permission
+        </Link>
       </div>
 
       {/* Search and Filters */}
-      <Card>
-        <CardContent className="pt-6">
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50" />
+              <input
+                type="text"
                 placeholder="Search permissions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="input input-bordered w-full pl-10"
               />
             </div>
-            <Button variant="outline" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Permissions by Module */}
       {Object.entries(groupedPermissions).map(([module, modulePermissions]) => (
-        <Card key={module}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div key={module} className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2 text-xl text-base-content">
               <Shield className="h-5 w-5" />
               {module} ({modulePermissions.length})
-            </CardTitle>
-            <CardDescription>
-              Permissions for the {module.toLowerCase()} module
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Permission</TableHead>
-                  <TableHead>Display Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {modulePermissions.map((permission) => (
-                  <TableRow key={permission.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-muted-foreground" />
-                        <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                          {permission.name}
-                        </code>
-                      </div>
-                    </TableCell>
-                    <TableCell>{permission.display_name}</TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {permission.description}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={permission.is_active ? "default" : "secondary"}>
-                        {permission.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+            </h2>
+            <p className="text-base-content/60">Permissions for the {module.toLowerCase()} module</p>
+            <div className="divider"></div>
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Permission</th>
+                    <th>Display Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modulePermissions.map((permission) => (
+                    <tr key={permission.id} className="hover">
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-4 w-4 text-base-content/50" />
+                          <code className="text-sm bg-base-200 px-2 py-1 rounded">
+                            {permission.name}
+                          </code>
+                        </div>
+                      </td>
+                      <td>{permission.display_name}</td>
+                      <td className="max-w-xs truncate">{permission.description}</td>
+                      <td>
+                        <span className={`badge ${permission.is_active ? 'badge-success' : 'badge-warning'}`}>
+                          {permission.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="dropdown dropdown-end">
+                          <Button variant="ghost" size="sm" className="btn btn-ghost btn-xs">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem asChild>
-                            <Link to={`/dashboard/permissions/edit/${permission.id}`}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() => handleDeletePermission(permission.id, permission.name)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                          <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-48 border border-base-300">
+                            <li>
+                              <Link to={`/dashboard/permissions/edit/${permission.id}`}>
+                                <Edit className="h-4 w-4" />
+                                Edit
+                              </Link>
+                            </li>
+                            <li className="border-t border-base-300 mt-2 pt-2">
+                              <a 
+                                onClick={() => handleDeletePermission(permission.id, permission.name)}
+                                className="text-error"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       ))}
 
       {filteredPermissions.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <p className="text-muted-foreground">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body text-center py-8">
+            <p className="text-base-content/60">
               {searchTerm ? 'No permissions found matching your search' : 'No permissions found'}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
 export default PermissionsList;
+

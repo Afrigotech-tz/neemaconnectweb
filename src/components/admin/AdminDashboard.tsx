@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import {
   Users,
@@ -35,6 +27,9 @@ import {
   Mail,
   FileText,
   DollarSign,
+  Zap,
+  Target,
+  Award,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -55,7 +50,9 @@ const AdminDashboard: React.FC = () => {
       description: "Registered platform users",
       trend: "+12% from last month",
       trendPositive: true,
-      color: "text-blue-600",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      iconBg: "bg-blue-500",
     },
     {
       title: "Active Content",
@@ -64,7 +61,9 @@ const AdminDashboard: React.FC = () => {
       description: "Published content items",
       trend: "+8% from last month",
       trendPositive: true,
-      color: "text-green-600",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      iconBg: "bg-green-500",
     },
     {
       title: "Revenue",
@@ -73,7 +72,9 @@ const AdminDashboard: React.FC = () => {
       description: "Total revenue this month",
       trend: "+15% from last month",
       trendPositive: true,
-      color: "text-purple-600",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      iconBg: "bg-purple-500",
     },
     {
       title: "System Health",
@@ -82,7 +83,9 @@ const AdminDashboard: React.FC = () => {
       description: "Overall system uptime",
       trend: "+0.1% from last month",
       trendPositive: true,
-      color: "text-orange-600",
+      color: "from-orange-500 to-orange-600",
+      bgColor: "bg-orange-50",
+      iconBg: "bg-orange-500",
     },
   ];
 
@@ -92,189 +95,83 @@ const AdminDashboard: React.FC = () => {
       title: "User Management",
       description: "Manage users, roles, and permissions",
       icon: Users,
-      color: "bg-blue-500",
+      color: "from-blue-500 to-blue-600",
       items: [
-        {
-          name: "Users",
-          href: "/users",
-          description: "Manage user accounts",
-        },
-        {
-          name: "Roles & Permissions",
-          href: "/roles",
-          description: "Configure user roles",
-        },
-        {
-          name: "User Analytics",
-          href: "/user-analytics",
-          description: "User behavior insights",
-        },
+        { name: "Users", href: "/users", description: "Manage user accounts" },
+        { name: "Roles & Permissions", href: "/roles", description: "Configure user roles" },
+        { name: "User Analytics", href: "/user-analytics", description: "User behavior insights" },
       ],
     },
     {
       title: "Content Management",
       description: "Manage all content across the platform",
       icon: BookOpen,
-      color: "bg-green-500",
+      color: "from-green-500 to-green-600",
       items: [
-        {
-          name: "Blog Posts",
-          href: "/admin/blog",
-          description: "Manage blog content",
-        },
-        {
-          name: "Music Library",
-          href: "/admin/music",
-          description: "Manage music tracks",
-        },
-        {
-          name: "News Articles",
-          href: "/admin/news",
-          description: "Manage news content",
-        },
-        {
-          name: "Gallery",
-          href: "/admin/gallery",
-          description: "Manage image gallery",
-        },
-        {
-          name: "Events",
-          href: "/admin/events",
-          description: "Manage events calendar",
-        },
+        { name: "Blog Posts", href: "/admin/blog", description: "Manage blog content" },
+        { name: "Music Library", href: "/admin/music", description: "Manage music tracks" },
+        { name: "News Articles", href: "/admin/news", description: "Manage news content" },
+        { name: "Gallery", href: "/admin/gallery", description: "Manage image gallery" },
+        { name: "Events", href: "/admin/events", description: "Manage events calendar" },
       ],
     },
     {
       title: "Commerce Management",
       description: "Manage shop, products, and transactions",
       icon: ShoppingCart,
-      color: "bg-purple-500",
+      color: "from-purple-500 to-purple-600",
       items: [
-        {
-          name: "Shop Management",
-          href: "/admin/shop",
-          description: "Manage shop products",
-        },
-        {
-          name: "Product Categories",
-          href: "/admin/products/categories",
-          description: "Organize product categories",
-        },
-        {
-          name: "Orders",
-          href: "/admin/orders",
-          description: "Manage customer orders",
-        },
-        {
-          name: "Donations",
-          href: "/admin/donations",
-          description: "Track donations",
-        },
-        {
-          name: "Payments",
-          href: "/admin/payments",
-          description: "Payment processing",
-        },
+        { name: "Shop Management", href: "/admin/shop", description: "Manage shop products" },
+        { name: "Product Categories", href: "/admin/products/categories", description: "Organize categories" },
+        { name: "Orders", href: "/admin/orders", description: "Manage customer orders" },
+        { name: "Donations", href: "/admin/donations", description: "Track donations" },
+        { name: "Payments", href: "/admin/payments", description: "Payment processing" },
       ],
     },
     {
       title: "System Management",
       description: "System settings, reports, and maintenance",
       icon: Settings,
-      color: "bg-orange-500",
+      color: "from-orange-500 to-orange-600",
       items: [
-        {
-          name: "System Settings",
-          href: "/admin/system-settings",
-          description: "Configure system",
-        },
-        {
-          name: "Reports & Analytics",
-          href: "/admin/reports",
-          description: "View detailed reports",
-        },
-        {
-          name: "Partnerships",
-          href: "/admin/partnerships",
-          description: "Manage partnerships",
-        },
-        {
-          name: "Email Templates",
-          href: "/admin/email-templates",
-          description: "Manage email templates",
-        },
-        {
-          name: "Backup & Security",
-          href: "/admin/security",
-          description: "System security",
-        },
+        { name: "System Settings", href: "/admin/system-settings", description: "Configure system" },
+        { name: "Reports & Analytics", href: "/admin/reports", description: "View detailed reports" },
+        { name: "Partnerships", href: "/admin/partnerships", description: "Manage partnerships" },
+        { name: "Email Templates", href: "/admin/email-templates", description: "Manage templates" },
       ],
     },
   ];
 
   // Recent activities
   const recentActivities = [
-    {
-      type: "user",
-      title: "New user registered",
-      description: "John Doe joined the platform",
-      time: "2 hours ago",
-      icon: Users,
-      color: "text-blue-500",
-    },
-    {
-      type: "content",
-      title: "Blog post published",
-      description: '"Easter Celebration 2024" was published',
-      time: "4 hours ago",
-      icon: BookOpen,
-      color: "text-green-500",
-    },
-    {
-      type: "commerce",
-      title: "New order received",
-      description: "Order #1247 for $89.99",
-      time: "6 hours ago",
-      icon: ShoppingCart,
-      color: "text-purple-500",
-    },
-    {
-      type: "system",
-      title: "System backup completed",
-      description: "Daily backup finished successfully",
-      time: "8 hours ago",
-      icon: Database,
-      color: "text-orange-500",
-    },
-    {
-      type: "donation",
-      title: "Donation received",
-      description: "$250 donation from anonymous donor",
-      time: "1 day ago",
-      icon: Heart,
-      color: "text-red-500",
-    },
+    { type: "user", title: "New user registered", description: "John Doe joined the platform", time: "2 hours ago", icon: Users, color: "text-blue-500", bgColor: "bg-blue-50" },
+    { type: "content", title: "Blog post published", description: '"Easter Celebration 2024" was published', time: "4 hours ago", icon: BookOpen, color: "text-green-500", bgColor: "bg-green-50" },
+    { type: "commerce", title: "New order received", description: "Order #1247 for $89.99", time: "6 hours ago", icon: ShoppingCart, color: "text-purple-500", bgColor: "bg-purple-50" },
+    { type: "system", title: "System backup completed", description: "Daily backup finished successfully", time: "8 hours ago", icon: Database, color: "text-orange-500", bgColor: "bg-orange-50" },
+    { type: "donation", title: "Donation received", description: "$250 donation from anonymous donor", time: "1 day ago", icon: Heart, color: "text-red-500", bgColor: "bg-red-50" },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-theme="neemadmin">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isSuperAdmin ? "SuperAdmin Dashboard" : "Admin Dashboard"}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Welcome back, {user?.first_name}! Complete control center for Neema
-            Gospel Choir platform.
-          </p>
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-orange-500 to-secondary p-8 text-white shadow-2xl">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOCAxOC04LjA1OSAxOC0xOC04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-30"></div>
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold drop-shadow-lg">
+              {isSuperAdmin ? "SuperAdmin Dashboard" : "Admin Dashboard"}
+            </h1>
+            <p className="mt-2 text-white/90 text-lg">
+              Welcome back, {user?.first_name}! Here's your platform overview.
+            </p>
+          </div>
+          {isSuperAdmin && (
+            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Shield className="h-5 w-5" />
+              <span className="font-semibold">SuperAdmin Access</span>
+            </div>
+          )}
         </div>
-        {isSuperAdmin && (
-          <Badge variant="destructive" className="flex items-center gap-1">
-            <Shield className="h-3 w-3" />
-            SuperAdmin Access
-          </Badge>
-        )}
       </div>
 
       {/* Stats Overview */}
@@ -282,216 +179,182 @@ const AdminDashboard: React.FC = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <Icon className={`h-5 w-5 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {stat.description}
-                </p>
-                <div
-                  className={`flex items-center text-xs ${
-                    stat.trendPositive ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {stat.trendPositive ? (
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                  ) : (
-                    <AlertCircle className="h-3 w-3 mr-1" />
-                  )}
-                  {stat.trend}
+            <div 
+              key={index} 
+              className="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-3 rounded-2xl ${stat.iconBg} shadow-lg`}>
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className={`flex items-center gap-1 text-sm font-medium ${stat.trendPositive ? "text-green-500" : "text-red-500"}`}>
+                    {stat.trendPositive ? <TrendingUp className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                    {stat.trend.split(' ')[0]}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                <h2 className="text-sm font-medium text-base-content/60 mb-1">{stat.title}</h2>
+                <p className="text-3xl font-bold text-base-content">{stat.value}</p>
+                <p className="text-xs text-base-content/50 mt-2">{stat.description}</p>
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Management Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {managementSections.map((section, index) => {
           const Icon = section.icon;
           return (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${section.color}`}>
+            <div 
+              key={index} 
+              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+            >
+              <div className={`h-2 bg-gradient-to-r ${section.color}`}></div>
+              <div className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${section.color} shadow-lg`}>
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl">{section.title}</CardTitle>
-                    <CardDescription>{section.description}</CardDescription>
+                    <h2 className="text-xl font-bold text-base-content">{section.title}</h2>
+                    <p className="text-sm text-base-content/60">{section.description}</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {section.items.map((item, itemIndex) => (
-                    <div
+                    <Link
                       key={itemIndex}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50  transition-colors"
+                      to={item.href}
+                      className="flex items-center justify-between p-3 rounded-xl hover:bg-base-100 border border-transparent hover:border-base-200 transition-all duration-200 group/item"
                     >
                       <div>
-                        <p className="font-medium text-sm">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.description}
-                        </p>
+                        <p className="font-medium text-base-content group-hover/item:text-primary transition-colors">{item.name}</p>
+                        <p className="text-xs text-base-content/50">{item.description}</p>
                       </div>
-                      <Button asChild variant="ghost" size="sm">
-                        <Link
-                          to={item.href}
-                          className="flex items-center gap-1"
-                        >
-                          Manage
-                          <ArrowRight className="h-3 w-3" />
-                        </Link>
-                      </Button>
-                    </div>
+                      <ArrowRight className="h-4 w-4 text-base-content/30 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
+                    </Link>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Recent System Activity
-          </CardTitle>
-          <CardDescription>
-            Latest activities across all platform modules
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivities.map((activity, index) => {
-              const Icon = activity.icon;
-              return (
-                <div
-                  key={index}
-                  className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className={`p-2 rounded-full bg-gray-100`}>
-                    <Icon className={`h-4 w-4 ${activity.color}`} />
+      {/* Recent Activity & Quick Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-primary to-orange-500"></div>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-base-content flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Recent Activity
+              </h2>
+              <Button variant="ghost" size="sm" className="btn btn-ghost btn-sm text-primary">
+                View All
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => {
+                const Icon = activity.icon;
+                return (
+                  <div
+                    key={index}
+                    className="flex items-start gap-4 p-4 rounded-xl hover:bg-base-50 transition-colors"
+                  >
+                    <div className={`p-2.5 rounded-xl ${activity.bgColor}`}>
+                      <Icon className={`h-4 w-4 ${activity.color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-base-content">{activity.title}</p>
+                      <p className="text-sm text-base-content/50">{activity.description}</p>
+                    </div>
+                    <span className="text-xs text-base-content/40 whitespace-nowrap">{activity.time}</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{activity.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.description}
-                    </p>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick System Status */}
+        <div className="space-y-6">
+          {/* System Status Card */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+            <div className="p-6">
+              <h2 className="text-lg font-bold text-base-content flex items-center gap-2 mb-4">
+                <Globe className="h-5 w-5 text-info" />
+                System Status
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-base-content/70">API Status</span>
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="badge badge-success badge-sm">Online</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {activity.time}
-                  </span>
                 </div>
-              );
-            })}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-base-content/70">Database</span>
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="badge badge-success badge-sm">Healthy</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-base-content/70">Storage</span>
+                  <span className="badge badge-warning badge-sm">78% Used</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-base-content/70">Memory</span>
+                  <span className="badge badge-info badge-sm">45% Used</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 pt-4 border-t">
-            <Button variant="outline" className="w-full">
-              View All Activities
-            </Button>
+
+          {/* Quick Stats Card */}
+          <div className="bg-gradient-to-br from-primary to-orange-500 rounded-2xl shadow-lg p-6 text-white">
+            <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+              <Zap className="h-5 w-5" />
+              Today's Overview
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <p className="text-3xl font-bold">1,247</p>
+                <p className="text-xs text-white/80">Visitors</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <p className="text-3xl font-bold">23</p>
+                <p className="text-xs text-white/80">New Signups</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <p className="text-3xl font-bold">$2,450</p>
+                <p className="text-xs text-white/80">Revenue</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <p className="text-3xl font-bold">156</p>
+                <p className="text-xs text-white/80">Active Users</p>
+              </div>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick System Status */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Globe className="h-5 w-5 text-blue-500" />
-              System Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">API Status</span>
-                <Badge variant="default" className="bg-green-500">
-                  Online
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Database</span>
-                <Badge variant="default" className="bg-green-500">
-                  Healthy
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Storage</span>
-                <Badge variant="secondary">78% Used</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Mail className="h-5 w-5 text-purple-500" />
-              Communications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Email Queue</span>
-                <Badge variant="secondary">24 Pending</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Notifications</span>
-                <Badge variant="secondary">12 Unread</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Messages</span>
-                <Badge variant="secondary">5 New</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-orange-500" />
-              Quick Stats
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Today's Visitors</span>
-                <Badge variant="secondary">1,247</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">New Signups</span>
-                <Badge variant="secondary">23</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Active Sessions</span>
-                <Badge variant="secondary">156</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
 };
 
-// Helper function for conditional classes
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default AdminDashboard;
+
