@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/services/profileService";
+import { dashboardService, UserDashboardStats } from "@/services/dashboardService";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { formatTZS, formatTZShort } from "@/lib/currency";
 import {
   Loader2,
   Upload,
@@ -26,6 +28,14 @@ import {
   Save,
   Calendar,
   Briefcase,
+  ShoppingCart,
+  Heart,
+  Package,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -37,6 +47,8 @@ const Dashboard = () => {
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [updatingNames, setUpdatingNames] = useState(false);
   const [profileData, setProfileData] = useState(user?.profile || null);
+  const [userStats, setUserStats] = useState<UserDashboardStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [locationData, setLocationData] = useState({
     address: user?.profile?.address || "",
     postal_code: user?.profile?.postal_code || "",
@@ -67,6 +79,21 @@ const Dashboard = () => {
         location_public: user.profile.location_public,
       });
     }
+
+    // Fetch user stats
+    const fetchUserStats = async () => {
+      setStatsLoading(true);
+      try {
+        const stats = await dashboardService.getUserStats(user?.id);
+        setUserStats(stats);
+      } catch (error) {
+        console.error("Error fetching user stats:", error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchUserStats();
   }, [user, navigate]);
 
   const handleLogout = () => {
@@ -173,14 +200,10 @@ const Dashboard = () => {
   const handleNamesUpdate = async () => {
     setUpdatingNames(true);
     try {
-      // Note: User names (first_name, surname) typically require a separate API endpoint
-      // For now, we'll show a placeholder message
       toast({
         title: "Info",
         description: "Name update functionality requires backend API endpoint",
       });
-      // TODO: Implement user name update API call
-      // const response = await userService.updateUser({ first_name: editableData.first_name, surname: editableData.surname });
     } catch (error) {
       toast({
         title: "Error",
@@ -232,15 +255,35 @@ const Dashboard = () => {
     return `${firstName?.[0] || ""}${surname?.[0] || ""}`.toUpperCase();
   };
 
+  // Get status badge color
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (!user) {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Dashboard</h1>
+            <p className="text-gray-500 mt-1">Welcome back, {user.first_name}!</p>
+          </div>
           <Button
             variant="outline"
             onClick={handleLogout}
@@ -250,6 +293,134 @@ const Dashboard = () => {
             Logout
           </Button>
         </div>
+
+        {/* User Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Total Orders */}
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm">Total Orders</p>
+                  <p className="text-3xl font-bold mt-1">
+                    {statsLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      userStats?.orders.total || 0
+                    )}
+                  </p>
+                </div>
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <ShoppingCart className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pending Orders */}
+          <Card className="bg-gradient-to-br from-yellow-500 to-orange-500 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-yellow-100 text-sm">Pending Orders</p>
+                  <p className="text-3xl font-bold mt-1">
+                    {statsLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      userStats?.orders.pending || 0
+                    )}
+                  </p>
+                </div>
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <Clock className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Completed Orders */}
+          <Card className="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm">Completed</p>
+                  <p className="text-3xl font-bold mt-1">
+                    {statsLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      userStats?.orders.completed || 0
+                    )}
+                  </p>
+                </div>
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <CheckCircle className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Spent */}
+          <Card className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Total Spent</p>
+                  <p className="text-3xl font-bold mt-1">
+                    {statsLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      formatTZShort(userStats?.orders.totalSpent || 0)
+                    )}
+                  </p>
+                </div>
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <DollarSign className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Orders */}
+        {userStats && userStats.recentOrders && userStats.recentOrders.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5" />
+                Recent Orders
+              </CardTitle>
+              <CardDescription>Your latest order history</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {userStats.recentOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <ShoppingCart className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Order #{order.id}</p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(order.created_at).toLocaleDateString('en-TZ')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-lg">{formatTZS(order.total)}</p>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(order.status)}`}>
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Card */}
@@ -640,3 +811,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

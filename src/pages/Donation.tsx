@@ -6,40 +6,45 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { formatTZS } from '@/lib/currency';
+
+// Tanzania donation tiers in TSh
+const donationTiers = [
+  {
+    icon: Heart,
+    title: "Msaidizi (Supporter)",
+    amount: 50000,
+    description: "Help cover monthly choir practice expenses",
+    features: ["Monthly newsletter", "Prayer requests"]
+  },
+  {
+    icon: Music,
+    title: "Mratibu (Patron)",
+    amount: 100000,
+    description: "Support music equipment and instruments",
+    features: ["Newsletter", "Prayer requests", "Event updates"]
+  },
+  {
+    icon: Award,
+    title: "Mwenyekiti (Champion)",
+    amount: 250000,
+    description: "Sponsor a choir member's participation",
+    features: ["All previous benefits", "Special recognition", "Annual report"]
+  },
+  {
+    icon: Star,
+    title: "Mhisani (Benefactor)",
+    amount: 500000,
+    description: "Fund major events and outreach programs",
+    features: ["All benefits", "VIP event access", "Personal thank you"]
+  }
+];
+
+// Quick donation amounts in TSh
+const quickDonationAmounts = [50000, 100000, 250000, 500000];
 
 const Donation = () => {
   const { t } = useTranslation();
-
-  const donationTiers = [
-    {
-      icon: Heart,
-      title: "Supporter",
-      amount: "$25",
-      description: "Help cover monthly choir practice expenses",
-      features: ["Monthly newsletter", "Prayer requests"]
-    },
-    {
-      icon: Music,
-      title: "Patron",
-      amount: "$50",
-      description: "Support music equipment and instruments",
-      features: ["Newsletter", "Prayer requests", "Event updates"]
-    },
-    {
-      icon: Award,
-      title: "Champion",
-      amount: "$100",
-      description: "Sponsor a choir member's participation",
-      features: ["All previous benefits", "Special recognition", "Annual report"]
-    },
-    {
-      icon: Star,
-      title: "Benefactor",
-      amount: "$250",
-      description: "Fund major events and outreach programs",
-      features: ["All benefits", "VIP event access", "Personal thank you"]
-    }
-  ];
 
   return (
     <div className="pt-16 min-h-screen bg-background">
@@ -81,9 +86,9 @@ const Donation = () => {
           <Card className="border-primary/20">
             <CardContent className="p-8">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {[25, 50, 100, 250].map((amount) => (
+                {quickDonationAmounts.map((amount) => (
                   <Button key={amount} variant="outline" className="h-12 text-lg font-semibold">
-                    ${amount}
+                    {formatTZS(amount)}
                   </Button>
                 ))}
               </div>
@@ -93,7 +98,7 @@ const Donation = () => {
                   <Label htmlFor="custom-amount">Custom Amount</Label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input id="custom-amount" placeholder="Enter amount" className="pl-10" />
+                    <Input id="custom-amount" placeholder="Enter amount in TSh" className="pl-10" />
                   </div>
                 </div>
                 
@@ -104,10 +109,10 @@ const Donation = () => {
                       <SelectValue placeholder="Select frequency" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="once">One-time</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                      <SelectItem value="annually">Annually</SelectItem>
+                      <SelectItem value="once">One-time (Mara moja)</SelectItem>
+                      <SelectItem value="monthly">Monthly (Kila mwezi)</SelectItem>
+                      <SelectItem value="quarterly">Quarterly (Robo mwaka)</SelectItem>
+                      <SelectItem value="annually">Annually (Kila mwaka)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -142,7 +147,7 @@ const Donation = () => {
                   <CardHeader>
                     <IconComponent className="h-12 w-12 text-primary mx-auto mb-4" />
                     <CardTitle className="text-xl">{tier.title}</CardTitle>
-                    <div className="text-3xl font-bold text-primary">{tier.amount}</div>
+                    <div className="text-3xl font-bold text-primary">{formatTZS(tier.amount)}</div>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-4">{tier.description}</p>
@@ -205,3 +210,4 @@ const Donation = () => {
 };
 
 export default Donation;
+
