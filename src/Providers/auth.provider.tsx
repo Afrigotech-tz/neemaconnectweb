@@ -59,11 +59,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, [logout]);
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      localStorage.setItem('user_data', JSON.stringify(updatedUser));
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
     login,
     logout,
+    updateUser,
     loading
   };
 
