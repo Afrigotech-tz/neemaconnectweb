@@ -11,6 +11,7 @@ export interface Event {
   capacity: number;
   ticket_price: number;
   ticket_url?: string;
+  image?: string;
   is_featured: boolean;
   is_public: boolean;
   status: 'upcoming' | 'past' | 'cancelled';
@@ -30,6 +31,7 @@ export interface EventCreate {
   capacity: number;
   ticket_price: number;
   ticket_url?: string;
+  image?: string;
   is_featured: boolean;
   is_public: boolean;
   status: 'upcoming' | 'past' | 'cancelled';

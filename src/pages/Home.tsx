@@ -1,5 +1,4 @@
 import HeroSlider from "@/components/HeroSlider";
-import UpcomingEvents from "@/components/UpcomingEvents";
 import PartnershipSection from "@/components/PartnershipSection";
 import MusicPlatforms from "@/components/MusicPlatforms";
 import FeaturedEvents from "@/components/FeaturedEvents";
@@ -168,9 +167,6 @@ const Home = () => {
 
       {/* Featured Products */}
       <FeaturedProducts />
-
-      {/* Upcoming Events */}
-      <UpcomingEvents />
 
       {/* Partnership Section */}
       <PartnershipSection />

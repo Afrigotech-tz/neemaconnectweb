@@ -69,6 +69,12 @@ const Events = () => {
     });
   };
 
+  // Get event image - use uploaded image or fallback
+  const getEventImage = (event: Event) => {
+    if (event.image) return event.image;
+    return "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png";
+  };
+
   return (
     <div className="pt-16 min-h-screen">
       {/* Hero Section */}
@@ -125,7 +131,7 @@ const Events = () => {
                 <Card key={event.id} className="group hover:shadow-warm transition-all duration-300">
                   <div className="relative overflow-hidden">
                     <img
-                      src="/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png"
+                      src={getEventImage(event)}
                       alt={event.title}
                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                     />

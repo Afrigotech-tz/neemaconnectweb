@@ -188,7 +188,7 @@ const AdminDashboard: React.FC = () => {
       items: [
         { name: "Blog Posts", href: "/admin/blog", description: "Manage blog content" },
         { name: "Music Library", href: "/admin/music", description: "Manage music tracks" },
-        { name: "Events", href: "/admin/events", description: "Manage events calendar" },
+        { name: "Events Management", href: "/admin/events-management", description: "Manage events calendar" },
       ],
     },
     {

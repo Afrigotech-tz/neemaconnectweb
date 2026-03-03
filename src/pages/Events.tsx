@@ -1,116 +1,83 @@
-import { useState } from "react";
-import { Calendar, MapPin, Clock, Users, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, MapPin, Clock, Users, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Event } from "@/types/eventTypes";
+import { eventService } from "@/services/eventService";
 
 const Events = () => {
   const [filter, setFilter] = useState("all");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const events = [
-    {
-      id: 1,
-      title: "Christmas Carol Concert",
-      date: "December 24, 2024",
-      time: "7:00 PM",
-      location: "City Cathedral",
-      attendees: "500+",
-      type: "concert",
-      status: "upcoming",
-      description: "Join us for a magical evening of traditional and contemporary Christmas carols that will fill your heart with joy and wonder.",
-      image: "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png",
-      price: "Free"
-    },
-    {
-      id: 2,
-      title: "Gospel Music Workshop",
-      date: "January 15, 2025",
-      time: "2:00 PM",
-      location: "Community Center",
-      attendees: "50",
-      type: "workshop",
-      status: "upcoming",
-      description: "Learn vocal techniques and harmonies in this interactive workshop for aspiring gospel singers.",
-      image: "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png",
-      price: "$25"
-    },
-    {
-      id: 3,
-      title: "Sunday Service Performance",
-      date: "Every Sunday",
-      time: "10:00 AM",
-      location: "Grace Baptist Church",
-      attendees: "200+",
-      type: "service",
-      status: "recurring",
-      description: "Weekly worship service featuring uplifting gospel music and spiritual fellowship.",
-      image: "/lovable-uploads/95215f6e-1ac7-47e3-aef6-31de3bfe820f.png",
-      price: "Free"
-    },
-    {
-      id: 4,
-      title: "Easter Celebration Concert",
-      date: "April 20, 2025",
-      time: "6:00 PM",
-      location: "Metropolitan Arena",
-      attendees: "1000+",
-      type: "concert",
-      status: "upcoming",
-      description: "A spectacular Easter celebration featuring special guests and a full orchestra.",
-      image: "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png",
-      price: "$15"
-    },
-    {
-      id: 5,
-      title: "Youth Choir Training",
-      date: "February 10, 2025",
-      time: "4:00 PM",
-      location: "Music Academy",
-      attendees: "30",
-      type: "workshop",
-      status: "upcoming",
-      description: "Special training session for young singers aged 8-18 to develop their gospel music skills.",
-      image: "/lovable-uploads/61b8188f-df3e-4934-a3ff-2bbadcd88906.png",
-      price: "$15"
-    },
-    {
-      id: 6,
-      title: "Thanksgiving Praise Night",
-      date: "November 25, 2024",
-      time: "7:30 PM",
-      location: "Community Hall",
-      attendees: "300+",
-      type: "concert",
-      status: "past",
-      description: "A night of gratitude and praise featuring our choir and special guest performers.",
-      image: "/lovable-uploads/95215f6e-1ac7-47e3-aef6-31de3bfe820f.png",
-      price: "Free"
-    }
-  ];
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await eventService.getEvents({
+          type: filter === "all" ? undefined : filter,
+          per_page: 50
+        });
+        setEvents(response.data.data);
+      } catch (err) {
+        console.error('Error fetching events:', err);
+        setError('Failed to load events. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [filter]);
 
   const filterTypes = [
     { key: "all", label: "All Events" },
     { key: "concert", label: "Concerts" },
-    { key: "workshop", label: "Workshops" },
-    { key: "service", label: "Services" }
+    { key: "service", label: "Services" },
+    { key: "live_recording", label: "Live Recordings" },
+    { key: "conference", label: "Conferences" },
+    { key: "other", label: "Other" }
   ];
-
-  const filteredEvents = filter === "all" 
-    ? events 
-    : events.filter(event => event.type === filter);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "upcoming":
         return <Badge className="bg-green-100 text-green-800">Upcoming</Badge>;
-      case "recurring":
-        return <Badge className="bg-blue-100 text-blue-800">Recurring</Badge>;
       case "past":
         return <Badge className="bg-gray-100 text-gray-800">Past</Badge>;
+      case "cancelled":
+        return <Badge className="bg-red-100 text-red-800">Cancelled</Badge>;
       default:
         return null;
     }
   };
+
+  const formatPrice = (price: number) => {
+    return price === 0 ? "Free" : `$${price}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // Get event image - use uploaded image or fallback
+  const getEventImage = (event: Event) => {
+    if (event.image) return event.image;
+    return "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png";
+  };
+
+  const filteredEvents = filter === "all" 
+    ? events 
+    : events.filter(event => event.type === filter);
 
   return (
     <div className="pt-16 min-h-screen">
@@ -139,77 +106,100 @@ const Events = () => {
                 variant={filter === type.key ? "default" : "outline"}
                 onClick={() => setFilter(type.key)}
                 className={filter === type.key ? "bg-gradient-primary" : ""}
+                disabled={loading}
               >
                 {type.label}
               </Button>
             ))}
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading events...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <Alert className="mb-8">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map((event) => (
-              <Card key={event.id} className="group hover:shadow-warm transition-all duration-300">
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={event.image} 
-                    alt={event.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute top-4 left-4 flex gap-2">
-                    {getStatusBadge(event.status)}
-                    <Badge variant="secondary">{event.price}</Badge>
+          {!loading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredEvents.map((event) => (
+                <Card key={event.id} className="group hover:shadow-warm transition-all duration-300">
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={getEventImage(event)} 
+                      alt={event.title}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      {getStatusBadge(event.status)}
+                      {event.is_featured && (
+                        <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>
+                      )}
+                    </div>
                   </div>
-                </div>
-                
-                <CardHeader className="pb-3">
-                  <CardTitle className="group-hover:text-primary transition-colors">
-                    {event.title}
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent className="space-y-3">
-                  <p className="text-muted-foreground leading-relaxed text-sm">
-                    {event.description}
-                  </p>
                   
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4 mr-2 text-primary" />
-                      {event.date}
+                  <CardHeader className="pb-3">
+                    <CardTitle className="group-hover:text-primary transition-colors">
+                      {event.title}
+                    </CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-3">
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      {event.description}
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 mr-2 text-primary" />
+                        {formatDate(event.date)}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4 mr-2 text-primary" />
+                        {event.venue}, {event.city}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Users className="h-4 w-4 mr-2 text-primary" />
+                        Capacity: {event.capacity}
+                      </div>
                     </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4 mr-2 text-primary" />
-                      {event.time}
+
+                    <div className="flex justify-between items-center pt-2">
+                      <Badge variant="secondary">{formatPrice(event.ticket_price)}</Badge>
+                      <Badge variant="outline" className="capitalize">{event.type}</Badge>
                     </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4 mr-2 text-primary" />
-                      {event.location}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="h-4 w-4 mr-2 text-primary" />
-                      {event.attendees} Expected
-                    </div>
-                  </div>
-                </CardContent>
-                
-                <CardFooter>
-                  <Button 
-                    className={`w-full ${
-                      event.status === "past" 
-                        ? "bg-gray-400 cursor-not-allowed" 
-                        : "bg-gradient-primary hover:shadow-glow"
-                    } transition-all duration-300`}
-                    disabled={event.status === "past"}
-                  >
-                    {event.status === "past" ? "Event Completed" : "Register Now"}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                  
+                  <CardFooter>
+                    <Button 
+                      className={`w-full ${
+                        event.status === "past" || event.status === "cancelled"
+                          ? "bg-gray-400 cursor-not-allowed" 
+                          : "bg-gradient-primary hover:shadow-glow"
+                      } transition-all duration-300`}
+                      disabled={event.status === "past" || event.status === "cancelled"}
+                    >
+                      {event.status === "past" ? "Event Completed" :
+                       event.status === "cancelled" ? "Event Cancelled" :
+                       event.ticket_url ? "Get Tickets" : "Register Now"}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {/* No Events Message */}
-          {filteredEvents.length === 0 && (
+          {!loading && !error && filteredEvents.length === 0 && (
             <div className="text-center py-12">
               <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
                 No events found
@@ -244,3 +234,4 @@ const Events = () => {
 };
 
 export default Events;
+

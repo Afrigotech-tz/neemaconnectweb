@@ -14,6 +14,7 @@ export const eventSchema = z.object({
   capacity: z.number().min(1, 'Capacity must be at least 1'),
   ticket_price: z.number().min(0, 'Ticket price cannot be negative'),
   ticket_url: z.string().url('Invalid URL format').optional().or(z.literal('')),
+  image: z.string().optional(),
   is_featured: z.boolean().default(false),
   is_public: z.boolean().default(true),
   status: z.enum(['upcoming', 'past', 'cancelled']).default('upcoming'),

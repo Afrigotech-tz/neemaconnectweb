@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Plus, Edit } from 'lucide-react';
+import { Loader2, Plus, Edit, Image as ImageIcon, X, Upload } from 'lucide-react';
 import { eventSchema, EventFormData } from '@/lib/validations/event';
 import { eventService } from '@/services/eventService';
 import { Event, EventCreate, EventUpdate } from '@/types/eventTypes';
@@ -24,6 +24,9 @@ interface EventFormProps {
 const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditing = !!event;
 
   const form = useForm<EventFormData>({
@@ -40,6 +43,7 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
       capacity: 100,
       ticket_price: 0,
       ticket_url: '',
+      image: '',
       is_featured: false,
       is_public: true,
       status: 'upcoming',
@@ -61,10 +65,12 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
         capacity: event.capacity,
         ticket_price: event.ticket_price,
         ticket_url: event.ticket_url || '',
+        image: event.image || '',
         is_featured: event.is_featured,
         is_public: event.is_public,
         status: event.status,
       });
+      setImagePreview(event.image || null);
     } else if (!event && isOpen) {
       // Reset to defaults when creating new event
       form.reset({
@@ -79,10 +85,12 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
         capacity: 100,
         ticket_price: 0,
         ticket_url: '',
+        image: '',
         is_featured: false,
         is_public: true,
         status: 'upcoming',
       });
+      setImagePreview(null);
     }
   }, [event, isOpen, form]);
 
@@ -94,15 +102,41 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
       if (isEditing && event) {
         // Update existing event
         const updateData: EventUpdate = {
-          ...data,
+          title: data.title,
+          type: data.type,
+          date: data.date,
+          location: data.location,
+          description: data.description,
+          venue: data.venue,
+          city: data.city,
+          country: data.country,
+          capacity: data.capacity,
+          ticket_price: data.ticket_price,
           ticket_url: data.ticket_url || undefined,
+          image: data.image || undefined,
+          is_featured: data.is_featured,
+          is_public: data.is_public,
+          status: data.status,
         };
         await eventService.updateEvent(event.id, updateData);
       } else {
         // Create new event
         const createData: EventCreate = {
-          ...data,
+          title: data.title,
+          type: data.type,
+          date: data.date,
+          location: data.location,
+          description: data.description,
+          venue: data.venue,
+          city: data.city,
+          country: data.country,
+          capacity: data.capacity,
+          ticket_price: data.ticket_price,
           ticket_url: data.ticket_url || undefined,
+          image: data.image || undefined,
+          is_featured: data.is_featured,
+          is_public: data.is_public,
+          status: data.status,
         };
         await eventService.createEvent(createData);
       }
@@ -121,7 +155,29 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
   const handleClose = () => {
     form.reset();
     setError(null);
+    setImagePreview(null);
     onClose();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create a preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        form.setValue('image', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    form.setValue('image', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -146,6 +202,59 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onClose, onSuccess, event
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Event Image</FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
+                        {imagePreview ? (
+                          <div className="relative w-full h-48 rounded-lg overflow-hidden border">
+                            <img
+                              src={imagePreview}
+                              alt="Event preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={removeImage}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div
+                            className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">
+                              Click to upload an image
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              PNG, JPG, GIF up to 5MB
+                            </p>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="title"

@@ -1,61 +1,71 @@
 import { useTranslation } from 'react-i18next';
-import { Calendar, MapPin, Clock, Ticket, Users, Star, Music, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, MapPin, Clock, Ticket, Users, Star, Heart, Loader2, Link as LinkIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { eventService } from '@/services/eventService';
+import { Event } from '@/types/eventTypes';
+import { Link } from 'react-router-dom';
 
 const Tickets = () => {
   const { t } = useTranslation();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Easter Celebration Concert",
-      date: "April 12, 2024",
-      time: "7:00 PM",
-      venue: "Community Center Auditorium",
-      location: "Dar es Salaam, Tanzania",
-      image: "/lovable-uploads/neema.png",
-      description: "Join us for a special Easter celebration featuring traditional hymns and contemporary gospel music.",
-      ticketTypes: [
-        { type: "General Admission", price: "Free", available: true },
-        { type: "VIP Seating", price: "$15", available: true },
-        { type: "Family Package (4 seats)", price: "$50", available: true }
-      ],
-      tags: ["Concert", "Easter", "Family-Friendly"]
-    },
-    {
-      id: 2,
-      title: "Annual Gospel Gala",
-      date: "June 15, 2024",
-      time: "6:30 PM",
-      venue: "National Stadium",
-      location: "Dar es Salaam, Tanzania",
-      image: "/lovable-uploads/NGC-Logo-2.png",
-      description: "Our biggest event of the year featuring guest choirs from across East Africa.",
-      ticketTypes: [
-        { type: "Standard", price: "$25", available: true },
-        { type: "Premium", price: "$50", available: true },
-        { type: "VIP Experience", price: "$100", available: false }
-      ],
-      tags: ["Gala", "Premium Event", "International"]
-    },
-    {
-      id: 3,
-      title: "Christmas Carol Service",
-      date: "December 20, 2024",
-      time: "5:00 PM",
-      venue: "St. Mary's Cathedral",
-      location: "Dar es Salaam, Tanzania",
-      image: "/lovable-uploads/AIC-MAIN.png",
-      description: "A traditional Christmas carol service with candlelight and special performances.",
-      ticketTypes: [
-        { type: "General Seating", price: "Free", available: true },
-        { type: "Reserved Seating", price: "$10", available: true }
-      ],
-      tags: ["Christmas", "Traditional", "Candlelight"]
-    }
-  ];
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await eventService.getEvents({ per_page: 50 });
+        // Filter for upcoming and public events
+        const upcomingEvents = response.data.data.filter(
+          (event: Event) => event.status === 'upcoming' && event.is_public
+        );
+        setEvents(upcomingEvents);
+      } catch (err) {
+        console.error('Error fetching events:', err);
+        setError('Failed to load events. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatPrice = (price: number) => {
+    return price === 0 ? 'Free' : `$${price}`;
+  };
+
+  const getEventTypeLabel = (type: string) => {
+    const typeMap: Record<string, string> = {
+      concert: 'Concert',
+      service: 'Service',
+      live_recording: 'Live Recording',
+      conference: 'Conference',
+      other: 'Other'
+    };
+    return typeMap[type] || type;
+  };
+
+  // Default event image
+  const getEventImage = (event: Event) => {
+    if (event.image) return event.image;
+    return "/lovable-uploads/362930e2-5eb0-4f2b-ae8d-cb0f718cd8db.png";
+  };
 
   return (
     <div className="pt-16 min-h-screen bg-background">
@@ -93,78 +103,117 @@ const Tickets = () => {
             <h2 className="text-3xl font-bold text-foreground mb-4">Upcoming Events</h2>
             <p className="text-muted-foreground">Don't miss out on these amazing worship experiences</p>
           </div>
-          
-          <div className="space-y-8">
-            {upcomingEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden hover:shadow-warm transition-all duration-300">
-                <div className="md:flex">
-                  <div className="md:w-1/3">
-                    <img 
-                      src={event.image} 
-                      alt={event.title}
-                      className="w-full h-64 md:h-full object-cover"
-                    />
-                  </div>
-                  <div className="md:w-2/3 p-6">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {event.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {tag}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading events...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <Alert className="mb-8">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Events List */}
+          {!loading && !error && events.length > 0 && (
+            <div className="space-y-8">
+              {events.map((event) => (
+                <Card key={event.id} className="overflow-hidden hover:shadow-warm transition-all duration-300">
+                  <div className="md:flex">
+                    <div className="md:w-1/3">
+                      <img 
+                        src={getEventImage(event)} 
+                        alt={event.title}
+                        className="w-full h-64 md:h-full object-cover"
+                      />
+                    </div>
+                    <div className="md:w-2/3 p-6">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge variant="secondary" className="text-xs">
+                          {getEventTypeLabel(event.type)}
                         </Badge>
-                      ))}
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold text-foreground mb-3">{event.title}</h3>
-                    <p className="text-muted-foreground mb-4">{event.description}</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span>{event.date}</span>
+                        {event.is_featured && (
+                          <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-accent" />
-                        <span>{event.time}</span>
+                      
+                      <h3 className="text-2xl font-bold text-foreground mb-3">{event.title}</h3>
+                      <p className="text-muted-foreground mb-4">{event.description}</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          <span>{formatDate(event.date)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-secondary" />
+                          <span>{event.venue}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-accent" />
+                          <span>Capacity: {event.capacity}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-secondary" />
-                        <span>{event.venue}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3 mb-6">
-                      <h4 className="font-semibold text-foreground">Ticket Options:</h4>
-                      {event.ticketTypes.map((ticket, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      
+                      <div className="space-y-3 mb-6">
+                        <h4 className="font-semibold text-foreground">Ticket Information:</h4>
+                        <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                           <div>
-                            <span className="font-medium">{ticket.type}</span>
-                            <span className="text-muted-foreground ml-2">- {ticket.price}</span>
+                            <span className="font-medium">General Admission</span>
+                            <span className="text-muted-foreground ml-2">- {formatPrice(event.ticket_price)}</span>
                           </div>
                           <Button 
                             size="sm" 
-                            disabled={!ticket.available}
-                            variant={ticket.available ? "default" : "secondary"}
+                            variant={event.ticket_price === 0 ? "secondary" : "default"}
+                            asChild={!!event.ticket_url}
                           >
-                            {ticket.available ? "Book Now" : "Sold Out"}
+                            {event.ticket_url ? (
+                              <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
+                                Get Tickets
+                              </a>
+                            ) : (
+                              <span>Register Now</span>
+                            )}
                           </Button>
                         </div>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4 inline mr-1" />
-                        {event.location}
                       </div>
-                      <Button variant="outline">
-                        View Details
-                      </Button>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4 inline mr-1" />
+                          {event.location}, {event.city}, {event.country}
+                        </div>
+                        <Button variant="outline" asChild>
+                          <Link to="/events">View Details</Link>
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* No Events State */}
+          {!loading && !error && events.length === 0 && (
+            <div className="text-center py-12">
+              <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
+                No upcoming events
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Check back later for new events or browse all events.
+              </p>
+              <Button asChild>
+                <Link to="/events">View All Events</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -236,11 +285,11 @@ const Tickets = () => {
             Contact us for group bookings, special arrangements, or any other inquiries
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Contact Us
+            <Button size="lg" className="text-lg px-8" asChild>
+              <Link to="/contact">Contact Us</Link>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              View All Events
+            <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+              <Link to="/events">View All Events</Link>
             </Button>
           </div>
         </div>
@@ -250,3 +299,4 @@ const Tickets = () => {
 };
 
 export default Tickets;
+

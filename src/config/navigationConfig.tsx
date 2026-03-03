@@ -3,8 +3,6 @@ import {
   Settings,
   BookOpen,
   Music,
-  Newspaper,
-  Image,
   Users,
   User,
   Package,
@@ -17,10 +15,10 @@ import {
   Shield,
   Box,
   Mail,
-  ImageIcon,
-  Info,
   ClipboardList,
-  MapPin
+  MapPin,
+  Image as ImageIcon,
+  Info
 } from 'lucide-react';
 import { RouteConfig } from './routePermissions';
 
@@ -64,26 +62,6 @@ export const navigationItems: RouteConfig[] = [
     icon: Music,
     section: 'Content',
     requiredPermissions: ['view_music']
-  },
-  {
-    name: 'News',
-    path: '/dashboard/news',
-    icon: Newspaper,
-    section: 'Content',
-    requiredPermissions: ['view_news']
-  },
-  {
-    name: 'Gallery',
-    path: '/dashboard/gallery',
-    icon: Image,
-    section: 'Content'
-  },
-  {
-    name: 'Events',
-    path: '/dashboard/events',
-    icon: Calendar,
-    section: 'Content',
-    requiredPermissions: ['view_events']
   },
   {
     name: 'Events Management',
