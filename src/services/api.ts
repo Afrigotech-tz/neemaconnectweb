@@ -9,18 +9,29 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    // Do not set a default Content-Type here.  When uploading files we
+    // rely on axios automatically adding the correct
+    // "multipart/form-data; boundary=..." header.  A static
+    // application/json header would override that and turn all requests to
+    // JSON, which causes 422 errors from endpoints expecting form data.
     'Accept': 'application/json',
     'x-api-key': API_KEY,
   },
   timeout: 10000, // 10 second timeout
 });
 
-// Add auth token to requests
+// Add auth token to requests and clean up headers for form-data
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  // If we're sending a FormData payload, let axios set the
+  // multipart boundary automatically by removing any existing
+  // Content-Type header.  A leftover application/json header will
+  // cause the body to be sent as JSON instead.
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
   }
   return config;
 }, (error) => {

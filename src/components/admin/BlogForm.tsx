@@ -29,6 +29,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogId, onSuccess, onCancel }) => {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [existingImage, setExistingImage] = useState<string>(''); // Store existing image path
   const [errors, setErrors] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,6 +52,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogId, onSuccess, onCancel }) => {
       });
       if (selectedBlog.image) {
         setImagePreview(selectedBlog.image);
+        setExistingImage(selectedBlog.image); // Store existing image path
       }
     }
   }, [selectedBlog, blogId]);
@@ -71,6 +73,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogId, onSuccess, onCancel }) => {
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview('');
+    // When removing image in edit mode, clear the existing image path
+    // This tells the backend to remove the image
+    setExistingImage(''); 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -96,6 +101,16 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogId, onSuccess, onCancel }) => {
         ...formData,
         ...(imageFile ? { image: imageFile } : {}),
       };
+
+      // In edit mode, if no new image is selected but we have an existing image,
+      // we need to preserve it. The backend should handle this.
+      // If the user removed the image (existingImage is empty after clicking remove),
+      // we should send an empty string to indicate removal
+      if (isEditMode && blogId && !imageFile) {
+        // Keep existing image path in the data if it wasn't explicitly removed
+        // The backend will decide whether to keep or remove based on this
+        (data as UpdateBlogData).image = undefined;
+      }
 
       let success;
       if (isEditMode && blogId) {
@@ -212,6 +227,10 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogId, onSuccess, onCancel }) => {
                       src={imagePreview}
                       alt="Preview"
                       className="w-full h-48 object-cover"
+                      onError={() => {
+                        // hide preview if the URL is not accessible (403 etc.)
+                        setImagePreview('');
+                      }}
                     />
                     <Button
                       type="button"

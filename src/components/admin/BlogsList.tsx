@@ -18,7 +18,7 @@ import {
 import { useBlog } from '@/hooks/useBlog';
 import { Blog } from '@/types/blogTypes';
 import { Plus, Edit, Trash2, Search, FileText, ImageIcon } from 'lucide-react';
-import { getImageUrl } from '@/lib/utils';
+import { getBlogImageUrl } from '@/lib/utils';
 
 const BlogsList: React.FC = () => {
   const { blogs, fetchBlogs, deleteBlog, loading } = useBlog();
@@ -122,7 +122,7 @@ const BlogsList: React.FC = () => {
                       <div className="w-16 h-10 bg-gray-100 rounded overflow-hidden">
                         {blog.image ? (
                           <img
-                            src={getImageUrl(blog.image)}
+                            src={getBlogImageUrl(blog.image)}
                             alt={blog.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {

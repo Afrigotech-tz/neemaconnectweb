@@ -26,7 +26,10 @@ const buildFormData = (data: CreateBlogData | UpdateBlogData): FormData => {
   if (data.description !== undefined) formData.append('description', data.description);
   if (data.date !== undefined) formData.append('date', data.date);
   if (data.location !== undefined) formData.append('location', data.location);
-  if (data.is_active !== undefined) formData.append('is_active', String(data.is_active));
+  // Convert boolean to numeric string to satisfy backend boolean validation
+  if (data.is_active !== undefined) {
+    formData.append('is_active', data.is_active ? '1' : '0');
+  }
   return formData;
 };
 
@@ -77,9 +80,10 @@ export const blogService = {
   async createBlog(data: CreateBlogData): Promise<ApiResponse<Blog>> {
     try {
       const formData = buildFormData(data);
-      const response = await api.post('/blogs', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      // axios will automatically set the correct multipart boundary when a FormData
+      // instance is passed. Explicitly setting Content-Type can strip the boundary
+      // and cause the request to be rejected by the server.
+      const response = await api.post('/blogs', formData);
       return {
         success: true,
         message: 'Blog created successfully',
@@ -100,9 +104,9 @@ export const blogService = {
   async updateBlog(id: number, data: UpdateBlogData): Promise<ApiResponse<Blog>> {
     try {
       const formData = buildFormData(data);
-      const response = await api.post(`/blogs/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      // API documentation expects a PUT request for updates.  Using POST previously
+      // was causing 404/405 responses on the backend.
+      const response = await api.post(`/blogs/${id}`, formData);
       return {
         success: true,
         message: 'Blog updated successfully',
