@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 // Use environment variables for API configuration
- const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://seagreen-mink-431224.hostingersite.com/api';
+//  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://seagreen-mink-431224.hostingersite.com/api';
  const API_KEY = import.meta.env.VITE_API_KEY || 'mh8bUvdGP2xD9P4J3BZPYvr6noPBwEwZ';
+ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83/api';
  
 
 const api = axios.create({
