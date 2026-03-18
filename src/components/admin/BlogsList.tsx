@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useBlog } from '@/hooks/useBlog';
 import { Blog } from '@/types/blogTypes';
-import { Plus, Edit, Trash2, Search, FileText, ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, FileText, ImageIcon, CheckCircle2, Clock3 } from 'lucide-react';
 import { getBlogImageUrl } from '@/lib/utils';
 
 const BlogsList: React.FC = () => {
@@ -47,6 +47,8 @@ const BlogsList: React.FC = () => {
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const activeBlogs = blogs.filter((blog) => blog.is_active).length;
+  const inactiveBlogs = blogs.length - activeBlogs;
 
   if (loading) {
     return (
@@ -58,17 +60,40 @@ const BlogsList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blog Management</h1>
-          <p className="text-gray-600 mt-2">Manage your blog posts</p>
+      <div className="rounded-2xl border bg-gradient-to-r from-orange-900 via-amber-800 to-lime-800 p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Blog Management</h1>
+            <p className="text-white/80 mt-2">Create, edit, and publish stories for your audience.</p>
+          </div>
+          <Button asChild className="bg-white text-black hover:bg-white/90">
+            <Link to="/dashboard/blog-management/add">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Blog
+            </Link>
+          </Button>
         </div>
-        <Button asChild>
-          <Link to="/dashboard/blog-management/add">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Blog
-          </Link>
-        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Blogs</p>
+          <p className="text-2xl font-bold mt-1">{blogs.length}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            Active
+          </p>
+          <p className="text-2xl font-bold mt-1">{activeBlogs}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Clock3 className="h-4 w-4 text-amber-600" />
+            Inactive
+          </p>
+          <p className="text-2xl font-bold mt-1">{inactiveBlogs}</p>
+        </div>
       </div>
 
       <Card>

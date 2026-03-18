@@ -20,9 +20,20 @@ const api = axios.create({
 
 // Add auth token to requests and clean up headers for form-data
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const headers = config.headers as Record<string, string | undefined> | undefined;
+  const skipAuth = headers?.['X-Skip-Auth'] === 'true' || headers?.['x-skip-auth'] === 'true';
+  (config as { __skipAuth?: boolean }).__skipAuth = skipAuth;
+  (config as { __hadAuthToken?: boolean }).__hadAuthToken = false;
+
+  if (skipAuth && headers) {
+    delete headers['X-Skip-Auth'];
+    delete headers['x-skip-auth'];
+  } else {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      (config as { __hadAuthToken?: boolean }).__hadAuthToken = true;
+    }
   }
   // If we're sending a FormData payload, let axios set the
   // multipart boundary automatically by removing any existing
@@ -40,12 +51,24 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isPublicRequest = Boolean((error.config as { __skipAuth?: boolean } | undefined)?.__skipAuth);
+    const hadAuthToken = Boolean((error.config as { __hadAuthToken?: boolean } | undefined)?.__hadAuthToken);
+    const authErrorMessage = String(error.response?.data?.message || '').toLowerCase();
+    const isLikelyExpiredAuth =
+      authErrorMessage.includes('unauthenticated') ||
+      authErrorMessage.includes('token') ||
+      authErrorMessage.includes('expired');
+
+    if (error.response?.status === 401 && !isPublicRequest && hadAuthToken && isLikelyExpiredAuth) {
       // Token expired or invalid - trigger logout
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       localStorage.removeItem('verification_data');
-      window.dispatchEvent(new CustomEvent('auth-expired'));
+      window.dispatchEvent(
+        new CustomEvent('auth-expired', {
+          detail: { message: authErrorMessage || 'unauthenticated' },
+        })
+      );
     }
     
     // Handle network errors
@@ -79,15 +102,11 @@ export const authAPI = {
 };
 
 export const profileAPI = {
-  getProfile: (userId?: string) => api.get(userId ? `/users/${userId}/profile` : '/profile'),
-  updateProfile: (userId: string, data: any) => api.patch(`/users/${userId}/profile`, data),
-  uploadProfilePicture: (userId: string, formData: FormData) => api.post(`/users/${userId}/profile/picture`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }),
-  updateLocation: (userId: string, data: any) => api.patch(`/users/${userId}/profile/location`, data),
-  deleteProfilePicture: (userId: string) => api.delete(`/users/${userId}/profile/picture`),
+  getProfile: () => api.get('/profile'),
+  updateProfile: (data: any) => api.put('/profile', data),
+  uploadProfilePicture: (formData: FormData) => api.post('/profile/picture', formData),
+  updateLocation: (data: any) => api.put('/profile/location', data),
+  deleteProfilePicture: () => api.delete('/profile/picture'),
 };
 
 export default api;

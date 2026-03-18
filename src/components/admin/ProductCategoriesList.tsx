@@ -9,6 +9,9 @@ import {
   Search,
   Eye,
   MoreHorizontal,
+  CheckCircle2,
+  Layers,
+  FolderTree,
 } from 'lucide-react';
 import { productService } from '@/services/productService';
 import { ProductCategory } from '@/types/productTypes';
@@ -83,6 +86,8 @@ const ProductCategoriesList: React.FC = () => {
     const parent = categories.find(cat => cat.id === parentId);
     return parent ? parent.name : 'Unknown';
   };
+  const activeCategories = categories.filter((category) => category.is_active).length;
+  const withParentCategories = categories.filter((category) => !!category.parent_id).length;
 
   if (loading) {
     return (
@@ -94,18 +99,41 @@ const ProductCategoriesList: React.FC = () => {
 
   return (
     <div className="space-y-6" data-theme="neemadmin">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-base-content">Product Categories</h1>
-          <p className="text-base-content/60 mt-2">
-            Create and manage product categories for your store
-          </p>
+      <div className="rounded-2xl border bg-gradient-to-r from-indigo-900 via-blue-800 to-cyan-800 p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <FolderTree className="h-7 w-7" />
+              Product Categories
+            </h1>
+            <p className="text-white/80 mt-2">Create and maintain category structure for product discovery.</p>
+          </div>
+          <Link to="/dashboard/products/categories/create" className="btn bg-white text-black hover:bg-white/90 border-0">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Category
+          </Link>
         </div>
-        <Link to="/dashboard/products/categories/create" className="btn btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Category
-        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60">Total Categories</p>
+          <p className="text-2xl font-bold text-base-content mt-1">{categories.length}</p>
+        </div>
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            Active
+          </p>
+          <p className="text-2xl font-bold text-base-content mt-1">{activeCategories}</p>
+        </div>
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60 flex items-center gap-2">
+            <Layers className="h-4 w-4" />
+            Child Categories
+          </p>
+          <p className="text-2xl font-bold text-base-content mt-1">{withParentCategories}</p>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -209,4 +237,3 @@ const ProductCategoriesList: React.FC = () => {
 };
 
 export default ProductCategoriesList;
-

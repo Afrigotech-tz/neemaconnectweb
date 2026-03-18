@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Package, MapPin, CreditCard, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useOrder } from "@/hooks/useOrder";
+import { paymentService } from "@/services/paymentService";
+import { Order } from "@/types/orderTypes";
+import { useToast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800',
@@ -19,13 +21,35 @@ const statusColors: Record<string, string> = {
 const OrderDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { selectedOrder, loading, fetchOrder } = useOrder();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (id) {
-      fetchOrder(parseInt(id));
-    }
-  }, [id]);
+    const fetchPaymentOrder = async () => {
+      const orderId = Number(id);
+      if (!Number.isFinite(orderId) || orderId <= 0) return;
+
+      setLoading(true);
+      try {
+        const response = await paymentService.getPaymentOrder(orderId);
+        if (response.success && response.data) {
+          setSelectedOrder(response.data);
+        } else {
+          setSelectedOrder(null);
+          toast({
+            title: "Order not found",
+            description: response.message || "Unable to fetch order details.",
+            variant: "destructive",
+          });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchPaymentOrder();
+  }, [id, toast]);
 
   if (loading && !selectedOrder) {
     return (

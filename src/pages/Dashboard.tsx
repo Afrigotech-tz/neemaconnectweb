@@ -37,9 +37,29 @@ import {
   TrendingUp,
   DollarSign,
 } from "lucide-react";
+import {
+  getCachedProfilePicture,
+  removeCachedProfilePicture,
+  saveProfilePictureToCache,
+} from "@/lib/profilePictureCache";
+
+const toDateInputValue = (value: string | null | undefined) => {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const isoMatch = value.match(/^(\d{4}-\d{2}-\d{2})T/);
+  if (isoMatch?.[1]) return isoMatch[1];
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toISOString().slice(0, 10);
+};
+const addImageCacheBuster = (url: string | null | undefined) => {
+  if (!url) return null;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${Date.now()}`;
+};
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -47,6 +67,10 @@ const Dashboard = () => {
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [updatingNames, setUpdatingNames] = useState(false);
   const [profileData, setProfileData] = useState(user?.profile || null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [cachedAvatarUrl, setCachedAvatarUrl] = useState<string | null>(
+    user?.id ? getCachedProfilePicture(String(user.id), user.profile?.profile_picture || null) : null
+  );
   const [userStats, setUserStats] = useState<UserDashboardStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [locationData, setLocationData] = useState({
@@ -60,10 +84,24 @@ const Dashboard = () => {
     bio: user?.profile?.bio || "",
     city: user?.profile?.city || "",
     state_province: user?.profile?.state_province || "",
-    date_of_birth: user?.profile?.date_of_birth || "",
+    date_of_birth: toDateInputValue(user?.profile?.date_of_birth),
     occupation: user?.profile?.occupation || "",
     profile_public: user?.profile?.profile_public ?? true,
   });
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(avatarPreviewUrl);
+      }
+    };
+  }, [avatarPreviewUrl]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const cached = getCachedProfilePicture(String(user.id), profileData?.profile_picture || user.profile?.profile_picture || null);
+    setCachedAvatarUrl(cached);
+  }, [user?.id, user?.profile?.profile_picture, profileData?.profile_picture]);
 
   useEffect(() => {
     if (!user) {
@@ -78,6 +116,10 @@ const Dashboard = () => {
         postal_code: user.profile.postal_code,
         location_public: user.profile.location_public,
       });
+      setEditableData((prev) => ({
+        ...prev,
+        date_of_birth: toDateInputValue(user.profile?.date_of_birth),
+      }));
     }
 
     // Fetch user stats
@@ -115,12 +157,40 @@ const Dashboard = () => {
     try {
       const response = await profileService.uploadProfilePicture(file);
       if (response.success) {
+        let nextUrl = response.data?.profile_picture_url || null;
+        if (!nextUrl) {
+          const refreshedProfile = await profileService.getProfile();
+          if (refreshedProfile.success && refreshedProfile.data) {
+            const payload = refreshedProfile.data as { profile?: { profile_picture?: string }; profile_picture?: string };
+            nextUrl = payload?.profile?.profile_picture || payload?.profile_picture || null;
+          }
+        }
+
+        const updatedProfile = {
+          ...(profileData || {}),
+          profile_picture: addImageCacheBuster(nextUrl),
+        };
+
+        const cachedDataUrl = await saveProfilePictureToCache(String(user.id), file, nextUrl || updatedProfile.profile_picture);
+        if (cachedDataUrl) {
+          setCachedAvatarUrl(cachedDataUrl);
+        }
+
+        const newPreviewUrl = URL.createObjectURL(file);
+        setAvatarPreviewUrl((prev) => {
+          if (prev?.startsWith("blob:")) {
+            URL.revokeObjectURL(prev);
+          }
+          return newPreviewUrl;
+        });
+
+        setProfileData(updatedProfile as any);
+        updateUser({ profile: updatedProfile as any });
+
         toast({
           title: "Success",
           description: "Profile picture updated successfully",
         });
-        // Refresh user data
-        window.location.reload();
       } else {
         toast({
           title: "Error",
@@ -144,12 +214,25 @@ const Dashboard = () => {
     try {
       const response = await profileService.deleteProfilePicture();
       if (response.success) {
+        const updatedProfile = {
+          ...(profileData || {}),
+          profile_picture: null,
+        };
+        removeCachedProfilePicture(String(user.id));
+        setCachedAvatarUrl(null);
+        setAvatarPreviewUrl((prev) => {
+          if (prev?.startsWith("blob:")) {
+            URL.revokeObjectURL(prev);
+          }
+          return null;
+        });
+        setProfileData(updatedProfile as any);
+        updateUser({ profile: updatedProfile as any });
+
         toast({
           title: "Success",
           description: "Profile picture removed successfully",
         });
-        // Refresh user data
-        window.location.reload();
       } else {
         toast({
           title: "Error",
@@ -436,7 +519,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src={profileData?.profile_picture || undefined}
+                    src={avatarPreviewUrl || cachedAvatarUrl || profileData?.profile_picture || undefined}
                     alt={`${user.first_name} ${user.surname}`}
                   />
                   <AvatarFallback className="text-lg">
@@ -466,7 +549,7 @@ const Dashboard = () => {
                         disabled={uploading}
                       />
                     </Label>
-                    {profileData?.profile_picture && (
+                    {(avatarPreviewUrl || cachedAvatarUrl || profileData?.profile_picture) && (
                       <Button
                         variant="destructive"
                         size="sm"
@@ -811,4 +894,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

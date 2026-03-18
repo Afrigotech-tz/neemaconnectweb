@@ -50,3 +50,8 @@ export interface OrderFilters {
   page?: number;
   per_page?: number;
 }
+
+export interface UpdateOrderStatusData {
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  notes?: string;
+}

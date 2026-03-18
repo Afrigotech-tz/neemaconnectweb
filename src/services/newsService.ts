@@ -58,6 +58,24 @@ export const newsService = {
     }
   },
 
+  // Get recent news
+  async getRecentNews(page?: number): Promise<ApiResponse<PaginatedResponse<News> | News[]>> {
+    try {
+      const response = await api.get('/news/recent', { params: { page } });
+      return {
+        success: true,
+        message: 'Recent news fetched successfully',
+        data: response.data,
+      };
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to fetch recent news',
+      };
+    }
+  },
+
   // Get single news by ID
   async getNewsById(id: number): Promise<ApiResponse<News>> {
     try {

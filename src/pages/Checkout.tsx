@@ -73,12 +73,16 @@ const Checkout = () => {
         notes: notes || undefined,
       });
 
-      if (response.success && response.data) {
+      if (response.success && response.data?.order?.id) {
         toast({ title: 'Order Placed', description: 'Your order has been placed successfully!' });
         await fetchCart();
         navigate(`/dashboard/orders/${response.data.order.id}`);
       } else {
-        toast({ title: 'Error', description: response.message, variant: 'destructive' });
+        toast({
+          title: 'Error',
+          description: response.message || 'Failed to place order',
+          variant: 'destructive',
+        });
       }
     } catch {
       toast({ title: 'Error', description: 'Failed to process payment', variant: 'destructive' });

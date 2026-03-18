@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, ChevronLeft, ChevronRight, Eye, Search } from "lucide-react";
+import { Package, ChevronLeft, ChevronRight, Eye, Search, CheckCircle2, Clock3, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -47,11 +47,42 @@ const OrdersManagementPage = () => {
     });
   };
 
+  const pendingOrders = orders.filter((order) => order.status === 'pending').length;
+  const processingOrders = orders.filter((order) => order.status === 'processing').length;
+  const deliveredOrders = orders.filter((order) => order.status === 'delivered').length;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Orders Management</h1>
-        <p className="text-muted-foreground">View and manage all customer orders.</p>
+      <div className="rounded-2xl border bg-gradient-to-r from-slate-900 via-indigo-900 to-blue-800 p-6 text-white shadow-lg">
+        <h1 className="text-3xl font-bold flex items-center gap-2">
+          <Package className="h-7 w-7" />
+          Orders Management
+        </h1>
+        <p className="text-white/80 mt-2">Track order pipeline, monitor fulfillment stages, and manage customer orders.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Clock3 className="h-4 w-4 text-amber-600" />
+            Pending
+          </p>
+          <p className="text-2xl font-bold mt-1">{pendingOrders}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Truck className="h-4 w-4 text-sky-600" />
+            Processing
+          </p>
+          <p className="text-2xl font-bold mt-1">{processingOrders}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            Delivered
+          </p>
+          <p className="text-2xl font-bold mt-1">{deliveredOrders}</p>
+        </div>
       </div>
 
       {/* Filters */}

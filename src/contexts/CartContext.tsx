@@ -11,6 +11,7 @@ interface CartContextType {
   addToCart: (data: AddToCartData) => Promise<boolean>;
   updateCartItem: (id: number, data: UpdateCartItemData) => Promise<boolean>;
   removeCartItem: (id: number) => Promise<boolean>;
+  clearCart: () => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -127,6 +128,31 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, [toast, fetchCart]);
 
+  const clearCart = useCallback(async (): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await cartService.clearCart();
+
+      if (response.success) {
+        setCart(emptyCart);
+        toast({ title: 'Success', description: 'Cart cleared successfully' });
+        return true;
+      } else {
+        setError(response.message);
+        toast({ title: 'Error', description: response.message, variant: 'destructive' });
+        return false;
+      }
+    } catch {
+      const errorMessage = 'An unexpected error occurred while clearing cart';
+      setError(errorMessage);
+      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
   // Auto-fetch cart on mount if authenticated
   useEffect(() => {
     fetchCart();
@@ -140,6 +166,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     addToCart,
     updateCartItem,
     removeCartItem,
+    clearCart,
     clearError,
   };
 

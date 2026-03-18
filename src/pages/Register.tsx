@@ -96,16 +96,25 @@ const Register: React.FC = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const mockCountries: Country[] = [
+        const response = await authService.getCountries();
+
+        if (response.success && response.data) {
+          setCountries(response.data);
+          return;
+        }
+
+        throw new Error(response.message || 'Failed to load countries');
+      } catch (err) {
+        console.error('Failed to fetch countries:', err);
+        // Fallback list to keep registration usable if API is unavailable.
+        const fallbackCountries: Country[] = [
           { id: 1, name: 'Tanzania', code: 'TZ', dial_code: '+255', created_at: '', updated_at: '' },
           { id: 2, name: 'Kenya', code: 'KE', dial_code: '+254', created_at: '', updated_at: '' },
           { id: 3, name: 'Uganda', code: 'UG', dial_code: '+256', created_at: '', updated_at: '' },
           { id: 4, name: 'United States', code: 'US', dial_code: '+1', created_at: '', updated_at: '' },
           { id: 5, name: 'United Kingdom', code: 'GB', dial_code: '+44', created_at: '', updated_at: '' },
         ];
-        setCountries(mockCountries);
-      } catch (err) {
-        console.error('Failed to fetch countries:', err);
+        setCountries(fallbackCountries);
       }
     };
     fetchCountries();
@@ -610,4 +619,3 @@ const Register: React.FC = () => {
 };
 
 export default Register;
-

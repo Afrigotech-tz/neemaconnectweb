@@ -57,6 +57,12 @@ export const ROUTE_PERMISSIONS = {
     edit: 'edit_events',
     delete: 'delete_events'
   },
+  '/dashboard/tickets-management': {
+    view: 'view_events',
+    create: 'create_events',
+    edit: 'edit_events',
+    delete: 'delete_events'
+  },
 
   // Commerce Routes
   '/dashboard/products': {

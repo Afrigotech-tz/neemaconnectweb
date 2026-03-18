@@ -59,4 +59,17 @@ export const cartService = {
       };
     }
   },
+
+  async clearCart(): Promise<ApiResponse<void>> {
+    try {
+      const response = await api.delete('/cart/clear');
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to clear cart',
+      };
+    }
+  },
 };

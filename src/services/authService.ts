@@ -34,6 +34,23 @@ export interface Country {
   updated_at: string;
 }
 
+export interface CountrySearchResponse {
+  current_page?: number;
+  data: Country[];
+  total?: number;
+  per_page?: number;
+}
+
+export interface CountryUsersResponse {
+  country?: Country;
+  users?: {
+    current_page?: number;
+    data: User[];
+    total?: number;
+    per_page?: number;
+  };
+}
+
 import { Role } from '../types/rolePermissionTypes';
 
 export interface User {
@@ -76,6 +93,25 @@ interface ErrorResponse {
 }
 
 export const authService = {
+  async getCountries(): Promise<ApiResponse<Country[]>> {
+    try {
+      const response = await api.get('/countries/list');
+      const payload = response.data;
+
+      return {
+        success: payload?.success ?? true,
+        message: payload?.message || 'Countries fetched successfully',
+        data: payload?.data || payload,
+      };
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to fetch countries. Please try again.',
+      };
+    }
+  },
+
   async register(data: RegisterFormData): Promise<ApiResponse<RegisterResponseData>> {
     try {
       const response = await api.post('/register', data);
@@ -114,6 +150,19 @@ export const authService = {
     }
   },
 
+  async logout(): Promise<ApiResponse> {
+    try {
+      const response = await api.post('/logout');
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Logout failed.'
+      };
+    }
+  },
+
   async verifyOTP(login: string, otp_code: string): Promise<ApiResponse<LoginResponseData>> {
     try {
       const response = await api.post('/auth/verify-otp', { login, otp_code });
@@ -140,9 +189,9 @@ export const authService = {
     }
   },
 
-  async forgotPassword(email: string): Promise<ApiResponse> {
+  async forgotPassword(login: string): Promise<ApiResponse> {
     try {
-      const response = await api.post('/api/password/forgot', { email });
+      const response = await api.post('/password/forgot', { login });
       return response.data;
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>;
@@ -155,7 +204,7 @@ export const authService = {
 
   async resetPassword(email: string, token: string, password: string, password_confirmation: string): Promise<ApiResponse> {
     try {
-      const response = await api.post('/api/password/reset', {
+      const response = await api.post('/password/reset', {
         email,
         token,
         password,
@@ -167,6 +216,42 @@ export const authService = {
       return {
         success: false,
         message: err.response?.data?.message || err.message || 'Failed to reset password. Please try again.'
+      };
+    }
+  },
+
+  async searchCountries(query: string, per_page?: number): Promise<ApiResponse<CountrySearchResponse>> {
+    try {
+      const response = await api.get('/countries/search', { params: { query, per_page } });
+      const payload = response.data;
+      return {
+        success: payload?.success ?? true,
+        message: payload?.message || 'Countries search completed successfully',
+        data: payload?.data || payload,
+      };
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to search countries.',
+      };
+    }
+  },
+
+  async getCountryUsers(countryId: number, per_page?: number): Promise<ApiResponse<CountryUsersResponse>> {
+    try {
+      const response = await api.get(`/countries/${countryId}/users`, { params: { per_page } });
+      const payload = response.data;
+      return {
+        success: payload?.success ?? true,
+        message: payload?.message || 'Country users fetched successfully',
+        data: payload?.data || payload,
+      };
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to fetch country users.',
       };
     }
   }

@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Package, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useOrder } from "@/hooks/useOrder";
+import { paymentService } from "@/services/paymentService";
+import { Order } from "@/types/orderTypes";
+import { useToast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800',
@@ -16,14 +18,62 @@ const statusColors: Record<string, string> = {
 };
 
 const OrderHistoryPage = () => {
-  const { userOrders, loading, userOrdersPagination, fetchUserOrders } = useOrder();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+  });
+
+  const normalizeOrdersWithMeta = (payload: unknown): { items: Order[]; currentPage: number; lastPage: number } => {
+    if (Array.isArray(payload)) {
+      const items = payload as Order[];
+      return { items, currentPage: 1, lastPage: 1 };
+    }
+
+    if (payload && typeof payload === "object") {
+      const record = payload as Record<string, unknown>;
+      if (Array.isArray(record.data)) {
+        const items = record.data as Order[];
+        const currentPage = Number(record.current_page ?? 1) || 1;
+        const lastPage =
+          Number(record.last_page ?? Math.max(1, Math.ceil((Number(record.total ?? items.length) || items.length) / Math.max(Number(record.per_page ?? items.length) || items.length, 1)))) || 1;
+        return { items, currentPage, lastPage };
+      }
+    }
+
+    return { items: [], currentPage: 1, lastPage: 1 };
+  };
+
+  const fetchOrders = async (page = 1) => {
+    setLoading(true);
+    try {
+      const response = await paymentService.getPaymentOrders(page);
+      if (response.success) {
+        const normalized = normalizeOrdersWithMeta(response.data);
+        setOrders(normalized.items);
+        setPagination({ current_page: normalized.currentPage, last_page: normalized.lastPage });
+      } else {
+        setOrders([]);
+        setPagination({ current_page: 1, last_page: 1 });
+        toast({
+          title: "Failed to load orders",
+          description: response.message || "Unable to fetch your payment orders.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchUserOrders(1);
+    void fetchOrders(1);
   }, []);
 
   const handlePageChange = (page: number) => {
-    fetchUserOrders(page);
+    void fetchOrders(page);
   };
 
   return (
@@ -33,7 +83,7 @@ const OrderHistoryPage = () => {
         <p className="text-muted-foreground">View your order history and track your purchases.</p>
       </div>
 
-      {loading && userOrders.length === 0 && (
+      {loading && orders.length === 0 && (
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full rounded-lg" />
@@ -41,7 +91,7 @@ const OrderHistoryPage = () => {
         </div>
       )}
 
-      {!loading && userOrders.length === 0 && (
+      {!loading && orders.length === 0 && (
         <div className="text-center py-16">
           <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
           <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
@@ -52,7 +102,7 @@ const OrderHistoryPage = () => {
         </div>
       )}
 
-      {userOrders.length > 0 && (
+      {orders.length > 0 && (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -66,7 +116,7 @@ const OrderHistoryPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {userOrders.map((order) => (
+              {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">#{order.id}</TableCell>
                   <TableCell>
@@ -97,24 +147,24 @@ const OrderHistoryPage = () => {
       )}
 
       {/* Pagination */}
-      {userOrdersPagination && userOrdersPagination.last_page > 1 && (
+      {pagination.last_page > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            disabled={userOrdersPagination.current_page <= 1}
-            onClick={() => handlePageChange(userOrdersPagination.current_page - 1)}
+            disabled={pagination.current_page <= 1}
+            onClick={() => handlePageChange(pagination.current_page - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {userOrdersPagination.current_page} of {userOrdersPagination.last_page}
+            Page {pagination.current_page} of {pagination.last_page}
           </span>
           <Button
             variant="outline"
             size="sm"
-            disabled={userOrdersPagination.current_page >= userOrdersPagination.last_page}
-            onClick={() => handlePageChange(userOrdersPagination.current_page + 1)}
+            disabled={pagination.current_page >= pagination.last_page}
+            onClick={() => handlePageChange(pagination.current_page + 1)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

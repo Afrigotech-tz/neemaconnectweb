@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { useSlider } from '@/hooks/useSlider';
 import { HomeSlider } from '@/types/sliderTypes';
-import { Plus, Edit, Trash2, ImageIcon, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ImageIcon, ToggleLeft, ToggleRight, Presentation, CheckCircle2, Clock3 } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
 
 const SlidersList: React.FC = () => {
@@ -32,6 +32,9 @@ const SlidersList: React.FC = () => {
     await toggleSliderStatus(slider.id, !slider.is_active);
   };
 
+  const activeSliders = sliders.filter((slider) => slider.is_active).length;
+  const inactiveSliders = sliders.length - activeSliders;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64" data-theme="neemadmin">
@@ -42,15 +45,41 @@ const SlidersList: React.FC = () => {
 
   return (
     <div className="space-y-6" data-theme="neemadmin">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-base-content">Slider Management</h1>
-          <p className="text-base-content/60 mt-2">Manage home page sliders</p>
+      <div className="rounded-2xl border bg-gradient-to-r from-emerald-900 via-teal-800 to-cyan-800 p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Presentation className="h-7 w-7" />
+              Slider Management
+            </h1>
+            <p className="text-white/80 mt-2">Control homepage slider visuals, ordering, and publication status.</p>
+          </div>
+          <Link to="/dashboard/slider-management/add" className="btn bg-white text-black hover:bg-white/90 border-0">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Slider
+          </Link>
         </div>
-        <Link to="/dashboard/slider-management/add" className="btn btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Slider
-        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60">Total Sliders</p>
+          <p className="text-2xl font-bold text-base-content mt-1">{sliders.length}</p>
+        </div>
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            Active
+          </p>
+          <p className="text-2xl font-bold text-base-content mt-1">{activeSliders}</p>
+        </div>
+        <div className="rounded-xl border bg-base-100 p-4">
+          <p className="text-sm text-base-content/60 flex items-center gap-2">
+            <Clock3 className="h-4 w-4 text-warning" />
+            Inactive
+          </p>
+          <p className="text-2xl font-bold text-base-content mt-1">{inactiveSliders}</p>
+        </div>
       </div>
 
       <div className="card bg-base-100 shadow-lg">
@@ -173,4 +202,3 @@ const SlidersList: React.FC = () => {
 };
 
 export default SlidersList;
-

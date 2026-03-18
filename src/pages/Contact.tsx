@@ -6,9 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useContact } from "@/hooks/useContact";
+import { useToast } from "@/hooks/use-toast";
+import { contactService } from "@/services/contactService";
 
 const Contact = () => {
   const { contactInfo, fetchContactInfo } = useContact();
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,14 +25,69 @@ const Contact = () => {
     fetchContactInfo();
   }, [fetchContactInfo]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const splitName = (fullName: string): { firstName: string; lastName: string } => {
+    const trimmed = fullName.trim();
+    if (!trimmed) return { firstName: "", lastName: "" };
+
+    const parts = trimmed.split(/\s+/);
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(" ") || "-";
+    return { firstName, lastName };
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const email = contactInfo?.email || "info@neemagospelchoir.com";
-    const subject = encodeURIComponent(formData.subject || "Contact Form Message");
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\n${formData.message}`
-    );
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+
+    const { firstName, lastName } = splitName(formData.name);
+
+    if (!firstName) {
+      toast({
+        title: "Name required",
+        description: "Please enter your full name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const response = await contactService.createUserMessage({
+        first_name: firstName,
+        last_name: lastName,
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || undefined,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
+      if (response.success) {
+        toast({
+          title: "Message sent",
+          description: response.message || "Your message has been received.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        toast({
+          title: "Failed to send",
+          description: response.message || "Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "Failed to send",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const contactCards = [
@@ -179,10 +238,11 @@ const Contact = () => {
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={submitting}
                     className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
                   >
                     <Send className="mr-2 h-4 w-4" />
-                    Send Message
+                    {submitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </CardContent>

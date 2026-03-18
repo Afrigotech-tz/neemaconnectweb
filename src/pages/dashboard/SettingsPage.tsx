@@ -7,16 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus } from 'lucide-react';
-import { profileService } from '@/services/profileService';
+import { Plus, Settings2, Shield, Bell, Lock } from 'lucide-react';
 import { roleService } from '@/services/roleService';
+import { Permission, Role } from '@/types/rolePermissionTypes';
 
 const SettingsPage = () => {
-  const [roles, setRoles] = useState([]);
-  const [permissions, setPermissions] = useState([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [showAddRole, setShowAddRole] = useState(false);
   const [newRoleName, setNewRoleName] = useState('');
-  const [newRolePermissions, setNewRolePermissions] = useState([]);
+  const [newRolePermissions, setNewRolePermissions] = useState<number[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -42,13 +42,13 @@ const SettingsPage = () => {
     }
   };
 
-  const togglePermission = (permId) => {
+  const togglePermission = (permId: number) => {
     setNewRolePermissions((prev) =>
       prev.includes(permId) ? prev.filter((id) => id !== permId) : [...prev, permId]
     );
   };
 
-  const handleAddRoleSubmit = async (e) => {
+  const handleAddRoleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newRoleName.trim()) {
       toast.toast({ title: 'Validation Error', description: 'Role name is required', variant: 'destructive' });
@@ -68,9 +68,36 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
-        <p className="text-gray-600 mt-2">Configure your account and system preferences</p>
+      <div className="rounded-2xl border bg-gradient-to-r from-gray-900 via-slate-800 to-zinc-800 p-6 text-white shadow-lg">
+        <h1 className="text-3xl font-bold flex items-center gap-2">
+          <Settings2 className="h-7 w-7" />
+          System Settings
+        </h1>
+        <p className="text-white/80 mt-2">Configure security, privacy, account preferences, and role governance.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Shield className="h-4 w-4 text-emerald-600" />
+            Roles
+          </p>
+          <p className="text-2xl font-bold mt-1">{roles.length}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Lock className="h-4 w-4 text-indigo-600" />
+            Permissions
+          </p>
+          <p className="text-2xl font-bold mt-1">{permissions.length}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Bell className="h-4 w-4 text-amber-600" />
+            Alerts
+          </p>
+          <p className="text-base font-semibold mt-1">Notification controls enabled</p>
+        </div>
       </div>
 
       {/* Account Settings */}

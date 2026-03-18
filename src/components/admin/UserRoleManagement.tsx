@@ -61,9 +61,8 @@ const UserRoleManagement: React.FC<UserRoleManagementProps> = ({
 
     setLoading(true);
     try {
-      const response = await userService.assignRoleToUser({
-        user_id: user.id,
-        role_id: parseInt(selectedRoleId),
+      const response = await userService.assignRoleToUser(user.id, {
+        role_id: parseInt(selectedRoleId, 10),
       });
 
       if (response.success) {
@@ -95,10 +94,7 @@ const UserRoleManagement: React.FC<UserRoleManagementProps> = ({
   const handleRemoveRole = async (roleId: number) => {
     setLoading(true);
     try {
-      const response = await userService.removeRoleFromUser({
-        user_id: user.id,
-        role_id: roleId,
-      });
+      const response = await userService.removeRoleFromUser(user.id, roleId);
 
       if (response.success) {
         toast({

@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrder } from "@/hooks/useOrder";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800',
@@ -19,13 +21,38 @@ const statusColors: Record<string, string> = {
 const OrderDetailAdminPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { selectedOrder, loading, fetchOrder } = useOrder();
+  const { selectedOrder, loading, fetchOrder, updateOrderStatus } = useOrder();
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState<string>("");
 
   useEffect(() => {
     if (id) {
       fetchOrder(parseInt(id));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (selectedOrder?.status) {
+      setNewStatus(selectedOrder.status);
+    }
+  }, [selectedOrder?.status]);
+
+  const handleUpdateStatus = async () => {
+    if (!selectedOrder || !newStatus) return;
+
+    setUpdatingStatus(true);
+    try {
+      const success = await updateOrderStatus(selectedOrder.id, {
+        status: newStatus as "pending" | "processing" | "shipped" | "delivered" | "cancelled",
+      });
+
+      if (success) {
+        await fetchOrder(selectedOrder.id);
+      }
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   if (loading && !selectedOrder) {
     return (
@@ -72,6 +99,34 @@ const OrderDetailAdminPage = () => {
           {selectedOrder.status}
         </Badge>
       </div>
+
+      <Card className="p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="font-semibold">Update Order Status</h3>
+            <p className="text-sm text-muted-foreground">
+              This uses the Orders endpoint (`PUT /api/orders/{'{id}'}`).
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select value={newStatus} onValueChange={setNewStatus}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="shipped">Shipped</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={handleUpdateStatus} disabled={updatingStatus || !newStatus}>
+              {updatingStatus ? "Updating..." : "Save"}
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shipping Address */}

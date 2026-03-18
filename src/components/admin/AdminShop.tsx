@@ -4,21 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Plus,
   Edit,
   Trash2,
   Box,
-  Folder,
   Search,
-  Filter,
   MoreHorizontal,
-  Package,
-  Eye
+  Eye,
+  ShoppingCart,
+  CheckCircle2,
+  Layers
 } from 'lucide-react';
 import { productService, PaginatedResponse } from '@/services/productService';
-import { Product, ProductCategory } from '@/types/productTypes';
+import { Product } from '@/types/productTypes';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import {
@@ -103,6 +102,9 @@ const AdminShop: React.FC = () => {
         product.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
+  const activeProducts = products.filter((product) => product.is_active).length;
+  const inactiveProducts = products.length - activeProducts;
+  const categorizedProducts = products.filter((product) => !!product.category).length;
 
   if (loading) {
     return (
@@ -114,20 +116,45 @@ const AdminShop: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-600 mt-2">
-            Create and manage products for your store
-          </p>
+      <div className="rounded-2xl border bg-gradient-to-r from-emerald-900 via-teal-800 to-cyan-800 p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <ShoppingCart className="h-7 w-7" />
+              Products
+            </h1>
+            <p className="text-white/80 mt-2">Manage inventory, lifecycle status, and product catalog structure.</p>
+          </div>
+          <Button asChild className="bg-white text-black hover:bg-white/90">
+            <Link to="/dashboard/shop/create">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Link>
+          </Button>
         </div>
-        <Button asChild>
-          <Link to="/dashboard/shop/create">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Link>
-        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Products</p>
+          <p className="text-2xl font-bold mt-1">{products.length}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            Active
+          </p>
+          <p className="text-2xl font-bold mt-1">{activeProducts}</p>
+          <p className="text-xs text-muted-foreground mt-1">Inactive: {inactiveProducts}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Layers className="h-4 w-4" />
+            Categorized
+          </p>
+          <p className="text-2xl font-bold mt-1">{categorizedProducts}</p>
+          <p className="text-xs text-muted-foreground mt-1">Uncategorized: {Math.max(products.length - categorizedProducts, 0)}</p>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -143,10 +170,9 @@ const AdminShop: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
+            <div className="text-sm text-muted-foreground flex items-center">
+              Showing {filteredProducts.length} results
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -6,6 +6,7 @@ import { Song, CreateMusicData, UpdateMusicData } from '../../types/musicTypes';
 import MusicList from '../../components/music/MusicList';
 import MusicForm from '../../components/music/MusicForm';
 import MusicView from '../../components/music/MusicView';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 const MusicPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -141,13 +142,11 @@ const MusicPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Music Library</h1>
-          <p className="text-gray-600 mt-2">
-            Browse and manage your music collection
-          </p>
-        </div>
+      <div className="rounded-2xl border bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 px-6 py-8 text-white shadow-lg">
+        <h1 className="text-3xl font-bold">Music Library</h1>
+        <p className="text-white/80 mt-2">
+          Advanced workspace for cataloging tracks, organizing choirs, and managing releases.
+        </p>
       </div>
 
       <MusicList
@@ -181,32 +180,31 @@ const MusicPage = () => {
         loading={createSongMutation.isPending || updateSongMutation.isPending}
       />
 
-      {/* Delete Confirmation Dialog */}
-      {showDeleteDialog && songToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-2">Delete Song</h3>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete "{songToDelete.name}"? This action cannot be undone.
-            </p>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => setShowDeleteDialog(false)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                disabled={deleteSongMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-              >
-                {deleteSongMutation.isPending ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Song</AlertDialogTitle>
+            <AlertDialogDescription>
+              {songToDelete
+                ? `Are you sure you want to delete "${songToDelete.name}"? This action cannot be undone.`
+                : 'Are you sure you want to delete this song?'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault();
+                void handleConfirmDelete();
+              }}
+              disabled={deleteSongMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteSongMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

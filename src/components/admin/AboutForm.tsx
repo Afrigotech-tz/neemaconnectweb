@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAbout } from '@/hooks/useAbout';
 import { CreateAboutUsData, UpdateAboutUsData } from '@/types/aboutTypes';
-import { Loader2, Save, Upload, X } from 'lucide-react';
+import { Loader2, Save, Upload, X, Info, ImageIcon, CheckCircle2 } from 'lucide-react';
 
 const AboutForm: React.FC = () => {
   const { aboutUs, fetchAboutUs, createAboutUs, updateAboutUs, loading } = useAbout();
@@ -97,11 +97,37 @@ const AboutForm: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">About Us Management</h1>
-        <p className="text-gray-600 mt-2">
-          {aboutUs ? 'Update your About Us page content' : 'Set up your About Us page content'}
+      <div className="rounded-2xl border bg-gradient-to-r from-violet-900 via-fuchsia-800 to-rose-800 p-6 text-white shadow-lg">
+        <h1 className="text-3xl font-bold flex items-center gap-2">
+          <Info className="h-7 w-7" />
+          About Us Management
+        </h1>
+        <p className="text-white/80 mt-2">
+          {aboutUs ? 'Refine your story, mission, and vision content.' : 'Set up your About page content for the first time.'}
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Content Status</p>
+          <p className="text-base font-semibold mt-1">{aboutUs ? 'Configured' : 'Not configured'}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <ImageIcon className="h-4 w-4" />
+            Featured Image
+          </p>
+          <p className="text-base font-semibold mt-1">{imagePreview ? 'Attached' : 'Not attached'}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            Form Readiness
+          </p>
+          <p className="text-base font-semibold mt-1">
+            {formData.our_story && formData.mission && formData.vision ? 'Complete' : 'Needs fields'}
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/hooks/useCart";
 
 const CartPage = () => {
-  const { cart, loading, fetchCart, updateCartItem, removeCartItem } = useCart();
+  const { cart, loading, fetchCart, updateCartItem, removeCartItem, clearCart } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +41,15 @@ const CartPage = () => {
           Continue Shopping
         </Button>
 
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          {cart.items.length > 0 && (
+            <Button variant="outline" onClick={clearCart}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear Cart
+            </Button>
+          )}
+        </div>
 
         {cart.items.length === 0 ? (
           <div className="text-center py-16">

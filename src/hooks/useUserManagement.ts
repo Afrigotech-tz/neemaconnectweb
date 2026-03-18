@@ -216,9 +216,9 @@ export const useUserManagement = () => {
   const bulkSuspendUsers = useCallback(async (userIds: string[], suspend: boolean = true) => {
     try {
       const updatePromises = userIds.map(id => 
-        updateUser(id, { 
-          // Add status field when available in UpdateUserData interface
-        } as UpdateUserData)
+        updateUser(id, {
+          status: suspend ? 'inactive' : 'active',
+        })
       );
       await Promise.all(updatePromises);
       

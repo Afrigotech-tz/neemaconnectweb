@@ -72,4 +72,33 @@ export const addressService = {
       };
     }
   },
+
+  async getAddressesByUser(userId: number): Promise<ApiResponse<Address[]>> {
+    try {
+      const response = await api.get(`/addresses/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to fetch user addresses',
+      };
+    }
+  },
+
+  async setDefaultAddressForUser(
+    userId: number,
+    data: { address_id: number; type: 'billing' | 'shipping' }
+  ): Promise<ApiResponse<Address>> {
+    try {
+      const response = await api.post(`/addresses/user/${userId}/default`, data);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      return {
+        success: false,
+        message: err.response?.data?.message || err.message || 'Failed to set default address',
+      };
+    }
+  },
 };

@@ -22,3 +22,31 @@ export interface ContactInfoResponse {
   message: string;
   data?: ContactInfo;
 }
+
+export type UserMessageStatus = 'pending' | 'read' | 'replied' | 'closed';
+
+export interface UserMessage {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string | null;
+  subject: string;
+  message: string;
+  status: UserMessageStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateUserMessageData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}
+
+export interface UpdateUserMessageData {
+  status: UserMessageStatus;
+}

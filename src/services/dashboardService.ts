@@ -4,6 +4,7 @@ import { productService } from './productService';
 import { blogService } from './blogService';
 import { eventService } from './eventService';
 import api from './api';
+import { donationService } from './donationService';
 
 // Types for dashboard stats
 export interface DashboardStats {
@@ -79,27 +80,36 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-// Helper to safely extract count from paginated response
-const getCount = (response: ApiResponse<any>): number => {
-  if (!response.success || !response.data) return 0;
-  // Handle paginated response
-  if (response.data.data && Array.isArray(response.data.data)) {
-    return response.data.total || response.data.data.length;
+const toNumber = (value: unknown): number => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
   }
-  // Handle array response
-  if (Array.isArray(response.data)) {
-    return response.data.length;
-  }
-  // Handle count in data
-  if (typeof response.data === 'object' && 'total' in response.data) {
-    return response.data.total as number;
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
   }
   return 0;
 };
 
-// Helper to extract data from response
-const getData = <T>(response: ApiResponse<T>): T | null => {
-  return response.success && response.data ? response.data : null;
+const safeDate = (value: unknown): Date | null => {
+  if (typeof value !== 'string' || value.length === 0) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const extractList = (payload: unknown): any[] => {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload && typeof payload === 'object') {
+    const data = payload as Record<string, unknown>;
+    if (Array.isArray(data.data)) {
+      return data.data;
+    }
+  }
+
+  return [];
 };
 
 // Format date for activity
@@ -149,29 +159,62 @@ export const dashboardService = {
         productService.getProducts(),
         blogService.getBlogs(),
         eventService.getEvents(),
-        api.get('/donations').catch(() => ({ data: { success: false } })),
+        donationService.getStatistics(),
       ]);
 
       // Process users
       if (usersResponse.status === 'fulfilled' && usersResponse.value.success) {
         const data = usersResponse.value.data;
-        defaultStats.users.total = data?.total || 0;
-        defaultStats.users.active = data?.total || 0; // Assuming most are active
+        const users = extractList(data);
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        defaultStats.users.total = toNumber((data as any)?.total) || users.length;
+        defaultStats.users.active = users.filter((user: any) => user?.status === 'active').length;
+        defaultStats.users.newThisMonth = users.filter((user: any) => {
+          const createdAt = safeDate(user?.created_at);
+          return createdAt ? createdAt >= monthStart : false;
+        }).length;
+
+        if (defaultStats.users.active === 0 && defaultStats.users.total > 0) {
+          defaultStats.users.active = defaultStats.users.total;
+        }
       }
 
       // Process orders
       if (ordersResponse.status === 'fulfilled' && ordersResponse.value.success) {
         const data = ordersResponse.value.data;
-        defaultStats.orders.total = data?.total || 0;
+        const orders = extractList(data);
+        defaultStats.orders.total = toNumber((data as any)?.total) || orders.length;
+
+        orders.forEach((order: any) => {
+          const status = String(order?.status || '').toLowerCase();
+          const total = toNumber(order?.total_amount ?? order?.total);
+
+          if (status === 'pending') {
+            defaultStats.orders.pending += 1;
+          } else if (status === 'processing' || status === 'shipped') {
+            defaultStats.orders.processing += 1;
+          } else if (status === 'completed' || status === 'delivered' || status === 'paid') {
+            defaultStats.orders.completed += 1;
+          } else if (status === 'cancelled' || status === 'refunded' || status === 'failed') {
+            defaultStats.orders.cancelled += 1;
+          }
+
+          if (status === 'completed' || status === 'delivered' || status === 'paid') {
+            defaultStats.orders.totalRevenue += total;
+          }
+        });
+
         // Try to get order status summary if available
         try {
           const statusSummary = await api.get('/reports/orders/status-summary');
           if (statusSummary.data?.success) {
             const summary = statusSummary.data.data || {};
-            defaultStats.orders.pending = summary.pending || 0;
-            defaultStats.orders.processing = summary.processing || 0;
-            defaultStats.orders.completed = summary.completed || 0;
-            defaultStats.orders.cancelled = summary.cancelled || 0;
+            defaultStats.orders.pending = toNumber(summary.pending);
+            defaultStats.orders.processing = toNumber(summary.processing);
+            defaultStats.orders.completed = toNumber(summary.completed);
+            defaultStats.orders.cancelled = toNumber(summary.cancelled) + toNumber(summary.refunded);
           }
         } catch {
           // Status summary not available
@@ -181,44 +224,53 @@ export const dashboardService = {
       // Process products
       if (productsResponse.status === 'fulfilled' && productsResponse.value.success) {
         const data = productsResponse.value.data;
-        defaultStats.products.total = data?.total || 0;
-        defaultStats.products.active = data?.total || 0;
+        const products = extractList(data);
+        defaultStats.products.total = toNumber((data as any)?.total) || products.length;
+        defaultStats.products.active = products.filter((product: any) => Boolean(product?.is_active)).length;
+        defaultStats.products.outOfStock = products.filter((product: any) => toNumber(product?.stock_quantity) <= 0).length;
+        defaultStats.products.lowStock = products.filter((product: any) => {
+          const stock = toNumber(product?.stock_quantity);
+          return stock > 0 && stock <= 5;
+        }).length;
+
+        if (defaultStats.products.active === 0 && defaultStats.products.total > 0) {
+          defaultStats.products.active = defaultStats.products.total;
+        }
       }
 
       // Process blogs
       if (blogsResponse.status === 'fulfilled' && blogsResponse.value.success) {
         const data = blogsResponse.value.data;
-        // Handle both paginated and non-paginated responses
-        if (data?.data && Array.isArray(data.data)) {
-          defaultStats.blogs.total = data.total || data.data.length;
-          defaultStats.blogs.active = data.data.filter((b: any) => b.is_active).length;
-        } else if (Array.isArray(data)) {
-          defaultStats.blogs.total = data.length;
-          defaultStats.blogs.active = data.filter((b: any) => b.is_active).length;
-        }
+        const blogs = extractList(data);
+        defaultStats.blogs.total = toNumber((data as any)?.total) || blogs.length;
+        defaultStats.blogs.active = blogs.filter((blog: any) => Boolean(blog?.is_active)).length;
       }
 
       // Process events
       if (eventsResponse.status === 'fulfilled' && eventsResponse.value.success) {
         const data = eventsResponse.value.data;
-        // Handle both paginated and non-paginated responses
-        if (data?.data && Array.isArray(data.data)) {
-          defaultStats.events.total = data.total || data.data.length;
-          defaultStats.events.upcoming = data.data.filter((e: any) => new Date(e.date) >= new Date()).length;
-        } else if (Array.isArray(data)) {
-          defaultStats.events.total = data.length;
-          defaultStats.events.upcoming = data.filter((e: any) => new Date(e.date) >= new Date()).length;
-        }
+        const events = extractList(data);
+        const now = new Date();
+        defaultStats.events.total = toNumber((data as any)?.total) || events.length;
+        defaultStats.events.upcoming = events.filter((event: any) => {
+          const eventDate = safeDate(event?.date);
+          return eventDate ? eventDate >= now : event?.status === 'upcoming';
+        }).length;
+        defaultStats.events.past = Math.max(defaultStats.events.total - defaultStats.events.upcoming, 0);
       }
 
       // Process donations
-      if (donationsResponse.status === 'fulfilled' && donationsResponse.value.data?.success) {
-        const data = donationsResponse.value.data.data;
+      if (donationsResponse.status === 'fulfilled' && donationsResponse.value.success && donationsResponse.value.data) {
+        const data = donationsResponse.value.data as Record<string, number>;
         if (data) {
-          defaultStats.donations.total = data.total || data.count || 0;
-          defaultStats.donations.totalAmount = data.totalAmount || data.amount || 0;
-          defaultStats.donations.thisMonth = data.thisMonth || 0;
-          defaultStats.donations.thisMonthAmount = data.thisMonthAmount || 0;
+          defaultStats.donations.total =
+            data.total_donations || data.total || data.count || 0;
+          defaultStats.donations.totalAmount =
+            data.total_amount || data.totalAmount || data.amount || 0;
+          defaultStats.donations.thisMonth =
+            data.this_month_donations || data.thisMonth || 0;
+          defaultStats.donations.thisMonthAmount =
+            data.this_month_amount || data.thisMonthAmount || 0;
         }
       }
 
@@ -260,11 +312,15 @@ export const dashboardService = {
       // Fetch user's donations if userId provided
       if (userId) {
         try {
-          const donationsResponse = await api.get(`/donations/user/${userId}`);
-          if (donationsResponse.data?.success) {
-            const data = donationsResponse.data.data;
-            defaultStats.donations.total = data?.total || 0;
-            defaultStats.donations.totalAmount = data?.totalAmount || 0;
+          const donationsResponse = await donationService.getDonationsByUser(userId, 1);
+          if (donationsResponse.success && donationsResponse.data) {
+            const data = donationsResponse.data as any;
+            const donationList = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+            defaultStats.donations.total = data?.total || donationList.length || 0;
+            defaultStats.donations.totalAmount = donationList.reduce(
+              (sum: number, donation: any) => sum + (Number(donation.amount) || 0),
+              0
+            );
           }
         } catch {
           // Donations not available
@@ -353,4 +409,3 @@ export const dashboardService = {
 };
 
 export default dashboardService;
-

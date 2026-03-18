@@ -1,5 +1,5 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
-import { Order, CreateOrderData, OrderFilters } from '@/types/orderTypes';
+import { Order, CreateOrderData, OrderFilters, UpdateOrderStatusData } from '@/types/orderTypes';
 import { orderService } from '@/services/orderService';
 import { PaginatedResponse } from '@/services/productService';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,7 @@ interface OrderContextType {
   fetchUserOrders: (page?: number) => Promise<void>;
   fetchOrder: (id: number) => Promise<void>;
   createOrder: (data: CreateOrderData) => Promise<Order | null>;
+  updateOrderStatus: (id: number, data: UpdateOrderStatusData) => Promise<boolean>;
   setSelectedOrder: (order: Order | null) => void;
   clearError: () => void;
 }
@@ -123,6 +124,33 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
     }
   }, [toast]);
 
+  const updateOrderStatus = useCallback(async (id: number, data: UpdateOrderStatusData): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await orderService.updateOrderStatus(id, data);
+
+      if (response.success && response.data) {
+        setSelectedOrder((prev) => (prev && prev.id === id ? response.data as Order : prev));
+        setOrders((prev) => prev.map((order) => (order.id === id ? { ...order, ...response.data } : order)));
+        setUserOrders((prev) => prev.map((order) => (order.id === id ? { ...order, ...response.data } : order)));
+        toast({ title: 'Success', description: response.message || 'Order status updated successfully' });
+        return true;
+      }
+
+      setError(response.message);
+      toast({ title: 'Error', description: response.message, variant: 'destructive' });
+      return false;
+    } catch {
+      const errorMessage = 'An unexpected error occurred while updating order status';
+      setError(errorMessage);
+      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
   const value: OrderContextType = {
     orders,
     userOrders,
@@ -135,6 +163,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
     fetchUserOrders,
     fetchOrder,
     createOrder,
+    updateOrderStatus,
     setSelectedOrder,
     clearError,
   };

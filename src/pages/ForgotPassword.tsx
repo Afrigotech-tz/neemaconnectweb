@@ -7,7 +7,7 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,17 +15,17 @@ const ForgotPassword = () => {
     setError('');
     setSuccess('');
 
-    if (!email) {
-      setError('Please enter your email address');
+    if (!login) {
+      setError('Please enter your email or phone number');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await authService.forgotPassword(email);
+      const response = await authService.forgotPassword(login);
       
       if (response.success) {
-        setSuccess('Password reset link has been sent to your email. Please check your inbox.');
+        setSuccess('Password reset instructions have been sent. Please check your inbox or SMS.');
         setTimeout(() => {
           navigate('/login');
         }, 3000);
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Forgot Password</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you a link to reset your password
+            Enter your email or phone number and we'll send you a password reset link
           </p>
         </div>
 
@@ -63,18 +63,18 @@ const ForgotPassword = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email Address
+            <label htmlFor="login" className="block text-sm font-medium text-gray-700">
+              Email or Phone Number
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
+              id="login"
+              name="login"
+              type="text"
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-              placeholder="email@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email@example.com or 255743871360"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
             />
           </div>
 

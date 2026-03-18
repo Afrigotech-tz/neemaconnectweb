@@ -103,6 +103,9 @@ import OrderDetailPage from "./pages/dashboard/OrderDetailPage";
 import AddressManagementPage from "./pages/dashboard/AddressManagementPage";
 import OrdersManagementPage from "./pages/dashboard/OrdersManagementPage";
 import OrderDetailAdminPage from "./pages/dashboard/OrderDetailAdminPage";
+import DepartmentsPage from "./pages/dashboard/DepartmentsPage";
+import PaymentsManagementPage from "./pages/dashboard/PaymentsManagementPage";
+import TicketsManagementPage from "./pages/dashboard/TicketsManagementPage";
 
 const queryClient = new QueryClient();
 
@@ -215,6 +218,14 @@ const App = () => (
                   element={
                     <PermissionBasedRoute requiredRoles={['super_admin']}>
                       <RolesList />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
+                  path="departments"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <DepartmentsPage />
                     </PermissionBasedRoute>
                   }
                 />
@@ -394,6 +405,14 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="tickets-management"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <TicketsManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
+                <Route
                   path="donations"
                   element={
                     <PermissionBasedRoute  requiredRoles={['super_admin']}>
@@ -411,6 +430,14 @@ const App = () => (
                 />
 
                 {/* E-Commerce Routes */}
+                <Route
+                  path="payments"
+                  element={
+                    <PermissionBasedRoute requiredRoles={['super_admin']}>
+                      <PaymentsManagementPage />
+                    </PermissionBasedRoute>
+                  }
+                />
                 <Route path="orders" element={<OrderHistoryPage />} />
                 <Route path="orders/:id" element={<OrderDetailPage />} />
                 <Route path="addresses" element={<AddressManagementPage />} />

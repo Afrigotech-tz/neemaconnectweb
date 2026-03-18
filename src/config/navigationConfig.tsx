@@ -18,7 +18,9 @@ import {
   ClipboardList,
   MapPin,
   Image as ImageIcon,
-  Info
+  Info,
+  Building2,
+  Ticket
 } from 'lucide-react';
 import { RouteConfig } from './routePermissions';
 
@@ -44,6 +46,13 @@ export const navigationItems: RouteConfig[] = [
     name: 'Roles & Permissions',
     path: '/dashboard/roles',
     icon: Shield,
+    section: 'User Management',
+    requiredPermissions: ['view_roles']
+  },
+  {
+    name: 'Departments',
+    path: '/dashboard/departments',
+    icon: Building2,
     section: 'User Management',
     requiredPermissions: ['view_roles']
   },
@@ -115,6 +124,13 @@ export const navigationItems: RouteConfig[] = [
     requiredPermissions: ['view_donations']
   },
   {
+    name: 'Tickets Management',
+    path: '/dashboard/tickets-management',
+    icon: Ticket,
+    section: 'Commerce',
+    requiredPermissions: ['view_events']
+  },
+  {
     name: 'Orders Management',
     path: '/dashboard/orders-management',
     icon: ClipboardList,
@@ -125,7 +141,8 @@ export const navigationItems: RouteConfig[] = [
     name: 'Payments',
     path: '/dashboard/payments',
     icon: CreditCard,
-    section: 'Commerce'
+    section: 'Commerce',
+    requiredPermissions: ['view_products']
   },
 
   // System & Settings
