@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSlider } from "@/hooks/useSlider";
 import { getImageUrl } from "@/lib/utils";
+import RotatingText from "@/components/ui/rotating-text";
+import SplitText from "@/components/ui/SplitText";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -114,13 +116,42 @@ const HeroSlider = () => {
                 
                 {/* Animated title */}
                 <h1 className={`text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-slide-up animation-delay-200`}>
-                  {slide.title}
+                  <span className="block">{slide.title}</span>
+                  <RotatingText
+                    texts={["Praise", "Worship", "Faith", "Hope"]}
+                    mainClassName="mt-4 inline-flex px-3 sm:px-3 md:px-4 bg-primary text-primary-content overflow-hidden py-1 sm:py-1.5 md:py-2 justify-center rounded-lg shadow-lg"
+                    staggerFrom="last"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-120%" }}
+                    staggerDuration={0.025}
+                    splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    rotationInterval={2000}
+                    auto={index === currentSlide}
+                  />
                 </h1>
                 
                 {/* Animated description */}
-                <p className={`text-xl md:text-2xl text-gray-200 mb-10 leading-relaxed max-w-2xl animate-slide-up animation-delay-300`}>
-                  {slide.description}
-                </p>
+                <SplitText
+                  key={`hero-desc-${index}-${currentSlide}`}
+                  text={slide.description}
+                  className="text-xl md:text-2xl text-gray-200 mb-10 leading-relaxed max-w-2xl animate-slide-up animation-delay-300"
+                  delay={50}
+                  duration={1.25}
+                  ease="power3.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 40 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.1}
+                  rootMargin="-100px"
+                  textAlign="left"
+                  onLetterAnimationComplete={() => {
+                    // eslint-disable-next-line no-console
+                    console.log("All letters have animated!");
+                  }}
+                  showCallback
+                />
                 
                 {/* CTA Buttons */}
                 <div className={`flex flex-col sm:flex-row gap-4 animate-slide-up animation-delay-400`}>
@@ -201,4 +232,3 @@ const HeroSlider = () => {
 };
 
 export default HeroSlider;
-
