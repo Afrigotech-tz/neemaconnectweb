@@ -8,11 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatTZS } from '@/lib/currency';
-import { donationService } from '@/services/donationService';
+import { donationService } from '@/services/donationService/donationService';
 import { DonationCategory } from '@/types/donationTypes';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { paymentService } from '@/services/paymentService';
+import { paymentService } from '@/services/paymentService/paymentService';
 import { PaymentMethod } from '@/types/paymentTypes';
 
 // Tanzania donation tiers in TSh

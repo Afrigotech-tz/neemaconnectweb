@@ -19,7 +19,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 // Services and Hooks
-import { authService } from '../services/authService';
+import { authService } from '../services/authService/authService';
 import { useAuth } from '../hooks/useAuth';
 
 const VerifyOTP: React.FC = () => {

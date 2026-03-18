@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserWithRoles } from '@/services/userService';
+import { UserWithRoles } from '@/services/userService/userService';
 import { Role } from '@/types/rolePermissionTypes';
 import { Button } from "@/components/ui/button";
 import {

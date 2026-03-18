@@ -1,7 +1,7 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { Order, CreateOrderData, OrderFilters, UpdateOrderStatusData } from '@/types/orderTypes';
-import { orderService } from '@/services/orderService';
-import { PaginatedResponse } from '@/services/productService';
+import { orderService } from '@/services/orderService/orderService';
+import { PaginatedResponse } from '@/services/productService/productService';
 import { useToast } from '@/hooks/use-toast';
 
 interface OrderContextType {

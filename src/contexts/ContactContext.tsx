@@ -4,7 +4,7 @@ import {
   CreateContactInfoData,
   UpdateContactInfoData,
 } from '@/types/contactTypes';
-import { contactService } from '@/services/contactService';
+import { contactService } from '@/services/contactService/contactService';
 import { useToast } from '@/hooks/use-toast';
 
 interface ContactContextType {

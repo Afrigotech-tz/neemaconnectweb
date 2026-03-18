@@ -13,7 +13,7 @@ import {
   Layers,
   FolderTree,
 } from 'lucide-react';
-import { productService } from '@/services/productService';
+import { productService } from '@/services/productService/productService';
 import { ProductCategory } from '@/types/productTypes';
 import { useToast } from '@/hooks/use-toast';
 

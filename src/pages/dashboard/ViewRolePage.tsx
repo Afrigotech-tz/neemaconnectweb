@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { roleService } from "@/services/roleService";
-import { permissionService } from "@/services/permissionService";
+import { roleService } from "@/services/roleService/roleService";
+import { permissionService } from "@/services/permissionService/permissionService";
 import { Role, Permission } from "@/types/rolePermissionTypes";
 import { Button } from "@/components/ui/button";
 import {

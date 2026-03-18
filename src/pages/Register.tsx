@@ -28,7 +28,7 @@ import StarIcon from '@mui/icons-material/Star';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Services and Hooks
-import { authService, Country } from '../services/authService';
+import { authService, Country } from '../services/authService/authService';
 import { RegisterFormData, PersonalInfoData, ContactInfoData, SecurityData } from '../lib/validations/auth';
 
 // Step Components

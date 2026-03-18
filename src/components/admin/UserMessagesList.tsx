@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { contactService } from '@/services/contactService';
+import { contactService } from '@/services/contactService/contactService';
 import { UserMessage, UserMessageStatus } from '@/types/contactTypes';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Loader2, Mail, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react';

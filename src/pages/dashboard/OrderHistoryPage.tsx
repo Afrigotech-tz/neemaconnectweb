@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { paymentService } from "@/services/paymentService";
+import { paymentService } from "@/services/paymentService/paymentService";
 import { Order } from "@/types/orderTypes";
 import { useToast } from "@/hooks/use-toast";
 

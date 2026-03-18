@@ -14,7 +14,7 @@ import {
   MoreHorizontal,
   List
 } from 'lucide-react';
-import { productService } from '@/services/productService';
+import { productService } from '@/services/productService/productService';
 import { ProductAttribute } from '@/types/productTypes';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';

@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Event } from "@/types/eventTypes";
-import { eventService } from "@/services/eventService";
+import { eventService } from "@/services/eventService/eventService";
 
 const Events = () => {
   const [filter, setFilter] = useState("all");

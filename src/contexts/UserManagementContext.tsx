@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { User } from '../services/authService';
+import { User } from '../services/authService/authService';
 import { Role } from '../types/rolePermissionTypes';
 import { 
   userService, 
@@ -8,7 +8,7 @@ import {
   CreateUserData, 
   UpdateUserData, 
   UserSearchParams 
-} from '../services/userService';
+} from '../services/userService/userService';
 
 export interface UserManagementState {
   users: UserWithRoles[];

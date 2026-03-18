@@ -9,7 +9,7 @@ import {
   Search,
   MoreHorizontal,
 } from 'lucide-react';
-import { permissionService } from '@/services/permissionService';
+import { permissionService } from '@/services/permissionService/permissionService';
 import { Permission } from '@/types/rolePermissionTypes';
 import { useToast } from '@/hooks/use-toast';
 

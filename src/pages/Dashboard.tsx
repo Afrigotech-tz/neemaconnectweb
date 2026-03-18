@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { profileService } from "@/services/profileService";
-import { dashboardService, UserDashboardStats } from "@/services/dashboardService";
+import { profileService } from "@/services/profileService/profileService";
+import { dashboardService, UserDashboardStats } from "@/services/dashboardService/dashboardService";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,8 +54,15 @@ const toDateInputValue = (value: string | null | undefined) => {
 };
 const addImageCacheBuster = (url: string | null | undefined) => {
   if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  const isAbsolute = /^(https?:\/\/|data:|blob:)/i.test(trimmed);
+  const hasPath = trimmed.includes("/");
+  if (!isAbsolute && !hasPath) {
+    return null;
+  }
   const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}v=${Date.now()}`;
+  return `${trimmed}${separator}v=${Date.now()}`;
 };
 
 const Dashboard = () => {

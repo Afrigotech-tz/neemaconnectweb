@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { productService } from "@/services/productService";
+import { productService } from "@/services/productService/productService";
 import { CreateProductData, ProductCategory } from "@/types/productTypes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

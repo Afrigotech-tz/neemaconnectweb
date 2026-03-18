@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   Layers
 } from 'lucide-react';
-import { productService, PaginatedResponse } from '@/services/productService';
+import { productService, PaginatedResponse } from '@/services/productService/productService';
 import { Product } from '@/types/productTypes';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';

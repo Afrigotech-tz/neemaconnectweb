@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { permissionService } from "@/services/permissionService";
+import { permissionService } from "@/services/permissionService/permissionService";
 import { CreatePermissionData } from "@/types/rolePermissionTypes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

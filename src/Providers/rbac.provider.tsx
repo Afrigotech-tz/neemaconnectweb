@@ -2,8 +2,8 @@ import React, { useState, useEffect, ReactNode, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Role, Permission } from "../types/rolePermissionTypes";
 
-import { roleService } from "../services/roleService";
-import { permissionService } from "../services/permissionService";
+import { roleService } from "../services/roleService/roleService";
+import { permissionService } from "../services/permissionService/permissionService";
 import { RBACContext, RBACContextType } from "@/contexts/RBACContext";
 
 interface RBACProviderProps {

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Settings2, Shield, Bell, Lock } from 'lucide-react';
-import { roleService } from '@/services/roleService';
+import { roleService } from '@/services/roleService/roleService';
 import { Permission, Role } from '@/types/rolePermissionTypes';
 
 const SettingsPage = () => {

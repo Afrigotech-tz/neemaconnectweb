@@ -26,7 +26,7 @@ import {
   DashboardStats,
   RecentActivity,
   UserDashboardStats,
-} from "@/services/dashboardService";
+} from "@/services/dashboardService/dashboardService";
 import { formatTZS, formatTZShort } from "@/lib/currency";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

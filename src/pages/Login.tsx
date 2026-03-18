@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 
 // Services and Hooks
-import { authService } from '../services/authService';
+import { authService } from '../services/authService/authService';
 import { useAuth } from '@/hooks/useAuth';
 
 // Feature Card Component

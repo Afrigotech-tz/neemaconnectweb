@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { HomeSlider, CreateSliderData, UpdateSliderData, SliderFilters } from '@/types/sliderTypes';
-import { sliderService } from '@/services/sliderService';
+import { sliderService } from '@/services/sliderService/sliderService';
 import { useToast } from '@/hooks/use-toast';
 
 interface SliderContextType {

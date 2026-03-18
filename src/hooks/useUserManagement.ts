@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useUserManagement as useUserManagementContext } from '../contexts/UserManagementContext';
 import { useToast } from './use-toast';
-import { UserSearchParams, CreateUserData, UpdateUserData } from '../services/userService';
+import { UserSearchParams, CreateUserData, UpdateUserData } from '../services/userService/userService';
 
 export const useUserManagement = () => {
   const context = useUserManagementContext();

@@ -1,5 +1,5 @@
 import { Permission } from './rolePermissionTypes';
-import { User } from '@/services/authService';
+import { User } from '@/services/authService/authService';
 
 export interface Department {
   id: number;

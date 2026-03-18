@@ -7,7 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import { ContactInfoData } from '../../lib/validations/auth';
-import { Country } from '../../services/authService';
+import { Country } from '../../services/authService/authService';
 
 interface StepContactProps {
   formData: ContactInfoData;

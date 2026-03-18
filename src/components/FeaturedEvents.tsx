@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { eventService } from "@/services/eventService";
+import { eventService } from "@/services/eventService/eventService";
 import { Event } from "@/types/eventTypes";
 import { Link } from "react-router-dom";
 

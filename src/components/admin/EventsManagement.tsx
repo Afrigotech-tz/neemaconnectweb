@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, Loader2, Calendar, Eye, Clock, Ticket, Save, RefreshCw, Search, CheckCircle2, XCircle } from 'lucide-react';
 import { Event } from '@/types/eventTypes';
-import { eventService } from '@/services/eventService';
+import { eventService } from '@/services/eventService/eventService';
 import EventForm from './EventForm';
 import EventView from './EventView';
 import { useToast } from '@/hooks/use-toast';
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ticketService } from '@/services/ticketService';
+import { ticketService } from '@/services/ticketService/ticketService';
 import { TicketOrder, TicketSalesSummary, TicketType } from '@/types/ticketTypes';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 

@@ -22,8 +22,8 @@ import {
   ArrowRight,
   Layers
 } from 'lucide-react';
-import { reportsAPI, ReportParams } from '@/services/reportsService';
-import { productService } from '@/services/productService';
+import { reportsAPI, ReportParams } from '@/services/reportsService/reportsService';
+import { productService } from '@/services/productService/productService';
 import { ProductCategory } from '@/types/productTypes';
 
 // Report type definitions

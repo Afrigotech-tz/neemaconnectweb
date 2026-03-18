@@ -8,7 +8,7 @@ jest.mock('@/hooks/use-toast', () => ({
 }));
 
 // Mock the roleService
-jest.mock('@/services/roleService', () => ({
+jest.mock('@/services/roleService/roleService', () => ({
   roleService: {
     getRoles: jest.fn().mockResolvedValue({
       success: true,

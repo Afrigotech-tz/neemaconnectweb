@@ -2,10 +2,10 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ProductCategoriesList from '../ProductCategoriesList';
-import { productService } from '@/services/productService';
+import { productService } from '@/services/productService/productService';
 
 // Mock the productService
-jest.mock('@/services/productService', () => ({
+jest.mock('@/services/productService/productService', () => ({
   productService: {
     getCategories: jest.fn(),
     deleteCategory: jest.fn()

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { musicService } from '../../services/musicService';
+import { musicService } from '../../services/musicService/musicService';
 import { Song, CreateMusicData, UpdateMusicData } from '../../types/musicTypes';
 import MusicList from '../../components/music/MusicList';
 import MusicForm from '../../components/music/MusicForm';

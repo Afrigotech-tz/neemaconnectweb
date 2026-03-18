@@ -17,9 +17,9 @@ import {
   Clock,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { profileService } from "@/services/profileService";
-import { userService } from "@/services/userService";
-import { Profile } from "@/services/authService";
+import { profileService } from "@/services/profileService/profileService";
+import { userService } from "@/services/userService/userService";
+import { Profile } from "@/services/authService/authService";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,8 +53,15 @@ const extractProfilePayload = (data: unknown): Partial<Profile> => {
 const toInputValue = (value: string | null | undefined) => value || "";
 const addImageCacheBuster = (url: string | null | undefined) => {
   if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  const isAbsolute = /^(https?:\/\/|data:|blob:)/i.test(trimmed);
+  const hasPath = trimmed.includes("/");
+  if (!isAbsolute && !hasPath) {
+    return null;
+  }
   const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}v=${Date.now()}`;
+  return `${trimmed}${separator}v=${Date.now()}`;
 };
 const toDateInputValue = (value: string | null | undefined) => {
   if (!value) return "";

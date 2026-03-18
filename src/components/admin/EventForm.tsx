@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Plus, Edit, Image as ImageIcon, X, Upload } from 'lucide-react';
 import { eventSchema, EventFormData } from '@/lib/validations/event';
-import { eventService } from '@/services/eventService';
+import { eventService } from '@/services/eventService/eventService';
 import { Event, EventCreate, EventUpdate } from '@/types/eventTypes';
 
 interface EventFormProps {

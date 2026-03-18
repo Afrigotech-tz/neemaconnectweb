@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { Cart, CartItem, AddToCartData, UpdateCartItemData } from '@/types/cartTypes';
-import { cartService } from '@/services/cartService';
+import { cartService } from '@/services/cartService/cartService';
 import { useToast } from '@/hooks/use-toast';
 
 interface CartContextType {

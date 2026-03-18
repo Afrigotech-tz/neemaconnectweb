@@ -27,7 +27,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { dashboardService, DashboardStats, RecentActivity } from "@/services/dashboardService";
+import { dashboardService, DashboardStats, RecentActivity } from "@/services/dashboardService/dashboardService";
 import { formatTZS, formatTZShort } from "@/lib/currency";
 
 const AdminDashboard: React.FC = () => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { authService } from '../services/authService/authService';
 import { RegisterFormData } from '../lib/validations/auth';
 import { countries } from '../lib/countries';
 import PasswordStrengthIndicator from './ui/password-strength-indicator';

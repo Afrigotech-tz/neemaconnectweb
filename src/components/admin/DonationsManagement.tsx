@@ -20,7 +20,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { formatTZS, formatTZShort } from '@/lib/currency';
-import { donationService } from '@/services/donationService';
+import { donationService } from '@/services/donationService/donationService';
 import { Donation, DonationCategory, DonationStatistics } from '@/types/donationTypes';
 import { useToast } from '@/hooks/use-toast';
 

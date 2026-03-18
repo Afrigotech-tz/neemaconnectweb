@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, RefreshCw, Search } from "lucide-react";
-import { paymentService } from "@/services/paymentService";
+import { paymentService } from "@/services/paymentService/paymentService";
 import { Order } from "@/types/orderTypes";
 import { PaymentMethod } from "@/types/paymentTypes";
 import { useToast } from "@/hooks/use-toast";

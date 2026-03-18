@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useCart } from "@/hooks/useCart";
 import { useAddress } from "@/hooks/useAddress";
-import { paymentService } from "@/services/paymentService";
+import { paymentService } from "@/services/paymentService/paymentService";
 import { PaymentMethod } from "@/types/paymentTypes";
 import AddressForm from "@/components/shop/AddressForm";
 import AddressSelector from "@/components/shop/AddressSelector";

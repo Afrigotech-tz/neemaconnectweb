@@ -9,10 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { eventService } from '@/services/eventService';
+import { eventService } from '@/services/eventService/eventService';
 import { Event } from '@/types/eventTypes';
 import { Link } from 'react-router-dom';
-import { ticketService } from '@/services/ticketService';
+import { ticketService } from '@/services/ticketService/ticketService';
 import { TicketOrder, TicketType } from '@/types/ticketTypes';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';

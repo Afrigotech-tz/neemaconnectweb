@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { Blog, CreateBlogData, UpdateBlogData, BlogFilters } from '@/types/blogTypes';
-import { blogService } from '@/services/blogService';
+import { blogService } from '@/services/blogService/blogService';
 import { useToast } from '@/hooks/use-toast';
 
 interface BlogContextType {

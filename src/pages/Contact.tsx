@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useContact } from "@/hooks/useContact";
 import { useToast } from "@/hooks/use-toast";
-import { contactService } from "@/services/contactService";
+import { contactService } from "@/services/contactService/contactService";
 
 const Contact = () => {
   const { contactInfo, fetchContactInfo } = useContact();

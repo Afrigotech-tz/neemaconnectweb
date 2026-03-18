@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import ProductCategoriesList from '../ProductCategoriesList';
 
 // Mock the productService
-jest.mock('@/services/productService', () => ({
+jest.mock('@/services/productService/productService', () => ({
   productService: {
     getCategories: jest.fn().mockResolvedValue({
       success: true,

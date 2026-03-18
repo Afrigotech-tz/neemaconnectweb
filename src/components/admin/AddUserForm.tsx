@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUserManagement } from "@/hooks/useUserManagement";
-import { CreateUserData } from "@/services/userService";
+import { CreateUserData } from "@/services/userService/userService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

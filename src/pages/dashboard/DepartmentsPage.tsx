@@ -7,11 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { departmentService } from '@/services/departmentService';
+import { departmentService } from '@/services/departmentService/departmentService';
 import { Department } from '@/types/departmentTypes';
-import { permissionService } from '@/services/permissionService';
+import { permissionService } from '@/services/permissionService/permissionService';
 import { Permission } from '@/types/rolePermissionTypes';
-import { userService, UserWithRoles } from '@/services/userService';
+import { userService, UserWithRoles } from '@/services/userService/userService';
 import { useToast } from '@/hooks/use-toast';
 
 const DepartmentsPage: React.FC = () => {

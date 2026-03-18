@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { authService } from '../services/authService/authService';
 
 const ResetPassword = () => {
   const navigate = useNavigate();

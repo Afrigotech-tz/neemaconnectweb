@@ -1,5 +1,5 @@
 import { AuthContext, AuthContextType } from "@/contexts/AuthContext";
-import { authService, User } from "@/services/authService";
+import { authService, User } from "@/services/authService/authService";
 import { getCachedProfilePicture } from "@/lib/profilePictureCache";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 

@@ -1,8 +1,8 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { Product, ProductCategory } from '@/types/productTypes';
 import { ShopProductFilters } from '@/types/shopTypes';
-import { shopService } from '@/services/shopService';
-import { PaginatedResponse } from '@/services/productService';
+import { shopService } from '@/services/shopService/shopService';
+import { PaginatedResponse } from '@/services/productService/productService';
 import { useToast } from '@/hooks/use-toast';
 
 interface ShopContextType {

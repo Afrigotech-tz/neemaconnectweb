@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { Address, CreateAddressData, UpdateAddressData } from '@/types/addressTypes';
-import { addressService } from '@/services/addressService';
+import { addressService } from '@/services/addressService/addressService';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddressContextType {

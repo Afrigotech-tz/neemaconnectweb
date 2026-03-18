@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { userService, UserWithRoles } from "@/services/userService";
-import { roleService } from "@/services/roleService";
+import { userService, UserWithRoles } from "@/services/userService/userService";
+import { roleService } from "@/services/roleService/roleService";
 import { Role } from "@/types/rolePermissionTypes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

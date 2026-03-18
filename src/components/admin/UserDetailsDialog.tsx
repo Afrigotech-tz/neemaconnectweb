@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserWithRoles } from '@/services/userService';
+import { UserWithRoles } from '@/services/userService/userService';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {

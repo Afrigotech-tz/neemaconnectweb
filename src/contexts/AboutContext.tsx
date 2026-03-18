@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { AboutUs, CreateAboutUsData, UpdateAboutUsData } from '@/types/aboutTypes';
-import { aboutService } from '@/services/aboutService';
+import { aboutService } from '@/services/aboutService/aboutService';
 import { useToast } from '@/hooks/use-toast';
 
 interface AboutContextType {

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Calendar, User, Eye } from 'lucide-react';
-import { newsService } from '@/services/newsService';
+import { newsService } from '@/services/newsService/newsService';
 import { News, PaginatedResponse } from '@/types/newsTypes';
 
 const NewsPage = () => {
