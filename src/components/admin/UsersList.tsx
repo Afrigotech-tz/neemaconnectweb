@@ -23,6 +23,7 @@ import { useUserManagement } from '@/hooks/useUserManagement';
 import UserDetailsDialog from './UserDetailsDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import RadioPagination from '@/components/ui/radio-pagination';
 
 const UsersList: React.FC = () => {
   const navigate = useNavigate();
@@ -421,6 +422,28 @@ const UsersList: React.FC = () => {
         )}
       </div>
 
+      {pagination.totalPages > 1 && (
+        <div className="bg-white rounded-2xl shadow-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p className="text-sm text-base-content/60">
+            Showing{" "}
+            {pagination.totalUsers > 0
+              ? (pagination.currentPage - 1) * pagination.usersPerPage + 1
+              : 0}
+            -
+            {Math.min(
+              pagination.currentPage * pagination.usersPerPage,
+              pagination.totalUsers
+            )}{" "}
+            of {pagination.totalUsers} users
+          </p>
+          <RadioPagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={(page) => void setCurrentPage(page)}
+          />
+        </div>
+      )}
+
       {/* User Details Dialog */}
       <UserDetailsDialog
         user={selectedUser}
@@ -459,4 +482,3 @@ const UsersList: React.FC = () => {
 };
 
 export default UsersList;
-

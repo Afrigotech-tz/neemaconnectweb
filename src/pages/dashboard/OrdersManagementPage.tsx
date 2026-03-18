@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, ChevronLeft, ChevronRight, Eye, Search, CheckCircle2, Clock3, Truck } from "lucide-react";
+import { Package, Eye, Search, CheckCircle2, Clock3, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import RadioPagination from "@/components/ui/radio-pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -175,26 +176,15 @@ const OrdersManagementPage = () => {
 
       {/* Pagination */}
       {ordersPagination && ordersPagination.last_page > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={ordersPagination.current_page <= 1}
-            onClick={() => handlePageChange(ordersPagination.current_page - 1)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <span className="text-sm text-muted-foreground">
             Page {ordersPagination.current_page} of {ordersPagination.last_page}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={ordersPagination.current_page >= ordersPagination.last_page}
-            onClick={() => handlePageChange(ordersPagination.current_page + 1)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <RadioPagination
+            currentPage={ordersPagination.current_page}
+            totalPages={ordersPagination.last_page}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>

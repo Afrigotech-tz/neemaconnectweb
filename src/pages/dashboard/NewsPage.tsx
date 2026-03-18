@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import RadioPagination from '@/components/ui/radio-pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Calendar, User, Eye } from 'lucide-react';
@@ -148,40 +149,12 @@ const NewsPage = () => {
 
               {/* Pagination */}
               {meta && meta.last_page > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-6">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-
-                  <div className="flex gap-1">
-                    {Array.from({ length: Math.min(5, meta.last_page) }, (_, i) => {
-                      const page = i + 1;
-                      return (
-                        <Button
-                          key={page}
-                          variant={page === currentPage ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handlePageChange(page)}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    })}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === meta.last_page}
-                  >
-                    Next
-                  </Button>
+                <div className="flex justify-center items-center mt-6">
+                  <RadioPagination
+                    currentPage={currentPage}
+                    totalPages={meta.last_page}
+                    onPageChange={handlePageChange}
+                  />
                 </div>
               )}
 

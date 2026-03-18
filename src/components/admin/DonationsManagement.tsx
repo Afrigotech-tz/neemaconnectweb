@@ -23,6 +23,7 @@ import { formatTZS, formatTZShort } from '@/lib/currency';
 import { donationService } from '@/services/donationService/donationService';
 import { Donation, DonationCategory, DonationStatistics } from '@/types/donationTypes';
 import { useToast } from '@/hooks/use-toast';
+import RadioPagination from '@/components/ui/radio-pagination';
 
 interface DonationStats {
   total: number;
@@ -541,36 +542,20 @@ const DonationsManagement: React.FC = () => {
     }
   };
 
-  const handleNextPage = async () => {
-    const nextPage = Math.min(listMeta.last_page, listMeta.current_page + 1);
-    if (nextPage === listMeta.current_page) return;
-    setListPageInput(String(nextPage));
+  const handlePageChange = async (page: number) => {
+    const targetPage = Math.max(1, Math.min(listMeta.last_page, page));
+    if (targetPage === listMeta.current_page) return;
+    setListPageInput(String(targetPage));
 
     if (listMode === 'user') {
       const userId = Number(userFilterId);
       if (Number.isFinite(userId) && userId > 0) {
-        await loadDonationsByUser(userId, nextPage);
+        await loadDonationsByUser(userId, targetPage);
       }
       return;
     }
 
-    await loadAllDonations(nextPage);
-  };
-
-  const handlePrevPage = async () => {
-    const prevPage = Math.max(1, listMeta.current_page - 1);
-    if (prevPage === listMeta.current_page) return;
-    setListPageInput(String(prevPage));
-
-    if (listMode === 'user') {
-      const userId = Number(userFilterId);
-      if (Number.isFinite(userId) && userId > 0) {
-        await loadDonationsByUser(userId, prevPage);
-      }
-      return;
-    }
-
-    await loadAllDonations(prevPage);
+    await loadAllDonations(targetPage);
   };
 
   const donationTypeBreakdown = useMemo(() => {
@@ -1122,16 +1107,16 @@ const DonationsManagement: React.FC = () => {
           )}
 
           {(listMode === 'all' || listMode === 'user') && listMeta.last_page > 1 && (
-            <div className="mt-6 flex items-center justify-between">
-              <Button variant="outline" onClick={() => void handlePrevPage()} disabled={listMeta.current_page <= 1 || listLoading}>
-                Previous
-              </Button>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <span className="text-sm text-base-content/60">
                 Page {listMeta.current_page} of {listMeta.last_page}
               </span>
-              <Button variant="outline" onClick={() => void handleNextPage()} disabled={listMeta.current_page >= listMeta.last_page || listLoading}>
-                Next
-              </Button>
+              <RadioPagination
+                currentPage={listMeta.current_page}
+                totalPages={listMeta.last_page}
+                onPageChange={(page) => void handlePageChange(page)}
+                disabled={listLoading}
+              />
             </div>
           )}
         </div>

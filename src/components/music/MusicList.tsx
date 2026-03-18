@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   Edit,
   Eye,
   LayoutGrid,
@@ -20,6 +18,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import RadioPagination from '@/components/ui/radio-pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Song } from '@/types/musicTypes';
 
@@ -371,30 +370,15 @@ const MusicList: React.FC<MusicListProps> = ({
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between rounded-xl border bg-card px-4 py-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border bg-card px-4 py-3">
           <p className="text-sm text-muted-foreground">
             Page {currentPage} of {totalPages}
           </p>
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <RadioPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
         </div>
       )}
     </div>

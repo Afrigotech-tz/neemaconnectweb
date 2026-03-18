@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Package, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import RadioPagination from "@/components/ui/radio-pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { paymentService } from "@/services/paymentService/paymentService";
@@ -148,26 +149,15 @@ const OrderHistoryPage = () => {
 
       {/* Pagination */}
       {pagination.last_page > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={pagination.current_page <= 1}
-            onClick={() => handlePageChange(pagination.current_page - 1)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <span className="text-sm text-muted-foreground">
             Page {pagination.current_page} of {pagination.last_page}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={pagination.current_page >= pagination.last_page}
-            onClick={() => handlePageChange(pagination.current_page + 1)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <RadioPagination
+            currentPage={pagination.current_page}
+            totalPages={pagination.last_page}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>

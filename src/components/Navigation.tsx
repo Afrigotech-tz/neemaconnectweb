@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LogOut, Search, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import MotionHighlight, { MotionHighlightItem } from "@/components/ui/motion-highlight";
+import { cn } from "@/lib/utils";
 
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
@@ -27,6 +29,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hoveredNavValue, setHoveredNavValue] = useState<string | null>(null);
   const location = useLocation();
   const { user, logout } = useAuth();
   const { isAdmin, isSuperAdmin } = usePermissions();
@@ -77,6 +80,19 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
 
   const isActive = (path: string) => location.pathname === path;
 
+  const activeDesktopNavPath = useMemo(() => {
+    const exactMatch = navigationItems.find((item) => location.pathname === item.path);
+    if (exactMatch) return exactMatch.path;
+    const prefixMatch = navigationItems.find(
+      (item) => item.path !== "/" && location.pathname.startsWith(item.path)
+    );
+    return prefixMatch?.path ?? "/";
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setHoveredNavValue(null);
+  }, [location.pathname]);
+
   // Updated: Enhanced NavItem component with improved animations and styling
   const NavItem = ({ item }: { item: typeof navigationItems[0] }) => {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
@@ -89,11 +105,11 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
       >
         <Link
           to={item.path}
-          className={`px-4 py-2 text-sm font-medium transition-colors duration-300 relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:bg-blue-600 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full ${
+          className={cn(`block rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300 ${
             isActive(item.path)
               ? "text-primary"
               : "text-muted-foreground hover:text-primary"
-          }`}
+          }`)}
         >
           {item.name}
         </Link>
@@ -136,10 +152,24 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
-            {navigationItems.map((item, index) => (
-              <NavItem key={index} item={item} />
-            ))}
+          <div className="hidden md:block">
+            <MotionHighlight
+              mode="children"
+              controlledItems
+              hover
+              value={hoveredNavValue ?? activeDesktopNavPath}
+              onValueChange={setHoveredNavValue}
+              className="rounded-xl border border-white/25 bg-white/15 shadow-lg backdrop-blur-md"
+              transition={{ type: "spring", stiffness: 360, damping: 34 }}
+            >
+              <div className="flex items-center gap-1">
+                {navigationItems.map((item, index) => (
+                  <MotionHighlightItem key={index} value={item.path} className="rounded-xl">
+                    <NavItem item={item} />
+                  </MotionHighlightItem>
+                ))}
+              </div>
+            </MotionHighlight>
           </div>
 
           {/* Right Side Actions */}

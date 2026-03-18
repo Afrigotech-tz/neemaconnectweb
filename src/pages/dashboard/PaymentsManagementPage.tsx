@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import RadioPagination from "@/components/ui/radio-pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, RefreshCw, Search } from "lucide-react";
@@ -139,6 +140,12 @@ const PaymentsManagementPage = () => {
     } finally {
       setLoadingOrders(false);
     }
+  };
+
+  const handleOrdersPageChange = (page: number) => {
+    const targetPage = Math.max(1, Math.min(listMeta.last_page, page));
+    setPageInput(String(targetPage));
+    void loadOrders(targetPage);
   };
 
   useEffect(() => {
@@ -362,6 +369,19 @@ const PaymentsManagementPage = () => {
               </Table>
             </div>
           )}
+
+          {!loadingOrders && orders.length > 0 && listMeta.last_page > 1 ? (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Page {listMeta.current_page} of {listMeta.last_page}
+              </p>
+              <RadioPagination
+                currentPage={listMeta.current_page}
+                totalPages={listMeta.last_page}
+                onPageChange={handleOrdersPageChange}
+              />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 
