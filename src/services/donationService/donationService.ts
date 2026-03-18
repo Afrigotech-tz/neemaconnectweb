@@ -194,12 +194,31 @@ export const donationService = {
 
   async getStatistics(): Promise<ApiResponse<DonationStatistics>> {
     try {
-      const response = await api.get('/donations/statistics');
-      const payload = response.data as WrappedApiResponse<DonationStatistics>;
+      const listResponse = await api.get('/donations', { params: { page: 1, per_page: 200 } });
+      const payload = listResponse.data as WrappedApiResponse<DonationListResponse | Donation[]>;
+      const data = unwrapData<DonationListResponse | Donation[]>(payload);
+      const rows = Array.isArray((data as DonationListResponse)?.data)
+        ? (data as DonationListResponse).data
+        : (Array.isArray(data) ? data : []);
+      const totalDonations = Number((data as DonationListResponse)?.total) || rows.length;
+      const totalAmount = rows.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0);
+      const month = new Date().getMonth();
+      const year = new Date().getFullYear();
+      const thisMonthRows = rows.filter((donation) => {
+        const date = new Date(donation.created_at);
+        return !Number.isNaN(date.getTime()) && date.getMonth() === month && date.getFullYear() === year;
+      });
+      const thisMonthAmount = thisMonthRows.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0);
+
       return {
-        success: payload?.success ?? true,
-        data: unwrapData<DonationStatistics>(payload),
-        message: unwrapMessage(payload, 'Donation statistics fetched successfully'),
+        success: true,
+        data: {
+          total_donations: totalDonations,
+          total_amount: totalAmount,
+          this_month_donations: thisMonthRows.length,
+          this_month_amount: thisMonthAmount,
+        },
+        message: 'Donation statistics fetched successfully',
       };
     } catch (error) {
       return buildErrorResponse(error, 'Failed to fetch donation statistics');

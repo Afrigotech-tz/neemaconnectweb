@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
   BarChart3, 
@@ -89,6 +89,8 @@ const ReportsManagement: React.FC = () => {
   const [isActiveFilter, setIsActiveFilter] = useState<boolean | ''>('');
   const [lowStockOnly, setLowStockOnly] = useState<boolean>(false);
   const [outOfStockOnly, setOutOfStockOnly] = useState<boolean>(false);
+  const [ordersSummary, setOrdersSummary] = useState<Record<string, number>>({});
+  const [loadingOrdersSummary, setLoadingOrdersSummary] = useState(false);
   
   // Categories for product report
   const [categories, setCategories] = useState<ProductCategory[]>([]);
@@ -116,39 +118,78 @@ const ReportsManagement: React.FC = () => {
     setSuccess(null);
 
     try {
-      let params: ReportParams = {};
-      
-      if (startDate) params.start_date = startDate;
-      if (endDate) params.end_date = endDate;
+      const hasDateRange = Boolean(startDate && endDate);
+      if (hasDateRange && startDate > endDate) {
+        setError('Start date cannot be later than end date.');
+        setLoading(false);
+        return;
+      }
 
       switch (selectedReport) {
-        case 'orders':
+        case 'orders': {
+          const params: Pick<ReportParams, 'status' | 'start_date' | 'end_date'> = {};
           if (statusFilter) params.status = statusFilter;
+          if (startDate) params.start_date = startDate;
+          if (endDate) params.end_date = endDate;
           await reportsAPI.generateOrdersReport(params);
           break;
-        case 'users':
+        }
+        case 'users': {
+          const params: Pick<ReportParams, 'status' | 'start_date' | 'end_date'> = {};
           if (statusFilter) params.status = statusFilter;
+          if (startDate) params.start_date = startDate;
+          if (endDate) params.end_date = endDate;
           await reportsAPI.generateUsersReport(params);
           break;
-        case 'products':
+        }
+        case 'products': {
+          const params: Pick<ReportParams, 'category_id' | 'is_active'> = {};
           if (categoryFilter) params.category_id = categoryFilter;
           if (isActiveFilter !== '') params.is_active = isActiveFilter;
           await reportsAPI.generateProductsReport(params);
           break;
-        case 'stock':
-          params.low_stock_only = lowStockOnly;
-          params.out_of_stock_only = outOfStockOnly;
+        }
+        case 'stock': {
+          const params: Pick<ReportParams, 'low_stock_only' | 'out_of_stock_only'> = {};
+          if (lowStockOnly) params.low_stock_only = true;
+          if (outOfStockOnly) params.out_of_stock_only = true;
           await reportsAPI.generateStockReport(params);
           break;
+        }
       }
 
-      setSuccess(`Report downloaded successfully!`);
+      setSuccess(`${getCurrentConfig().name} downloaded successfully.`);
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to generate report');
+      setError(err?.message || 'Failed to generate report');
     } finally {
       setLoading(false);
     }
   };
+
+  const loadOrdersSummary = async () => {
+    if (selectedReport !== 'orders') return;
+    setLoadingOrdersSummary(true);
+    try {
+      const response = await reportsAPI.getOrdersStatusSummary({
+        start_date: startDate || undefined,
+        end_date: endDate || undefined,
+      });
+      setOrdersSummary(response?.data || {});
+    } catch (err: any) {
+      setOrdersSummary({});
+      setError(err?.message || 'Failed to load orders status summary');
+    } finally {
+      setLoadingOrdersSummary(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedReport !== 'orders') {
+      setOrdersSummary({});
+      return;
+    }
+    void loadOrdersSummary();
+  }, [selectedReport, startDate, endDate]);
 
   const handlePrint = () => {
     window.print();
@@ -537,31 +578,73 @@ const ReportsManagement: React.FC = () => {
             <div className="p-6">
               <h3 className="font-bold text-base-content flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-primary" />
-                Quick Stats
+                {selectedReport === 'orders' ? 'Orders Status Summary' : 'Quick Stats'}
               </h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
-                  <span className="text-base-content/70 flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    This Month
-                  </span>
-                  <span className="font-bold text-primary">156 reports</span>
+              {selectedReport === 'orders' ? (
+                <div className="space-y-3">
+                  {loadingOrdersSummary ? (
+                    <div className="flex items-center gap-2 text-sm text-base-content/70">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading summary...
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                        <span className="text-base-content/70 flex items-center gap-2">
+                          <Clock className="h-4 w-4" />
+                          Pending
+                        </span>
+                        <span className="font-bold text-amber-600">{ordersSummary.pending || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                        <span className="text-base-content/70 flex items-center gap-2">
+                          <RefreshCw className="h-4 w-4" />
+                          Processing
+                        </span>
+                        <span className="font-bold text-blue-600">{ordersSummary.processing || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                        <span className="text-base-content/70 flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          Completed
+                        </span>
+                        <span className="font-bold text-green-600">{ordersSummary.completed || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                        <span className="text-base-content/70 flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4" />
+                          Cancelled
+                        </span>
+                        <span className="font-bold text-red-600">{ordersSummary.cancelled || 0}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
-                <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
-                  <span className="text-base-content/70 flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    Downloads
-                  </span>
-                  <span className="font-bold text-green-600">1,234</span>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                    <span className="text-base-content/70 flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      Active Filters
+                    </span>
+                    <span className="font-bold text-primary">{hasFilters() ? 'Yes' : 'No'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                    <span className="text-base-content/70 flex items-center gap-2">
+                      <Download className="h-4 w-4" />
+                      Format
+                    </span>
+                    <span className="font-bold text-green-600">PDF</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
+                    <span className="text-base-content/70 flex items-center gap-2">
+                      <DollarSign className="h-4 w-4" />
+                      Selected
+                    </span>
+                    <span className="font-bold text-purple-600">{getCurrentConfig().name}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-base-200 rounded-xl">
-                  <span className="text-base-content/70 flex items-center gap-2">
-                    <DollarSign className="h-4 w-4" />
-                    Revenue
-                  </span>
-                  <span className="font-bold text-purple-600">$24,580</span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -597,4 +680,3 @@ const ReportsManagement: React.FC = () => {
 };
 
 export default ReportsManagement;
-

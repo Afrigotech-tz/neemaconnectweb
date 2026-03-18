@@ -6,6 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -19,10 +26,12 @@ import { useBlog } from '@/hooks/useBlog';
 import { Blog } from '@/types/blogTypes';
 import { Plus, Edit, Trash2, Search, FileText, ImageIcon, CheckCircle2, Clock3 } from 'lucide-react';
 import { getBlogImageUrl } from '@/lib/utils';
+import BlogForm from '@/components/admin/BlogForm';
 
 const BlogsList: React.FC = () => {
   const { blogs, fetchBlogs, deleteBlog, loading } = useBlog();
   const [searchTerm, setSearchTerm] = useState('');
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
 
@@ -66,11 +75,9 @@ const BlogsList: React.FC = () => {
             <h1 className="text-3xl font-bold">Blog Management</h1>
             <p className="text-white/80 mt-2">Create, edit, and publish stories for your audience.</p>
           </div>
-          <Button asChild className="bg-white text-black hover:bg-white/90">
-            <Link to="/dashboard/blog-management/add">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Blog
-            </Link>
+          <Button onClick={() => setCreateDialogOpen(true)} className="bg-white text-black hover:bg-white/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Blog
           </Button>
         </div>
       </div>
@@ -121,11 +128,9 @@ const BlogsList: React.FC = () => {
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No blogs found</h3>
               <p className="text-gray-500 mb-4">Get started by creating your first blog post.</p>
-              <Button asChild>
-                <Link to="/dashboard/blog-management/add">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Blog
-                </Link>
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Blog
               </Button>
             </div>
           ) : (
@@ -195,6 +200,26 @@ const BlogsList: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent className="max-h-[92vh] overflow-y-auto border-white/20 bg-background/70 p-0 shadow-2xl backdrop-blur-2xl sm:max-w-5xl">
+          <DialogHeader className="border-b border-white/20 bg-gradient-to-r from-primary/20 via-background/40 to-primary/10 px-6 py-5 text-left backdrop-blur-xl">
+            <DialogTitle className="text-2xl font-semibold">Create Blog Post</DialogTitle>
+            <DialogDescription>
+              Craft a rich, engaging story and publish it to your audience.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 py-5">
+            <BlogForm
+              embedded
+              onSuccess={() => {
+                setCreateDialogOpen(false);
+              }}
+              onCancel={() => setCreateDialogOpen(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

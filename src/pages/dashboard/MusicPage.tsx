@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { musicService } from '../../services/musicService/musicService';
-import { Song, CreateMusicData, UpdateMusicData } from '../../types/musicTypes';
-import MusicList from '../../components/music/MusicList';
-import MusicForm from '../../components/music/MusicForm';
-import MusicView from '../../components/music/MusicView';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import MusicForm from '@/components/music/MusicForm';
+import MusicList from '@/components/music/MusicList';
+import MusicView from '@/components/music/MusicView';
+import { musicService } from '@/services/musicService/musicService';
+import { CreateMusicData, Song, UpdateMusicData } from '@/types/musicTypes';
 
 const MusicPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const [choirFilter, setChoirFilter] = useState('');
+  const [genreFilter, setGenreFilter] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedChoir, setDebouncedChoir] = useState('');
+  const [debouncedGenre, setDebouncedGenre] = useState('');
   const [sortBy, setSortBy] = useState<'release_date' | 'genre'>('release_date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
@@ -22,68 +37,90 @@ const MusicPage = () => {
 
   const queryClient = useQueryClient();
 
-  // Fetch songs with React Query
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedChoir(choirFilter.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [choirFilter]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedGenre(genreFilter.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [genreFilter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, debouncedChoir, debouncedGenre, perPage]);
+
   const { data: songsResponse, isLoading } = useQuery({
-    queryKey: ['songs', currentPage],
-    queryFn: () => musicService.getSongs(currentPage),
+    queryKey: ['songs', currentPage, perPage, debouncedSearch, debouncedChoir, debouncedGenre],
+    queryFn: () =>
+      musicService.getSongs({
+        page: currentPage,
+        per_page: perPage,
+        search: debouncedSearch || undefined,
+        choir: debouncedChoir || undefined,
+        genre: debouncedGenre || undefined,
+      }),
     placeholderData: (previousData) => previousData,
   });
 
   const songs = songsResponse?.data?.data || [];
   const totalPages = songsResponse?.data?.last_page || 1;
+  const totalItems = songsResponse?.data?.total || 0;
 
-  // Create song mutation
   const createSongMutation = useMutation({
     mutationFn: (data: CreateMusicData) => musicService.createSong(data),
     onSuccess: (response) => {
-      if (response.success) {
-        toast.success(response.message);
-        queryClient.invalidateQueries({ queryKey: ['songs'] });
-        setShowFormModal(false);
-        setEditingSong(null);
-      } else {
+      if (!response.success) {
         toast.error(response.message);
+        return;
       }
+      toast.success(response.message);
+      queryClient.invalidateQueries({ queryKey: ['songs'] });
+      setShowFormModal(false);
+      setEditingSong(null);
     },
     onError: () => {
-      toast.error('Failed to create song');
+      toast.error('Failed to upload music');
     },
   });
 
-  // Update song mutation
   const updateSongMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateMusicData }) =>
-      musicService.updateSong(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateMusicData }) => musicService.updateSong(id, data),
     onSuccess: (response) => {
-      if (response.success) {
-        toast.success(response.message);
-        queryClient.invalidateQueries({ queryKey: ['songs'] });
-        setShowFormModal(false);
-        setEditingSong(null);
-      } else {
+      if (!response.success) {
         toast.error(response.message);
+        return;
       }
+      toast.success(response.message);
+      queryClient.invalidateQueries({ queryKey: ['songs'] });
+      setShowFormModal(false);
+      setEditingSong(null);
     },
     onError: () => {
-      toast.error('Failed to update song');
+      toast.error('Failed to update music');
     },
   });
 
-  // Delete song mutation
   const deleteSongMutation = useMutation({
     mutationFn: (id: number) => musicService.deleteSong(id),
     onSuccess: (response) => {
-      if (response.success) {
-        toast.success(response.message);
-        queryClient.invalidateQueries({ queryKey: ['songs'] });
-        setShowDeleteDialog(false);
-        setSongToDelete(null);
-      } else {
+      if (!response.success) {
         toast.error(response.message);
+        return;
       }
+      toast.success(response.message);
+      queryClient.invalidateQueries({ queryKey: ['songs'] });
+      setShowDeleteDialog(false);
+      setSongToDelete(null);
     },
     onError: () => {
-      toast.error('Failed to delete song');
+      toast.error('Failed to delete music');
     },
   });
 
@@ -93,21 +130,23 @@ const MusicPage = () => {
     }
   };
 
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-  };
-
   const handleSortChange = (field: 'release_date' | 'genre') => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
     }
+    setSortBy(field);
+    setSortOrder('asc');
   };
 
-  const handleViewSong = (song: Song) => {
-    setSelectedSong(song);
+  const handleViewSong = async (song: Song) => {
+    const response = await musicService.getSong(song.id);
+    if (response.success && response.data) {
+      setSelectedSong(response.data);
+    } else {
+      setSelectedSong(song);
+      toast.error(response.message || 'Failed to load full music details');
+    }
     setShowViewModal(true);
   };
 
@@ -129,23 +168,22 @@ const MusicPage = () => {
   const handleFormSubmit = async (data: CreateMusicData | UpdateMusicData) => {
     if (editingSong) {
       await updateSongMutation.mutateAsync({ id: editingSong.id, data: data as UpdateMusicData });
-    } else {
-      await createSongMutation.mutateAsync(data as CreateMusicData);
+      return;
     }
+    await createSongMutation.mutateAsync(data as CreateMusicData);
   };
 
   const handleConfirmDelete = async () => {
-    if (songToDelete) {
-      await deleteSongMutation.mutateAsync(songToDelete.id);
-    }
+    if (!songToDelete) return;
+    await deleteSongMutation.mutateAsync(songToDelete.id);
   };
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 px-6 py-8 text-white shadow-lg">
+      <div className="rounded-2xl border bg-gradient-to-r from-primary via-primary to-primary-glow px-6 py-8 text-primary-foreground shadow-lg">
         <h1 className="text-3xl font-bold">Music Library</h1>
-        <p className="text-white/80 mt-2">
-          Advanced workspace for cataloging tracks, organizing choirs, and managing releases.
+        <p className="mt-2 text-primary-foreground/85">
+          Manage songs using the official Music API: listing, filters, upload, details, update, and delete.
         </p>
       </div>
 
@@ -154,10 +192,17 @@ const MusicPage = () => {
         loading={isLoading}
         currentPage={currentPage}
         totalPages={totalPages}
+        totalItems={totalItems}
         searchTerm={searchTerm}
+        choirFilter={choirFilter}
+        genreFilter={genreFilter}
+        perPage={perPage}
         sortBy={sortBy}
         sortOrder={sortOrder}
-        onSearchChange={handleSearchChange}
+        onSearchChange={setSearchTerm}
+        onChoirFilterChange={setChoirFilter}
+        onGenreFilterChange={setGenreFilter}
+        onPerPageChange={setPerPage}
         onSortChange={handleSortChange}
         onPageChange={handlePageChange}
         onViewSong={handleViewSong}
@@ -183,11 +228,11 @@ const MusicPage = () => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Song</AlertDialogTitle>
+            <AlertDialogTitle>Delete Music</AlertDialogTitle>
             <AlertDialogDescription>
               {songToDelete
                 ? `Are you sure you want to delete "${songToDelete.name}"? This action cannot be undone.`
-                : 'Are you sure you want to delete this song?'}
+                : 'Are you sure you want to delete this music item?'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -198,7 +243,7 @@ const MusicPage = () => {
                 void handleConfirmDelete();
               }}
               disabled={deleteSongMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleteSongMutation.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>

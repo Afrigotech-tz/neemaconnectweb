@@ -1,37 +1,44 @@
 import React, { useMemo, useState } from 'react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Eye,
+  LayoutGrid,
+  List,
+  Loader2,
+  Music2,
+  Plus,
+  Search,
+  SortAsc,
+  SortDesc,
+  Tags,
+  Trash2,
+  Users,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import {
-  Loader2,
-  Search,
-  Eye,
-  Trash2,
-  Edit,
-  ChevronLeft,
-  ChevronRight,
-  SortAsc,
-  SortDesc,
-  Plus,
-  Music2,
-  Users,
-  CalendarDays,
-  Tags,
-  LayoutGrid,
-  List,
-} from 'lucide-react';
-import { Song } from '../../types/musicTypes';
+import { Song } from '@/types/musicTypes';
 
 interface MusicListProps {
   songs: Song[];
   loading: boolean;
   currentPage: number;
   totalPages: number;
+  totalItems: number;
   searchTerm: string;
+  choirFilter: string;
+  genreFilter: string;
+  perPage: number;
   sortBy: 'release_date' | 'genre';
   sortOrder: 'asc' | 'desc';
   onSearchChange: (value: string) => void;
+  onChoirFilterChange: (value: string) => void;
+  onGenreFilterChange: (value: string) => void;
+  onPerPageChange: (value: number) => void;
   onSortChange: (field: 'release_date' | 'genre') => void;
   onPageChange: (page: number) => void;
   onViewSong: (song: Song) => void;
@@ -45,10 +52,17 @@ const MusicList: React.FC<MusicListProps> = ({
   loading,
   currentPage,
   totalPages,
+  totalItems,
   searchTerm,
+  choirFilter,
+  genreFilter,
+  perPage,
   sortBy,
   sortOrder,
   onSearchChange,
+  onChoirFilterChange,
+  onGenreFilterChange,
+  onPerPageChange,
   onSortChange,
   onPageChange,
   onViewSong,
@@ -58,31 +72,20 @@ const MusicList: React.FC<MusicListProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
-  const filteredSongs = useMemo(
-    () =>
-      songs.filter(
-        (song) =>
-          song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          song.choir.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [songs, searchTerm]
-  );
-
   const sortedSongs = useMemo(
     () =>
-      [...filteredSongs].sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
-
-        if (sortOrder === 'asc') return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      [...songs].sort((a, b) => {
+        const aValue = (a[sortBy] || '').toString();
+        const bValue = (b[sortBy] || '').toString();
+        if (sortOrder === 'asc') return aValue.localeCompare(bValue);
+        return bValue.localeCompare(aValue);
       }),
-    [filteredSongs, sortBy, sortOrder]
+    [songs, sortBy, sortOrder]
   );
 
   const stats = useMemo(() => {
     const choirs = new Set(songs.map((song) => song.choir.trim()).filter(Boolean));
-    const genres = new Set(songs.map((song) => song.genre.trim()).filter(Boolean));
+    const genres = new Set(songs.map((song) => (song.genre || '').trim()).filter(Boolean));
     const latestRelease = songs.reduce<string | null>((latest, song) => {
       if (!song.release_date) return latest;
       if (!latest) return song.release_date;
@@ -90,16 +93,13 @@ const MusicList: React.FC<MusicListProps> = ({
     }, null);
 
     return {
-      totalSongs: songs.length,
+      itemsOnPage: songs.length,
+      totalItems,
       choirs: choirs.size,
       genres: genres.size,
       latestRelease,
     };
-  }, [songs]);
-
-  const toggleSort = (field: 'release_date' | 'genre') => {
-    onSortChange(field);
-  };
+  }, [songs, totalItems]);
 
   const formatReleaseDate = (dateValue: string) => {
     if (!dateValue) return '-';
@@ -110,13 +110,20 @@ const MusicList: React.FC<MusicListProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">Total Songs</p>
+            <p className="text-sm text-muted-foreground">Total Music</p>
             <Music2 className="h-4 w-4 text-primary" />
           </div>
-          <p className="mt-2 text-2xl font-bold">{stats.totalSongs}</p>
+          <p className="mt-2 text-2xl font-bold">{stats.totalItems}</p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">On Current Page</p>
+            <List className="h-4 w-4 text-primary" />
+          </div>
+          <p className="mt-2 text-2xl font-bold">{stats.itemsOnPage}</p>
         </div>
         <div className="rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between">
@@ -127,13 +134,6 @@ const MusicList: React.FC<MusicListProps> = ({
         </div>
         <div className="rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">Genres</p>
-            <Tags className="h-4 w-4 text-primary" />
-          </div>
-          <p className="mt-2 text-2xl font-bold">{stats.genres}</p>
-        </div>
-        <div className="rounded-xl border bg-card p-4">
-          <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Latest Release</p>
             <CalendarDays className="h-4 w-4 text-primary" />
           </div>
@@ -141,11 +141,11 @@ const MusicList: React.FC<MusicListProps> = ({
         </div>
       </div>
 
-      <div className="rounded-xl border bg-card p-4 space-y-4">
+      <div className="space-y-4 rounded-xl border bg-card p-4">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Music Collection</h2>
-            <p className="text-sm text-muted-foreground">Advanced library view with quick management tools</p>
+            <h2 className="text-2xl font-bold">Music Library</h2>
+            <p className="text-sm text-muted-foreground">Filter and manage music using live API endpoints</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -153,7 +153,7 @@ const MusicList: React.FC<MusicListProps> = ({
               size="sm"
               onClick={() => setViewMode('table')}
             >
-              <List className="h-4 w-4 mr-1" />
+              <List className="mr-1 h-4 w-4" />
               Table
             </Button>
             <Button
@@ -161,31 +161,52 @@ const MusicList: React.FC<MusicListProps> = ({
               size="sm"
               onClick={() => setViewMode('cards')}
             >
-              <LayoutGrid className="h-4 w-4 mr-1" />
+              <LayoutGrid className="mr-1 h-4 w-4" />
               Cards
             </Button>
             <Button onClick={onAddSong}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Add Music
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="md:col-span-2 relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
+          <div className="relative xl:col-span-2">
+            <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by song name or choir..."
+              placeholder="Search by music name..."
               value={searchTerm}
               onChange={(event) => onSearchChange(event.target.value)}
               className="pl-9"
             />
           </div>
+          <Input
+            placeholder="Filter by choir"
+            value={choirFilter}
+            onChange={(event) => onChoirFilterChange(event.target.value)}
+          />
+          <Input
+            placeholder="Filter by genre"
+            value={genreFilter}
+            onChange={(event) => onGenreFilterChange(event.target.value)}
+          />
+          <select
+            value={String(perPage)}
+            onChange={(event) => onPerPageChange(Number(event.target.value))}
+            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            {[10, 20, 30, 50].map((value) => (
+              <option key={value} value={value}>
+                {value} per page
+              </option>
+            ))}
+          </select>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toggleSort('release_date')}
+              onClick={() => onSortChange('release_date')}
               className="w-full"
             >
               Date
@@ -196,7 +217,7 @@ const MusicList: React.FC<MusicListProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toggleSort('genre')}
+              onClick={() => onSortChange('genre')}
               className="w-full"
             >
               Genre
@@ -209,43 +230,64 @@ const MusicList: React.FC<MusicListProps> = ({
       </div>
 
       {viewMode === 'table' ? (
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="overflow-hidden rounded-xl border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
+                <TableHead>Cover</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Choir</TableHead>
                 <TableHead>Release Date</TableHead>
                 <TableHead>Genre</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>Audio</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+                  <TableCell colSpan={8} className="py-10 text-center">
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin" />
                   </TableCell>
                 </TableRow>
               ) : sortedSongs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
-                    No songs found.
+                  <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                    No music found.
                   </TableCell>
                 </TableRow>
               ) : (
                 sortedSongs.map((song) => (
                   <TableRow key={song.id}>
                     <TableCell>{song.id}</TableCell>
+                    <TableCell>
+                      {song.picture ? (
+                        <img
+                          src={song.picture}
+                          alt={song.name}
+                          className="h-10 w-10 rounded-md object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                          <Music2 className="h-4 w-4" />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium">{song.name}</TableCell>
                     <TableCell>{song.choir}</TableCell>
                     <TableCell>{formatReleaseDate(song.release_date)}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{song.genre}</Badge>
+                      <Badge variant="secondary">{song.genre || 'N/A'}</Badge>
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">{song.description}</TableCell>
+                    <TableCell>
+                      {song.audio_file ? (
+                        <Badge variant="outline">Available</Badge>
+                      ) : (
+                        <Badge variant="secondary">None</Badge>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Button variant="outline" size="sm" onClick={() => onViewSong(song)}>
@@ -266,42 +308,59 @@ const MusicList: React.FC<MusicListProps> = ({
           </Table>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {loading ? (
             <div className="md:col-span-2 xl:col-span-3 rounded-xl border bg-card p-10 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3" />
-              <p className="text-muted-foreground">Loading songs...</p>
+              <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin" />
+              <p className="text-muted-foreground">Loading music...</p>
             </div>
           ) : sortedSongs.length === 0 ? (
             <div className="md:col-span-2 xl:col-span-3 rounded-xl border bg-card p-10 text-center text-muted-foreground">
-              No songs found.
+              No music found.
             </div>
           ) : (
             sortedSongs.map((song) => (
-              <div key={song.id} className="rounded-xl border bg-card p-4 space-y-3">
+              <div key={song.id} className="space-y-3 rounded-xl border bg-card p-4">
+                <div className="overflow-hidden rounded-lg border bg-muted/20">
+                  {song.picture ? (
+                    <img
+                      src={song.picture}
+                      alt={song.name}
+                      className="h-40 w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-40 items-center justify-center text-muted-foreground">
+                      <Music2 className="h-6 w-6" />
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{song.name}</p>
                     <p className="text-sm text-muted-foreground">{song.choir}</p>
                   </div>
-                  <Badge variant="secondary">{song.genre}</Badge>
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <Tags className="h-3 w-3" />
+                    {song.genre || 'N/A'}
+                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground line-clamp-2">{song.description}</p>
+                <p className="line-clamp-2 text-sm text-muted-foreground">{song.description || '-'}</p>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Released: {formatReleaseDate(song.release_date)}</span>
                   <span>#{song.id}</span>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="w-full" onClick={() => onViewSong(song)}>
-                    <Eye className="h-4 w-4 mr-1" />
+                    <Eye className="mr-1 h-4 w-4" />
                     View
                   </Button>
                   <Button variant="outline" size="sm" className="w-full" onClick={() => onEditSong(song)}>
-                    <Edit className="h-4 w-4 mr-1" />
+                    <Edit className="mr-1 h-4 w-4" />
                     Edit
                   </Button>
                   <Button variant="outline" size="sm" className="w-full" onClick={() => onDeleteSong(song)}>
-                    <Trash2 className="h-4 w-4 mr-1" />
+                    <Trash2 className="mr-1 h-4 w-4" />
                     Delete
                   </Button>
                 </div>

@@ -3,8 +3,8 @@ export interface Song {
   name: string;
   choir: string;
   release_date: string;
-  genre: string;
-  description: string;
+  genre: string | null;
+  description: string | null;
   picture: string | null;
   audio_file: string | null;
   duration: string | null;
@@ -40,16 +40,23 @@ export interface ApiResponse<T = unknown> {
   data?: T;
 }
 
+export interface MusicListParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  choir?: string;
+  genre?: string;
+}
+
 export interface CreateMusicData {
   name: string;
   choir: string;
   release_date: string;
-  genre: string;
-  description: string;
+  genre?: string;
+  description?: string;
+  picture?: File | null;
+  audio_file?: File | null;
 }
 
-export interface UpdateMusicData extends Partial<CreateMusicData> {
-  id: number;
-}
-
+export type UpdateMusicData = Partial<CreateMusicData>;
 
