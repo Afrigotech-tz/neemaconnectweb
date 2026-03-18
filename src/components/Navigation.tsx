@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User, LogOut, Search, Bell, Sun, Moon } from "lucide-react";
+import { Menu, X, User, LogOut, Search, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -98,7 +98,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
           {item.name}
         </Link>
         {item.submenu && isSubmenuOpen && (
-          <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 z-50 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 ease-in-out">
+          <div className="absolute left-0 mt-2 w-48 rounded-lg py-2 z-50 backdrop-blur-md bg-transparent border border-white/20 transform transition-all duration-300 ease-in-out">
             {item.submenu.map((subItem, index) => (
               <Link
                 key={index}
@@ -121,13 +121,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
   };
 
   return (
-    <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg"
-          : "bg-white dark:bg-gray-900"
-      }`}
-    >
+    <header className="fixed w-full top-0 z-50 bg-transparent shadow-none transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -155,10 +149,6 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
             <div className="flex items-center space-x-3">
               <button className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-all duration-300 hover:scale-110">
                 <Search className="h-5 w-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-all duration-300 hover:scale-110 relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
               </button>
               <button
                 onClick={toggleDarkMode}
@@ -223,10 +213,10 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
                 </DropdownMenu>
               ) : (
                 <Link to="/login">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-sm"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm bg-transparent border border-current/30 hover:bg-white/10 dark:hover:bg-white/10"
                   >
                     Login
                   </Button>
@@ -266,7 +256,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-white dark:bg-gray-900 shadow-lg rounded-b-2xl"
+            className="md:hidden bg-transparent backdrop-blur-md rounded-b-2xl"
           >
             <div className="px-4 pt-3 pb-4 space-y-2">
               {navigationItems.map((item, index) => (
@@ -299,7 +289,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
                       className="block px-4 py-2"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Button variant="outline" className="w-full flex items-center gap-2">
+                      <Button variant="ghost" className="w-full flex items-center gap-2 bg-transparent border border-current/30 hover:bg-white/10 dark:hover:bg-white/10">
                         <User className="h-4 w-4" />
                         Dashboard
                       </Button>
@@ -323,7 +313,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
                       className="block px-4 py-2"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Button variant="outline" className="w-full">
+                      <Button variant="ghost" className="w-full bg-transparent border border-current/30 hover:bg-white/10 dark:hover:bg-white/10">
                         Login
                       </Button>
                     </Link>
@@ -348,4 +338,3 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onRegisterClick }
 };
 
 export default Navigation;
-
