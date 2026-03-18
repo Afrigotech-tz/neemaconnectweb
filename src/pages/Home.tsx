@@ -4,39 +4,12 @@ import MusicPlatforms from "@/components/MusicPlatforms";
 import FeaturedEvents from "@/components/FeaturedEvents";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Music, Heart, Award } from "lucide-react";
+import { Music, Heart, Award, Rocket, Lightbulb } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
   const { t } = useTranslation();
-
-  const stats = [
-    {
-      icon: Users,
-      number: "150+",
-      label: t('common.choir_members'),
-      description: t('common.passionate_voices')
-    },
-    {
-      icon: Music,
-      number: "500+",
-      label: t('common.performances'),
-      description: t('common.concerts_and_services')
-    },
-    {
-      icon: Heart,
-      number: "10K+",
-      label: t('common.lives_touched'),
-      description: t('common.hearts_changed')
-    },
-    {
-      icon: Award,
-      number: "15+",
-      label: t('common.years_of_ministry'),
-      description: t('common.serving_community')
-    }
-  ];
 
   return (
     <div className="pt-16"> {/* Account for fixed navigation */}
@@ -110,52 +83,66 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-16 bg-background">
+      <section className="py-20 bg-gradient-hero text-primary-foreground relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 opacity-20">
+          <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/40 blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-secondary/30 blur-3xl" />
+        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
             <div>
-              <h2 className="text-4xl font-bold text-foreground mb-6">
+              <p className="text-[hsl(var(--gold))] font-semibold tracking-[0.2em] uppercase mb-6">~ Who We Are</p>
+              <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-primary-foreground">
                 {t('home.title')}
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              <p className="text-lg lg:text-2xl text-primary-foreground/90 leading-relaxed mb-4 max-w-2xl">
                 {t('home.description1')}
               </p>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              <p className="text-base lg:text-lg text-primary-foreground/80 leading-relaxed mb-10 max-w-2xl">
                 {t('home.description2')}
               </p>
-              <button className="bg-white text-black px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors mb-8">
-                {t('common.watch_performances')}
-              </button>
-              <div className="grid grid-cols-2 gap-6">
-                {stats.map((stat, index) => {
-                  const IconComponent = stat.icon;
-                  return (
-                    <Card key={index} className="text-center hover:shadow-warm transition-all duration-300">
-                      <CardContent className="p-6">
-                        <IconComponent className="h-8 w-8 text-primary mx-auto mb-3" />
-                        <div className="text-2xl font-bold text-foreground mb-1">
-                          {stat.number}
-                        </div>
-                        <div className="font-medium text-foreground mb-1">
-                          {stat.label}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {stat.description}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+                <div className="group flex items-start gap-4 rounded-2xl border border-primary-foreground/35 bg-primary-foreground/15 p-5 backdrop-blur-md shadow-warm transition-all duration-300 hover:-translate-y-1 hover:bg-primary-foreground/20">
+                  <div className="h-14 w-14 shrink-0 rounded-xl bg-gradient-gold text-foreground flex items-center justify-center shadow-glow ring-2 ring-primary-foreground/60 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                    <Rocket className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-primary-foreground mb-2">{t('common.choir_members')}</h3>
+                    <p className="text-primary-foreground/95 text-base">{t('common.passionate_voices')}</p>
+                  </div>
+                </div>
+
+                <div className="group flex items-start gap-4 rounded-2xl border border-primary-foreground/35 bg-primary-foreground/15 p-5 backdrop-blur-md shadow-warm transition-all duration-300 hover:-translate-y-1 hover:bg-primary-foreground/20">
+                  <div className="h-14 w-14 shrink-0 rounded-xl bg-gradient-gold text-foreground flex items-center justify-center shadow-glow ring-2 ring-primary-foreground/60 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                    <Lightbulb className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-primary-foreground mb-2">{t('common.performances')}</h3>
+                    <p className="text-primary-foreground/95 text-base">{t('common.concerts_and_services')}</p>
+                  </div>
+                </div>
               </div>
+
+              <Link to="/about" className="inline-flex">
+                <button className="bg-gradient-gold text-foreground px-10 py-4 rounded-md text-2xl font-semibold hover:brightness-105 transition-all duration-300 shadow-warm-lg">
+                  OUR TEAM
+                </button>
+              </Link>
             </div>
-            <div className="relative">
+
+            <div className="relative mx-auto w-full max-w-xl">
               <img 
                 src="/lovable-uploads/336ebe09-2ea3-4cfb-a1ca-56b18fd19f9b.png" 
                 alt="Neema Gospel Choir Team"
-                className="rounded-2xl shadow-warm w-full"
+                className="rounded-3xl shadow-2xl w-full min-h-[520px] object-cover"
               />
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                <Music className="h-12 w-12 text-primary-foreground" />
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 lg:left-auto lg:-right-8 lg:translate-x-0 w-[86%] rounded-3xl bg-card text-card-foreground p-6 shadow-warm-lg border border-border">
+                <p className="text-primary text-xl mb-2">Neema Gospel Choir</p>
+                <h3 className="text-4xl font-semibold mb-3 text-card-foreground">Looking for help?</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  We are here to serve through worship, music ministry, and community support.
+                </p>
               </div>
             </div>
           </div>
@@ -213,4 +200,3 @@ const Home = () => {
 };
 
 export default Home;
-
