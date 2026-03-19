@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   Users,
   LogOut,
-  Menu,
-  X,
   Box,
   Shield,
   BookOpen,
@@ -153,9 +151,34 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* Mobile Header */}
         <div className="navbar bg-gradient-to-r from-primary to-primary/80 lg:hidden sticky top-0 z-40 text-white shadow-lg">
           <div className="flex-none">
-            <label htmlFor="admin-drawer" className="btn btn-square btn-ghost text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            <label className="btn btn-circle swap swap-rotate bg-white/10 border border-white/20 text-white hover:bg-white/20">
+              <input
+                type="checkbox"
+                checked={isSidebarOpen}
+                onChange={(event) => setIsSidebarOpen(event.target.checked)}
+                aria-label="Toggle admin sidebar"
+              />
+
+              {/* hamburger icon */}
+              <svg
+                className="swap-off fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 512 512"
+              >
+                <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+              </svg>
+
+              {/* close icon */}
+              <svg
+                className="swap-on fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 512 512"
+              >
+                <polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
               </svg>
             </label>
           </div>
@@ -180,8 +203,35 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <h1 className="text-2xl font-bold text-white drop-shadow-lg">NeemaAdmin</h1>
               <p className="text-xs text-white/80">Management Console</p>
             </div>
-            <label htmlFor="admin-drawer" className="btn btn-sm btn-circle btn-ghost absolute right-4 lg:hidden">
-              <X className="h-5 w-5 text-white" />
+            <label className="btn btn-sm btn-circle swap swap-rotate bg-white/10 border border-white/20 text-white hover:bg-white/20 absolute right-4 lg:hidden">
+              <input
+                type="checkbox"
+                checked={isSidebarOpen}
+                onChange={(event) => setIsSidebarOpen(event.target.checked)}
+                aria-label="Toggle admin sidebar"
+              />
+
+              {/* hamburger icon */}
+              <svg
+                className="swap-off fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 512 512"
+              >
+                <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+              </svg>
+
+              {/* close icon */}
+              <svg
+                className="swap-on fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 512 512"
+              >
+                <polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
+              </svg>
             </label>
           </div>
 
@@ -282,4 +332,3 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 };
 
 export default AdminLayout;
-

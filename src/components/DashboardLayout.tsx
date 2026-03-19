@@ -161,7 +161,6 @@ const DashboardLayout = () => {
                 alt="NGC Logo" 
                 className="w-8 h-8 object-contain"
               />
-              {!sidebarCollapsed && <span className="font-bold text-lg text-sidebar-foreground">Dashboard</span>}
             </Link>
             <Button
               variant="ghost"
@@ -261,7 +260,6 @@ const DashboardLayout = () => {
                   {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
               )}
-              <span className="hidden text-lg font-semibold text-foreground lg:inline">Dashboard</span>
             </div>
 
             <div className="relative hidden w-full max-w-2xl flex-1 lg:block">
