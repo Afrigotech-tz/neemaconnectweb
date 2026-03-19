@@ -39,7 +39,7 @@ const PartnershipSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-muted/30 to-background">
+    <section className="landing-band landing-band-lilac py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -58,7 +58,7 @@ const PartnershipSection = () => {
             return (
               <Card 
                 key={option.type}
-                className="relative overflow-hidden hover:shadow-glow transition-all duration-300"
+                className="relative overflow-hidden border-white/60 bg-card/85 backdrop-blur-sm hover:shadow-glow transition-all duration-300"
               >
                 <CardHeader className="text-center">
                   <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-r ${option.color} flex items-center justify-center mb-4`}>
@@ -101,7 +101,7 @@ const PartnershipSection = () => {
         {/* Our Products & Events Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {/* Our Products Overview */}
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="rounded-xl border border-white/60 bg-card/85 p-6 backdrop-blur-sm">
             <h3 className="text-2xl font-bold mb-4 text-foreground">Our Products</h3>
             <p className="text-muted-foreground mb-4">
               Discover our collection of inspirational merchandise that spreads the message of faith and hope.
@@ -127,7 +127,7 @@ const PartnershipSection = () => {
           </div>
 
           {/* Upcoming Events Overview */}
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="rounded-xl border border-white/60 bg-card/85 p-6 backdrop-blur-sm">
             <h3 className="text-2xl font-bold mb-4 text-foreground">Upcoming Events</h3>
             <p className="text-muted-foreground mb-4">
               Join us for inspiring performances and community gatherings throughout the year.
@@ -155,7 +155,7 @@ const PartnershipSection = () => {
 
         {/* Call to Action */}
         <div className="text-center">
-          <div className="bg-gradient-hero rounded-2xl p-8 text-white">
+          <div className="rounded-2xl border border-white/20 bg-gradient-hero p-8 text-white shadow-warm">
             <h3 className="text-2xl font-bold mb-4">Ready to Make a Difference?</h3>
             <p className="text-lg mb-6 opacity-90">
               Contact us to discuss custom partnership opportunities that align with your organization's goals.
@@ -174,4 +174,3 @@ const PartnershipSection = () => {
 };
 
 export default PartnershipSection;
-

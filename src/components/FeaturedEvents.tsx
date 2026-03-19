@@ -66,7 +66,7 @@ const FeaturedEvents = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-background to-muted/30">
+    <section className="landing-band landing-band-gold py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -114,7 +114,7 @@ const FeaturedEvents = () => {
         {!loading && !error && featuredEvents.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden hover:shadow-glow transition-all duration-300 group">
+              <Card key={event.id} className="overflow-hidden border-white/60 bg-card/85 backdrop-blur-sm hover:shadow-glow transition-all duration-300 group">
                 {/* Event Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img 
@@ -179,8 +179,8 @@ const FeaturedEvents = () => {
         {/* Call to Action */}
         <div className="text-center mt-12">
           <Link to="/events">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-gradient-warm hover:shadow-warm transition-all duration-300"
             >
               View All Events
@@ -193,4 +193,3 @@ const FeaturedEvents = () => {
 };
 
 export default FeaturedEvents;
-

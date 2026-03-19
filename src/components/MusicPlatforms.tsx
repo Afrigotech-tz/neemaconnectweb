@@ -59,7 +59,7 @@ const MusicPlatforms = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-background to-muted/20">
+    <section className="landing-band landing-band-harmony py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -76,7 +76,7 @@ const MusicPlatforms = () => {
           {platforms.map((platform, index) => (
             <Card 
               key={platform.name}
-              className="group hover:shadow-warm transition-all duration-300 cursor-pointer hover:-translate-y-1"
+              className="group cursor-pointer border-white/60 bg-card/85 backdrop-blur-sm hover:-translate-y-1 hover:shadow-warm transition-all duration-300"
             >
               <CardHeader className="text-center pb-2">
                 <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r ${platform.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
@@ -103,7 +103,7 @@ const MusicPlatforms = () => {
           <h3 className="text-2xl font-bold text-center mb-8">Featured Tracks</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredTracks.map((track, index) => (
-              <Card key={track.title} className="group hover:shadow-warm transition-all duration-300">
+              <Card key={track.title} className="group border-white/60 bg-card/85 backdrop-blur-sm hover:shadow-warm transition-all duration-300">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
                     src={track.image} 
@@ -136,7 +136,7 @@ const MusicPlatforms = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center bg-gradient-primary rounded-2xl p-8 text-primary-foreground">
+        <div className="rounded-2xl border border-white/20 bg-gradient-primary p-8 text-center text-primary-foreground shadow-warm">
           <Music className="h-12 w-12 mx-auto mb-4" />
           <h3 className="text-2xl font-bold mb-4">Download Neema Connect App</h3>
           <p className="text-lg mb-6 opacity-90">
@@ -166,4 +166,3 @@ const MusicPlatforms = () => {
 };
 
 export default MusicPlatforms;
-

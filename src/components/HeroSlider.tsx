@@ -227,6 +227,9 @@ const HeroSlider = () => {
         <MousePointer2 className="h-5 w-5 mb-2" />
         <span className="text-xs uppercase tracking-wider">Scroll</span>
       </div>
+
+      {/* Soft fade into the next landing section */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-[hsl(var(--gold)/0.08)] to-[hsl(var(--background))]" />
     </div>
   );
 };

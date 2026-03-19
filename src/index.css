@@ -411,6 +411,120 @@ All colors MUST be HSL.
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  .landing-page-shell {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at top center, hsl(var(--gold) / 0.14), transparent 28%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
+  }
+
+  .landing-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .landing-band > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(
+      --landing-band-bg,
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.45) 100%)
+    );
+  }
+
+  .landing-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at top left, hsl(var(--landing-band-accent-1, var(--primary)) / 0.16), transparent 34%),
+      radial-gradient(circle at bottom right, hsl(var(--landing-band-accent-2, var(--gold)) / 0.16), transparent 30%);
+    opacity: 0.95;
+    pointer-events: none;
+  }
+
+  .landing-band-sunrise {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--gold) / 0.12) 52%, hsl(var(--background)) 100%);
+    --landing-band-accent-1: var(--gold);
+    --landing-band-accent-2: var(--primary);
+  }
+
+  .landing-band-coral {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.11) 46%, hsl(var(--secondary) / 0.08) 100%);
+    --landing-band-accent-1: var(--primary);
+    --landing-band-accent-2: var(--secondary);
+  }
+
+  .landing-band-royal {
+    --landing-band-bg:
+      linear-gradient(135deg, hsl(var(--deep-purple)) 0%, hsl(var(--primary)) 100%);
+    --landing-band-accent-1: var(--primary-glow);
+    --landing-band-accent-2: var(--gold);
+  }
+
+  .landing-band-cream {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--gold) / 0.08) 30%, hsl(var(--muted) / 0.6) 100%);
+    --landing-band-accent-1: var(--gold);
+    --landing-band-accent-2: var(--secondary);
+  }
+
+  .landing-band-gold {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--gold) / 0.11) 38%, hsl(var(--primary) / 0.07) 100%);
+    --landing-band-accent-1: var(--primary);
+    --landing-band-accent-2: var(--gold);
+  }
+
+  .landing-band-petal {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--secondary) / 0.12) 42%, hsl(var(--background)) 100%);
+    --landing-band-accent-1: var(--secondary);
+    --landing-band-accent-2: var(--gold);
+  }
+
+  .landing-band-lilac {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--deep-purple) / 0.09) 35%, hsl(var(--secondary) / 0.08) 100%);
+    --landing-band-accent-1: var(--deep-purple);
+    --landing-band-accent-2: var(--secondary);
+  }
+
+  .landing-band-harmony {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--primary-glow) / 0.11) 40%, hsl(var(--gold) / 0.08) 100%);
+    --landing-band-accent-1: var(--primary-glow);
+    --landing-band-accent-2: var(--gold);
+  }
+
+  .landing-band-glow {
+    --landing-band-bg:
+      linear-gradient(135deg, hsl(var(--primary) / 0.94) 0%, hsl(var(--primary-glow) / 0.9) 100%);
+    --landing-band-accent-1: var(--gold);
+    --landing-band-accent-2: var(--secondary);
+  }
+
+  .landing-band-blush {
+    --landing-band-bg:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--secondary) / 0.09) 35%, hsl(var(--gold) / 0.08) 100%);
+    --landing-band-accent-1: var(--secondary);
+    --landing-band-accent-2: var(--primary);
+  }
+
+  .landing-panel {
+    @apply rounded-3xl border border-white/50 bg-card/80 backdrop-blur-sm shadow-sm;
+  }
+
   /* Badge styles */
   .badge-featured {
     @apply bg-gradient-warm text-white;
@@ -557,4 +671,3 @@ All colors MUST be HSL.
     contain-intrinsic-size: auto 500px;
   }
 }
-

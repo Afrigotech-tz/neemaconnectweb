@@ -107,50 +107,52 @@ const Home = () => {
   ];
 
   return (
-    <div className="pt-16"> {/* Account for fixed navigation */}
+    <div className="landing-page-shell pt-16"> {/* Account for fixed navigation */}
       {/* Hero Section */}
      <HeroSlider />
 
       {/* Quick Actions */}
-      <section className="py-10 bg-background border-y border-border/60">
+      <section className="landing-band landing-band-sunrise py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-7">
-            <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-sm font-medium text-primary mb-3">
-              <ArrowRight className="h-4 w-4" />
-              Quick Access
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground text-balance">Explore Neema in One Click</h2>
-            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Everything you need is organized here so visitors can quickly find events, donations, shop items, and support.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {quickLinks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.title}
-                  to={item.to}
-                  className="group rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-warm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                      <Icon className="h-5 w-5" />
+          <div className="landing-panel p-6 md:p-8">
+            <div className="text-center mb-7">
+              <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-sm font-medium text-primary mb-3">
+                <ArrowRight className="h-4 w-4" />
+                Quick Access
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground text-balance">Explore Neema in One Click</h2>
+              <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                Everything you need is organized here so visitors can quickly find events, donations, shop items, and support.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {quickLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.title}
+                    to={item.to}
+                    className="group rounded-2xl border border-white/60 bg-card/85 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-warm"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary" />
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-                  <p className="mt-4 text-sm font-semibold text-primary">{item.cta}</p>
-                </Link>
-              );
-            })}
+                    <h3 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                    <p className="mt-4 text-sm font-semibold text-primary">{item.cta}</p>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Donation Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <section className="landing-band landing-band-coral py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-sm font-medium text-primary mb-4">
@@ -169,7 +171,7 @@ const Home = () => {
             {supportOptions.map((option) => {
               const Icon = option.icon;
               return (
-                <Card key={option.title} className="text-center border-border hover:shadow-warm transition-all duration-300 hover:-translate-y-1">
+                <Card key={option.title} className="text-center border-white/60 bg-card/85 backdrop-blur-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-1">
                   <CardContent className="p-8">
                     <Icon className={`h-12 w-12 mx-auto mb-4 ${option.tone}`} />
                     <h3 className="text-xl font-semibold text-foreground mb-2">{option.title}</h3>
@@ -185,7 +187,7 @@ const Home = () => {
             })}
           </div>
           
-          <div className="text-center rounded-2xl border border-border bg-card p-6">
+          <div className="landing-panel text-center p-6">
             <p className="text-sm text-muted-foreground mb-4">All donations are secure and help us continue sharing God's love through music.</p>
             <div className="flex flex-wrap justify-center gap-3 text-xs">
               <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-muted-foreground">
@@ -206,8 +208,8 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 bg-gradient-hero text-primary-foreground relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 opacity-20">
+      <section className="landing-band landing-band-royal py-20 text-primary-foreground relative">
+        <div className="pointer-events-none absolute inset-0 opacity-20 z-[1]">
           <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-primary/40 blur-3xl" />
           <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-secondary/30 blur-3xl" />
         </div>
@@ -260,7 +262,7 @@ const Home = () => {
                 alt="Neema Gospel Choir Team"
                 className="rounded-3xl shadow-2xl w-full min-h-[520px] object-cover"
               />
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 lg:left-auto lg:-right-8 lg:translate-x-0 w-[86%] rounded-3xl bg-card text-card-foreground p-6 shadow-warm-lg border border-border">
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 lg:left-auto lg:-right-8 lg:translate-x-0 w-[86%] rounded-3xl bg-card/92 text-card-foreground p-6 shadow-warm-lg border border-white/60 backdrop-blur-sm">
                 <p className="text-primary text-xl mb-2">Neema Gospel Choir</p>
                 <h3 className="text-4xl font-semibold mb-3 text-card-foreground">Looking for help?</h3>
                 <p className="text-lg text-muted-foreground leading-relaxed">
@@ -273,16 +275,16 @@ const Home = () => {
       </section>
 
       {/* Impact Stats */}
-      <section className="py-12 bg-background">
+      <section className="landing-band landing-band-cream py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-sm">
+          <div className="landing-panel p-6 md:p-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {impactStats.map((stat) => {
                 const Icon = stat.icon;
                 return (
                   <div
                     key={stat.label}
-                    className="rounded-2xl border border-border/60 bg-background p-4 md:p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-warm"
+                    className="rounded-2xl border border-white/60 bg-background/90 p-4 md:p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-warm"
                   >
                     <div className="mx-auto h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <Icon className="h-5 w-5" />
@@ -310,7 +312,7 @@ const Home = () => {
       <MusicPlatforms />
 
       {/* Bottom CTA */}
-      <section className="py-16 bg-gradient-primary text-primary-foreground">
+      <section className="landing-band landing-band-glow py-16 text-primary-foreground">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl border border-primary-foreground/20 bg-primary-foreground/10 p-8 md:p-10 backdrop-blur-sm">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -338,7 +340,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-gradient-to-br from-muted/30 to-background">
+      <section className="landing-band landing-band-blush py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -351,7 +353,7 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {(t('testimonials', { returnObjects: true }) as Array<{name: string; role: string; quote: string}>).map((testimonial, index) => (
-              <Card key={index} className="relative overflow-hidden border-border/70 hover:shadow-warm transition-all duration-300 hover:-translate-y-1">
+              <Card key={index} className="relative overflow-hidden border-white/60 bg-card/85 backdrop-blur-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="absolute -top-6 -right-6 h-16 w-16 rounded-full bg-primary/10 blur-xl" />
                   <div className="relative z-10">
