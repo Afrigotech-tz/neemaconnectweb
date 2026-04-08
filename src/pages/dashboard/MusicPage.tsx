@@ -16,6 +16,7 @@ import MusicList from '@/components/music/MusicList';
 import MusicView from '@/components/music/MusicView';
 import { musicService } from '@/services/musicService/musicService';
 import { CreateMusicData, Song, UpdateMusicData } from '@/types/musicTypes';
+import { usePermissions } from '@/hooks/usePermissions';
 
 const MusicPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +35,7 @@ const MusicPage = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [songToDelete, setSongToDelete] = useState<Song | null>(null);
   const [editingSong, setEditingSong] = useState<Song | null>(null);
+  const { canCreate, canEdit, canDelete } = usePermissions();
 
   const queryClient = useQueryClient();
 
@@ -151,16 +153,28 @@ const MusicPage = () => {
   };
 
   const handleEditSong = (song: Song) => {
+    if (!canEdit('music')) {
+      toast.error('You do not have permission to edit music.');
+      return;
+    }
     setEditingSong(song);
     setShowFormModal(true);
   };
 
   const handleDeleteSong = (song: Song) => {
+    if (!canDelete('music')) {
+      toast.error('You do not have permission to delete music.');
+      return;
+    }
     setSongToDelete(song);
     setShowDeleteDialog(true);
   };
 
   const handleAddSong = () => {
+    if (!canCreate('music')) {
+      toast.error('You do not have permission to create music.');
+      return;
+    }
     setEditingSong(null);
     setShowFormModal(true);
   };
@@ -209,6 +223,9 @@ const MusicPage = () => {
         onEditSong={handleEditSong}
         onDeleteSong={handleDeleteSong}
         onAddSong={handleAddSong}
+        canCreate={canCreate('music')}
+        canEdit={canEdit('music')}
+        canDelete={canDelete('music')}
       />
 
       <MusicView

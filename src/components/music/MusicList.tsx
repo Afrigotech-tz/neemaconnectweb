@@ -44,6 +44,9 @@ interface MusicListProps {
   onEditSong: (song: Song) => void;
   onDeleteSong: (song: Song) => void;
   onAddSong: () => void;
+  canCreate: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 const MusicList: React.FC<MusicListProps> = ({
@@ -68,6 +71,9 @@ const MusicList: React.FC<MusicListProps> = ({
   onEditSong,
   onDeleteSong,
   onAddSong,
+  canCreate,
+  canEdit,
+  canDelete,
 }) => {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
@@ -163,10 +169,12 @@ const MusicList: React.FC<MusicListProps> = ({
               <LayoutGrid className="mr-1 h-4 w-4" />
               Cards
             </Button>
-            <Button onClick={onAddSong}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Music
-            </Button>
+            {canCreate && (
+              <Button onClick={onAddSong}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Music
+              </Button>
+            )}
           </div>
         </div>
 
@@ -292,12 +300,16 @@ const MusicList: React.FC<MusicListProps> = ({
                         <Button variant="outline" size="sm" onClick={() => onViewSong(song)}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => onEditSong(song)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => onDeleteSong(song)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {canEdit && (
+                          <Button variant="outline" size="sm" onClick={() => onEditSong(song)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {canDelete && (
+                          <Button variant="outline" size="sm" onClick={() => onDeleteSong(song)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -354,14 +366,18 @@ const MusicList: React.FC<MusicListProps> = ({
                     <Eye className="mr-1 h-4 w-4" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => onEditSong(song)}>
-                    <Edit className="mr-1 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => onDeleteSong(song)}>
-                    <Trash2 className="mr-1 h-4 w-4" />
-                    Delete
-                  </Button>
+                  {canEdit && (
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => onEditSong(song)}>
+                      <Edit className="mr-1 h-4 w-4" />
+                      Edit
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => onDeleteSong(song)}>
+                      <Trash2 className="mr-1 h-4 w-4" />
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </div>
             ))

@@ -6,7 +6,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // API Base URL for image paths
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://seagreen-mink-431224.hostingersite.com';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83:8000/api/').replace(/\/+$/, '');
+const API_ORIGIN = (() => {
+  try {
+    return new URL(API_BASE_URL).origin;
+  } catch {
+    return 'http://31.170.165.83:8000';
+  }
+})();
 
 /**
  * Converts a relative image path to a full URL for sliders
@@ -21,7 +28,7 @@ export function getImageUrl(imagePath: string | null | undefined): string {
   }
   
   // If it's already a full URL (starts with http:// or https://), return as-is
-  // Backend returns full URLs like: https://seagreen-mink-431224.hostingersite.com/storage/home_sliders/image.jpg
+  // Backend returns full URLs like: http://31.170.165.83:8000/storage/home_sliders/image.jpg
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
@@ -36,7 +43,7 @@ export function getImageUrl(imagePath: string | null | undefined): string {
   
   // Prepend API base URL with /storage/home_sliders/ path
   // Backend stores slider images in storage/app/public/home_sliders/
-  return `${API_BASE_URL}/storage/home_sliders/${cleanPath}`;
+  return `${API_ORIGIN}/storage/home_sliders/${cleanPath}`;
 }
 
 /**
@@ -52,7 +59,7 @@ export function getBlogImageUrl(imagePath: string | null | undefined): string {
   }
   
   // If it's already a full URL (starts with http:// or https://), return as-is
-  // Backend returns full URLs like: https://seagreen-mink-431224.hostingersite.com/storage/blogs/image.jpg
+  // Backend returns full URLs like: http://31.170.165.83:8000/storage/blogs/image.jpg
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
@@ -67,5 +74,5 @@ export function getBlogImageUrl(imagePath: string | null | undefined): string {
   
   // Prepend API base URL with /storage/blogs/ path
   // Backend stores blog images in storage/app/public/blogs/
-  return `http://31.170.165.83/storage/blogs/${cleanPath}`;
+  return `${API_ORIGIN}/storage/blogs/${cleanPath}`;
 }

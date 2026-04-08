@@ -39,7 +39,7 @@ interface WrappedApiResponse<T> {
   errors?: Record<string, string[] | string>;
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83/api/').replace(/\/+$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83:8000/api/').replace(/\/+$/, '');
 const API_ORIGIN = (() => {
   try {
     return new URL(API_BASE_URL).origin;

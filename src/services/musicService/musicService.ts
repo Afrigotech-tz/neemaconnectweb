@@ -22,7 +22,7 @@ interface WrappedApiResponse<T> {
 
 const MUSIC_UPLOAD_TIMEOUT_MS = 180000;
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83/api/').replace(/\/+$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83:8000/api/').replace(/\/+$/, '');
 const API_ORIGIN = (() => {
   try {
     return new URL(API_BASE_URL).origin;
@@ -55,6 +55,16 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
   const err = error as AxiosError<ErrorResponse>;
   const baseMessage = err.response?.data?.message || err.message || fallback;
   const errors = err.response?.data?.errors;
+
+  const audioUploadFailedMessages = Array.isArray(errors?.audio_file)
+    ? errors.audio_file
+    : typeof errors?.audio_file === 'string'
+      ? [errors.audio_file]
+      : [];
+
+  if (audioUploadFailedMessages.some((message) => /failed to upload/i.test(message))) {
+    return 'The server rejected the audio upload before validation completed. This usually means the backend upload limit is smaller than the UI limit, or the server temp upload directory/configuration is failing.';
+  }
 
   if (!errors || typeof errors !== 'object') {
     return baseMessage;
@@ -257,6 +267,37 @@ export const musicService = {
         data: normalizeSong(songRaw),
       };
     } catch (error) {
+      const err = error as AxiosError<ErrorResponse>;
+      const status = err.response?.status;
+
+      if (status === 401) {
+        return {
+          success: false,
+          message: 'Your session is not authenticated for music uploads. Please log in again and try.',
+        };
+      }
+
+      if (status === 403) {
+        return {
+          success: false,
+          message: 'You do not have permission to upload music.',
+        };
+      }
+
+      if (status === 413) {
+        return {
+          success: false,
+          message: 'File is too large for server upload limits. Please use a smaller file and try again.',
+        };
+      }
+
+      if (!status) {
+        return {
+          success: false,
+          message: 'Upload failed due to a network/proxy/server restriction. If you are on localhost, restart Vite and try again.',
+        };
+      }
+
       return {
         success: false,
         message: getErrorMessage(error, 'Failed to upload music'),

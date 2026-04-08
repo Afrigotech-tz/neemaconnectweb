@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useSlider } from '@/hooks/useSlider';
 import { CreateSliderData, UpdateSliderData } from '@/types/sliderTypes';
+import { getImageUrl } from '@/lib/utils';
 import { Loader2, Save, X, Upload, Image } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,7 +51,7 @@ const SliderForm: React.FC<SliderFormProps> = ({ sliderId, onSuccess, onCancel }
         sort_order: selectedSlider.sort_order,
       });
       if (selectedSlider.image) {
-        setImagePreview(selectedSlider.image);
+        setImagePreview(getImageUrl(selectedSlider.image));
       }
     }
   }, [selectedSlider, sliderId]);

@@ -350,7 +350,7 @@ const MusicForm: React.FC<MusicFormProps> = ({
                       Selected: {formData.audio_file.name} ({(formData.audio_file.size / (1024 * 1024)).toFixed(2)} MB)
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground">MP3, WAV, OGG, M4A, FLAC. Max 50MB.</p>
+                  <p className="text-xs text-muted-foreground">MP3, WAV, OGG, M4A, FLAC. Client limit 50MB, but the server may enforce a smaller upload limit.</p>
                   {errors.audio_file && <p className="text-sm text-destructive">{errors.audio_file}</p>}
                 </CardContent>
               </Card>
