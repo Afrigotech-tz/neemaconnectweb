@@ -1,4 +1,5 @@
 import api from '../api';
+import { buildStorageAssetUrl } from '@/lib/apiUrl';
 import {
   Blog,
   CreateBlogData,
@@ -16,6 +17,30 @@ interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
 }
+
+const normalizeBlog = (payload: unknown): Blog => {
+  const blog = (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
+
+  return {
+    id: Number(blog.id || 0),
+    image: buildStorageAssetUrl('blogs', blog.image ?? blog.image_url ?? blog.image_path) || '',
+    title: typeof blog.title === 'string' ? blog.title : '',
+    description: typeof blog.description === 'string' ? blog.description : '',
+    date: typeof blog.date === 'string' ? blog.date : '',
+    location: typeof blog.location === 'string' ? blog.location : '',
+    is_active: Boolean(blog.is_active),
+    created_at: typeof blog.created_at === 'string' ? blog.created_at : '',
+    updated_at: typeof blog.updated_at === 'string' ? blog.updated_at : '',
+  };
+};
+
+const normalizeBlogList = (payload: unknown): Blog[] => {
+  if (!Array.isArray(payload)) {
+    return [];
+  }
+
+  return payload.map(normalizeBlog);
+};
 
 const buildFormData = (data: CreateBlogData | UpdateBlogData): FormData => {
   const formData = new FormData();
@@ -43,7 +68,7 @@ export const blogService = {
       return {
         success: true,
         message: 'Blogs fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeBlogList(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -63,7 +88,7 @@ export const blogService = {
       return {
         success: true,
         message: 'Blog fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeBlog(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -87,7 +112,7 @@ export const blogService = {
       return {
         success: true,
         message: 'Blog created successfully',
-        data: response.data.data || response.data,
+        data: normalizeBlog(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -110,7 +135,7 @@ export const blogService = {
       return {
         success: true,
         message: 'Blog updated successfully',
-        data: response.data.data || response.data,
+        data: normalizeBlog(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -151,7 +176,7 @@ export const blogService = {
       return {
         success: true,
         message: 'Active blogs fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeBlogList(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;

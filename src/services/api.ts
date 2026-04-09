@@ -1,10 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@/lib/apiUrl';
 
 const API_KEY = import.meta.env.VITE_API_KEY || 'mh8bUvdGP2xD9P4J3BZPYvr6noPBwEwZ';
-const API_BASE_URL = import.meta.env.DEV
-  ? '/api/'
-  : (import.meta.env.VITE_API_BASE_URL || 'http://31.170.165.83:8000/api/');
- 
 
 const api = axios.create({
   baseURL: API_BASE_URL,

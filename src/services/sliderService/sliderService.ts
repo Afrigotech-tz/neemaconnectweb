@@ -1,4 +1,5 @@
 import api from '../api';
+import { buildStorageAssetUrl } from '@/lib/apiUrl';
 import {
   HomeSlider,
   CreateSliderData,
@@ -16,6 +17,53 @@ interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
 }
+
+const toBoolean = (value: unknown): boolean => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'number') {
+    return value === 1;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === '1' || normalized === 'true';
+  }
+
+  return false;
+};
+
+const normalizeSlider = (payload: unknown): HomeSlider => {
+  const slider = (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
+  const rawImage =
+    slider.image ??
+    slider.image_url ??
+    slider.image_path ??
+    slider.photo ??
+    null;
+
+  return {
+    id: Number(slider.id || 0),
+    image: buildStorageAssetUrl('home_sliders', rawImage) || '',
+    title: typeof slider.title === 'string' ? slider.title : '',
+    head: typeof slider.head === 'string' ? slider.head : '',
+    description: typeof slider.description === 'string' ? slider.description : undefined,
+    is_active: toBoolean(slider.is_active),
+    sort_order: Number(slider.sort_order || 0),
+    created_at: typeof slider.created_at === 'string' ? slider.created_at : '',
+    updated_at: typeof slider.updated_at === 'string' ? slider.updated_at : '',
+  };
+};
+
+const normalizeSliderList = (payload: unknown): HomeSlider[] => {
+  if (!Array.isArray(payload)) {
+    return [];
+  }
+
+  return payload.map(normalizeSlider);
+};
 
 const buildFormData = (data: CreateSliderData | UpdateSliderData): FormData => {
   const formData = new FormData();
@@ -42,7 +90,7 @@ export const sliderService = {
       return {
         success: true,
         message: 'Sliders fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeSliderList(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -62,7 +110,7 @@ export const sliderService = {
       return {
         success: true,
         message: 'Slider fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeSlider(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -85,7 +133,7 @@ export const sliderService = {
       return {
         success: true,
         message: 'Slider created successfully',
-        data: response.data.data || response.data,
+        data: normalizeSlider(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -108,7 +156,7 @@ export const sliderService = {
       return {
         success: true,
         message: 'Slider updated successfully',
-        data: response.data.data || response.data,
+        data: normalizeSlider(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -149,7 +197,7 @@ export const sliderService = {
       return {
         success: true,
         message: 'Active sliders fetched successfully',
-        data: response.data.data || response.data,
+        data: normalizeSliderList(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -176,7 +224,7 @@ export const sliderService = {
       return {
         success: true,
         message: `Slider ${isActive ? 'activated' : 'deactivated'} successfully`,
-        data: response.data.data || response.data,
+        data: normalizeSlider(response.data.data || response.data),
       };
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
@@ -189,4 +237,3 @@ export const sliderService = {
 
 
 };
-
