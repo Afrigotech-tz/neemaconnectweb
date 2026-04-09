@@ -87,7 +87,7 @@ export const navigationItems: RouteConfig[] = [
     requiredPermissions: ['view_news']
   },
   {
-    name: 'Slider Management',
+    name: 'Sliders Management',
     path: '/dashboard/slider-management',
     icon: ImageIcon,
     section: 'Content',

@@ -125,6 +125,20 @@ const Login = () => {
     }
   }, [location, navigate]);
 
+  const getSafeRedirectPath = () => {
+    const redirectFromState = location.state?.from?.pathname
+      ? `${location.state.from.pathname}${location.state.from.search || ''}${location.state.from.hash || ''}`
+      : '';
+    const redirectFromQuery = new URLSearchParams(location.search).get('redirect') || '';
+    const candidate = redirectFromState || redirectFromQuery;
+
+    if (candidate.startsWith('/') && !candidate.startsWith('//') && candidate !== '/login') {
+      return candidate;
+    }
+
+    return '/dashboard';
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -158,7 +172,7 @@ const Login = () => {
         } else {
           const userWithPermissions = { ...user, permissions };
           login(userWithPermissions, token);
-          navigate('/dashboard');
+          navigate(getSafeRedirectPath(), { replace: true });
         }
       } else {
         setError(response.message || 'Login failed. Please try again.');
@@ -696,4 +710,3 @@ const Login = () => {
 };
 
 export default Login;
-

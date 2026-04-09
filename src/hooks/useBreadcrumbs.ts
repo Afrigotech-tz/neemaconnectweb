@@ -31,6 +31,7 @@ const routeNameMap: Record<string, string> = {
   payments: 'Payments',
   reports: 'Reports',
   partnership: 'Partnership',
+  'slider-management': 'Sliders Management',
   settings: 'Settings',
   profile: 'Profile',
 };
@@ -57,7 +58,7 @@ export const useBreadcrumbs = () => {
     }
 
     // Build breadcrumbs from path segments
-    let currentPath = '';
+    let currentPath = '/dashboard';
     pathSegments.forEach((segment, index) => {
       // Skip 'dashboard' as we already added it
       if (segment === 'dashboard') return;

@@ -1,4 +1,5 @@
 const DEFAULT_API_BASE_URL = '/api/';
+const DEFAULT_PRODUCTION_API_BASE_URL = 'https://seagreen-mink-431224.hostingersite.com/api/';
 const LEGACY_BACKEND_HOSTS = new Set(['31.170.165.83']);
 
 const getRuntimeOrigin = (): string => {
@@ -28,7 +29,7 @@ const parseUrl = (value: string): URL | null => {
 
 const trimTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
 
-const shouldUseSameOriginApi = (parsedUrl: URL): boolean => {
+const shouldUseVerifiedProductionApi = (parsedUrl: URL): boolean => {
   const runtimeOrigin = getRuntimeOrigin();
 
   if (LEGACY_BACKEND_HOSTS.has(parsedUrl.hostname)) {
@@ -50,12 +51,12 @@ export const API_BASE_URL = (() => {
   }
 
   if (!configuredBaseUrl) {
-    return DEFAULT_API_BASE_URL;
+    return DEFAULT_PRODUCTION_API_BASE_URL;
   }
 
   const parsedUrl = parseUrl(configuredBaseUrl);
-  if (parsedUrl && shouldUseSameOriginApi(parsedUrl)) {
-    return DEFAULT_API_BASE_URL;
+  if (parsedUrl && shouldUseVerifiedProductionApi(parsedUrl)) {
+    return DEFAULT_PRODUCTION_API_BASE_URL;
   }
 
   return trimTrailingSlashes(configuredBaseUrl);

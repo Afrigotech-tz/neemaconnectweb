@@ -101,6 +101,20 @@ const sanitizeUserProfilePicture = (userData: User | null): User | null => {
   };
 };
 
+const buildLoginRedirectUrl = (): string => {
+  if (typeof window === 'undefined') {
+    return '/login';
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+  if (!currentPath || currentPath === '/' || currentPath.startsWith('/login')) {
+    return '/login';
+  }
+
+  return `/login?redirect=${encodeURIComponent(currentPath)}`;
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -145,8 +159,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
     localStorage.removeItem('verification_data');
-    // Use window.location since AuthProvider is outside Router context
-    window.location.href = '/';
+    // Use window.location since AuthProvider is outside Router context.
+    window.location.assign(buildLoginRedirectUrl());
   }, []);
 
   // Listen for 401 auth-expired events from the API interceptor

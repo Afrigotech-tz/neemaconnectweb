@@ -50,7 +50,7 @@ const SlidersList: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
               <Presentation className="h-7 w-7" />
-              Slider Management
+              Sliders Management
             </h1>
             <p className="text-white/80 mt-2">Control homepage slider visuals, ordering, and publication status.</p>
           </div>
